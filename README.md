@@ -23,15 +23,15 @@ I don't recommend installing this config, but you can clone inside <code>$HOME/m
 <h2>Summary of Features</h2>
 <br>
 <ul type="square">
-<li>home-manager</li>
-<li>xmonad(still learning how to configure though)</li>
-<li>neovim + plugins(includes coc)</li>
-<li>haskell environment</li>
-<li>Japanese IME(mozc+fcitx)</li>
-<li>Dvorak layout</li>
-<li>kitty(terminal)</li>
-<li>fish shell + plugins(Doesn't include theme because I couldn't figure out how to make work installing with home-manager)</li>
-<li>qutebrowser</li>
-<li>NerdFont</li>
-<li>Apple emoji</li>
+    <li>home-manager</li>
+    <li>xmonad(still learning how to configure though)</li>
+    <li>neovim + plugins(includes coc)</li>
+    <li>haskell environment</li>
+    <li>Japanese IME(mozc+fcitx)</li>
+    <li>Dvorak layout</li>
+    <li>kitty(terminal)</li>
+    <li>fish shell + plugins(Doesn't include theme because I couldn't figure out how to make work installing with home-manager)</li>
+    <li>qutebrowser</li>
+    <li>NerdFont</li>
+    <li>Apple emoji</li>
 </ul>
