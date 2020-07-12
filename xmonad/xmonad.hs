@@ -11,7 +11,7 @@ import qualified Data.Map                 as M
 import qualified XMonad.StackSet          as W
 
 myModMask       = mod4Mask
-myTerminal      = "kitty"
+myTerminal      = "kitty --single-instance"
 myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 myClickJustFocuses :: Bool
