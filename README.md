@@ -32,6 +32,6 @@ I don't recommend installing this config, but you can clone inside <code>$HOME/m
     <li>kitty(terminal)</li>
     <li>fish shell + plugins(Doesn't include theme because I couldn't figure out how to make work installing with home-manager)</li>
     <li>qutebrowser</li>
-    <li>NerdFont</li>
+    <li>NerdFont(Monoid)</li>
     <li>Apple emoji</li>
 </ul>
