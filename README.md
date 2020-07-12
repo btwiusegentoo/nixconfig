@@ -34,4 +34,5 @@ I don't recommend installing this config, but you can clone inside <code>$HOME/m
     <li>qutebrowser</li>
     <li>NerdFont(Monoid)</li>
     <li>Apple emoji</li>
+    <li>Some packages from unstable while running stable branch</li>
 </ul>
