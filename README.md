@@ -10,9 +10,37 @@
 
 <br>
 <h1 align="center">NixOS config files</h1>
-
+<br>
 note: this repo is a personally backup. and my system is still work in progress.<br>
 I try to install packages/manage config files declarative using <code>configuration.nix</code> and <code>home.nix</code> as much as possible.<br>
 I personally use vim's folding(marker) to make config files readable.<br>
-I don't recommend installing this config, but you can clone inside <code>$HOME/mygit/</code> and symlink. Don't forget that nixpkgs directory goes inside <code>$HOME/.config/</code><br>
 If you are new to nixos, maybe you can get idea how to install neovim plugins and fish plugins,haskell packages,python packages from this config.
+<br>
+<h2>Installation</h2>
+<br>
+I don't recommend installing this config, but you can clone inside <code>$HOME/mygit/</code> and symlink. Don't forget that nixpkgs directory goes inside <code>$HOME/.config/</code><br>
+<br>
+<h2>Summary of Features</h2>
+<br>
+- home-manager
+<br>
+- xmonad(still learning how to configure though)
+<br>
+- neovim + plugins(includes coc)
+<br>
+- haskell environment
+<br>
+- Japanese IME(mozc+fcitx)
+<br>
+- Dvorak layout
+<br>
+- kitty(terminal)
+<br>
+- fish shell + plugins(Doesn't include theme that I couldn't figure out how to make work installing with home-manager)
+<br>
+- qutebrowser
+<br>
+- NerdFont
+<br>
+- Apple emoji
+<br>
