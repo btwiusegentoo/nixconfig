@@ -111,6 +111,9 @@ in
     services = {
         openssh.enable = true;
         fstrim.enable = true;
+        redshift = {
+            enable = true;
+        };
     };
 
     # Enable sound.
@@ -157,6 +160,8 @@ in
         autoRepeatInterval = 25;
     };# }}}
     #}}}
+
+    location.provider = "geoclue2";
 
     # Define a user account. Don't forget to set a password with ‘passwd’.{{{
     users.users.btw = {
