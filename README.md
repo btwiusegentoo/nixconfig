@@ -12,4 +12,7 @@
 <h1 align="center">NixOS config files</h1>
 
 note: this repo is a personally backup.<br>
-I try to install packages/manage config files declarative using <code>configuration.nix</code> and <code>home.nix</code> as much as possible.
+I try to install packages/manage config files declarative using <code>configuration.nix</code> and <code>home.nix</code> as much as possible.<br>
+I use vim's folding to make readable.<br>
+I don't recommend installing this config, but you can clone inside <code>$HOME/mygit/</code> and symlink.
+If you are new to nixos, maybe you can get idea how to install neovim plugins and haskell packages,python packages from this config.
