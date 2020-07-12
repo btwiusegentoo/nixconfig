@@ -106,6 +106,7 @@ in
                 "cat" = "bat";
                 "find" = "fd";
                 "top" = "htop";
+                "untar" = "tar -xvzf";
                 #Git
                 "g" = "git";
                 "ga" = "git add";
