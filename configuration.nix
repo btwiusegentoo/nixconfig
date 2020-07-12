@@ -50,7 +50,8 @@ in
     fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
     # Boot faster
     systemd.services.systemd-udev-settle.enable = false;
-    systemd.services.NetworkManager-wait-online.enable = false;# }}}
+    systemd.services.NetworkManager-wait-online.enable = false;
+    # }}}
 
     #Networking{{{
     networking.hostName = "nixos"; # Define your hostname.
@@ -107,13 +108,16 @@ in
 
     # services{{{
 
-    # Enable the OpenSSH daemon.
-    services.openssh.enable = true;
+    services = {
+        openssh.enable = true;
+        fstrim.enable = true;
+    };
 
     # Enable sound.
     sound.enable = true;
     hardware.pulseaudio.enable = true;
 
+    #xserver{{{
     services.xserver = {
         enable = true;
         autorun = true;
@@ -149,7 +153,10 @@ in
             #];
         #};
         wacom.enable = true;
+        autoRepeatDelay = 200;
+        autoRepeatInterval = 25;
     };# }}}
+    #}}}
 
     # Define a user account. Don't forget to set a password with ‘passwd’.{{{
     users.users.btw = {

@@ -450,9 +450,6 @@ in
 
         # Fonts
         c.fonts.default_family="SFNS Diplay"
-        c.fonts.web.family.standard="SFNS Display"
-        c.fonts.web.family.serif="SFNS Display"
-        c.fonts.web.family.sans_serif="SFNS Display"
         c.fonts.web.family.fixed="Monoid Nerd Font Mono"
         c.fonts.completion.category="8pt Monoid Nerd Font Mono"
         c.fonts.completion.entry="8pt Monoid Nerd Font Mono"
@@ -874,6 +871,8 @@ in
     #neofetch{{{
     ".config/neofetch/config.conf".text = ''
         print_info() {
+
+            prin "$(color 12)────────────────────────────────────────────" 
             info "OS" distro
             info "Uptime" uptime
             info "Packages" packages
@@ -882,13 +881,13 @@ in
             info "Terminal" term
             info "CPU" cpu
             info "Memory" memory
-
+            prin "$(color 12)────────────────────────────────────────────"
             info cols
         }
         title_fqdn="off"
         kernel_shorthand="on"
         os_arch="on"
-        uptime_shorthand="on"
+        uptime_shorthand="tiny"
         memory_percent="off"
         package_managers="on"
         shell_path="off"
@@ -901,7 +900,7 @@ in
         cpu_temp="off"
         refresh_rate="off"
         de_version="off"
-        colors=(distro)
+        colors=(12 14)
         bold="on"
         underline_enabled="on"
         underline_char="-"
@@ -913,9 +912,9 @@ in
         col_offset="auto"
         image_backend="ascii"
         image_source="auto"
-        ascii_distro="auto"
+        ascii_distro="nixos"
         ascii_colors=(distro)
-        ascii_bold="on"
+        ascii_bold="off"
         gap=3
         stdout="off"
     '';
