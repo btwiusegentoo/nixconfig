@@ -30,7 +30,7 @@ I don't recommend installing this config, but you can clone inside <code>$HOME/m
 <li>Japanese IME(mozc+fcitx)</li>
 <li>Dvorak layout</li>
 <li>kitty(terminal)</li>
-<li>fish shell + plugins(Doesn't include theme that I couldn't figure out how to make work installing with home-manager)</li>
+<li>fish shell + plugins(Doesn't include theme because I couldn't figure out how to make work installing with home-manager)</li>
 <li>qutebrowser</li>
 <li>NerdFont</li>
 <li>Apple emoji</li>
