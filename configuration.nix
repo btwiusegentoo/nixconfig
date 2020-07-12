@@ -10,7 +10,7 @@ let
         numpy
         pip
     ];
-    python-with-my-packages = pkgs.python3.withPackages my-python-packages;
+    python-with-my-packages = unstable.python3.withPackages my-python-packages;
 
 in
 {
