@@ -284,7 +284,6 @@ in
 
                 "Keybinds
                 let mapleader = "\<Space>"
-                inoremap <C-c> <ESC>
                 nnoremap <Leader>w :w<CR>
                 "move window with ctrlhjkl
                 nnoremap <C-h> <C-w>h
