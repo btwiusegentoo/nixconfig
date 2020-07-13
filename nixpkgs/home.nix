@@ -266,6 +266,9 @@ in
                 let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
                 let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
 
+                " NERDTree
+                let NERDTreeShowHidden=1
+
                 "cosco.vim
                 let g:cosco_ignore_comment_lines = 1
                 let g:cosco_filetype_whitelist = ['php', 'javascript']
@@ -435,8 +438,16 @@ in
     # generate dotfiles{{{
     home.file = {
 
-    #".xmonad/xmonad.hs".source = ../xmonad/xmonad.hs;
+    # xmobar
     ".xmonad/xmobar.hs".source = ../xmonad/xmobar.hs;
+    ".xmonad/xmobar.hs".onChange = ''
+        if [[ -v DISPLAY ]] ; then
+            echo "Recompiling xmobar"
+            xmobar --recompile ~/.xmonad/xmobar.hs &
+            disown
+            killall xmobar
+        fi
+    '';
 
     # qutebrowser{{{
     ".config/qutebrowser/config.py".text = 

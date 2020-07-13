@@ -1,15 +1,18 @@
 
 import           Data.Monoid
 import           System.Exit
-import           XMonad
+import           XMonad                             hiding ((|||))
 import           XMonad.Hooks.DynamicLog
 import           XMonad.Hooks.ManageDocks
+import           XMonad.Layout.BinarySpacePartition
+import           XMonad.Layout.LayoutCombinators
 import           XMonad.Layout.Spacing
+import           XMonad.Layout.Spiral
 import           XMonad.Util.Run
 import           XMonad.Util.SpawnOnce
 
-import qualified Data.Map                 as M
-import qualified XMonad.StackSet          as W
+import qualified Data.Map                           as M
+import qualified XMonad.StackSet                    as W
 
 myModMask       = mod4Mask
 myTerminal      = "kitty --single-instance"
@@ -21,6 +24,7 @@ myBorderWidth   = 2
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 myNormalBorderColor  = "#fefefe"
 myFocusedBorderColor = "#f07178"
+myGaps = spacingRaw True (Border 10 10 10 10) True (Border 10 10 10 10) True
 
 myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
 
@@ -29,19 +33,25 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     , ((modm,               xK_b     ), spawn "qutebrowser")
     , ((modm .|. shiftMask, xK_c     ), kill)
     , ((modm,               xK_space ), sendMessage NextLayout)
+    , ((modm,               xK_t     ), sendMessage $ JumpToLayout "Spacing Tall")
+    , ((modm,               xK_f     ), sendMessage $ JumpToLayout "Full")
+    , ((modm,               xK_m     ), sendMessage $ JumpToLayout "Mirror Spacing Tall")
+    , ((modm,               xK_n     ), sendMessage $ JumpToLayout "Spacing BSP")
+    , ((modm,               xK_s     ), sendMessage $ JumpToLayout "Spacing Spiral")
     , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
-    , ((modm,               xK_n     ), refresh)
+    , ((modm,               xK_r     ), refresh)
     , ((modm,               xK_j     ), windows W.focusDown)
     , ((modm,               xK_k     ), windows W.focusUp  )
-    , ((modm,               xK_m     ), windows W.focusMaster)
-    , ((modm .|. shiftMask, xK_m     ), windows W.swapMaster)
+    , ((modm,               xK_g     ), windows W.focusMaster)
+    , ((modm .|. shiftMask, xK_g     ), windows W.swapMaster)
     , ((modm .|. shiftMask, xK_j     ), windows W.swapDown  )
     , ((modm .|. shiftMask, xK_k     ), windows W.swapUp    )
     , ((modm,               xK_h     ), sendMessage Shrink)
     , ((modm,               xK_l     ), sendMessage Expand)
-    , ((modm,               xK_t     ), withFocused $ windows . W.sink)
     , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
     , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
+    , ((modm              , xK_comma ), sendMessage Swap)
+    , ((modm              , xK_period), sendMessage Rotate)
     , ((modm .|. shiftMask, xK_q     ), io exitSuccess)
     , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
     ]
@@ -66,19 +76,21 @@ myMouseBindings XConfig {XMonad.modMask = modm} = M.fromList
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
     ]
 
-myLayout = avoidStruts(tiled ||| Mirror tiled ||| Full)
+myLayout = avoidStruts(tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| Full)
     where
-     -- default tiling algorithm partitions the screen into two panes
-     tiled   = spacingRaw True (Border 6 6 6 6) True (Border 6 6 6 6) True $ Tall nmaster delta ratio
+        tiledgaps = myGaps $ Tall nmaster delta ratio
 
-     -- The default number of windows in the master pane
-     nmaster = 1
+        -- window number in master pane
+        nmaster = 1
 
-     -- Default proportion of screen occupied by master pane
-     ratio   = 1/2
+        -- percent of screen to increment by when resizing panes
+        delta = 2/100
 
-     -- Percent of screen to increment by when resizing panes
-     delta   = 3/100
+        -- default proportion of screen occupied by master pane
+        ratio = 1/2
+
+        bspgaps = myGaps emptyBSP
+        spiralgaps = myGaps $ spiral (6/7)
 
 
 myManageHook = composeAll
@@ -86,7 +98,7 @@ myManageHook = composeAll
     , resource  =? "desktop_window" --> doIgnore]
 
 myEventHook = mempty
-myLogHook = return()
+myLogHook =  return()
 
 myStartupHook = do
     spawnOnce "feh --bg-fill ~/Pictures/nix-wallpaper-dracula.png"
@@ -94,7 +106,7 @@ myStartupHook = do
     spawnOnce "fcitx &"
 
 main = do
-    xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
+    xmproc <- spawnPipe "xmobar -r ~/.xmonad/xmobar.hs"
     xmonad $ docks def {
         -- simple stuff
             terminal           = myTerminal,
@@ -112,6 +124,11 @@ main = do
             layoutHook         = myLayout,
             manageHook         = myManageHook,
             handleEventHook    = myEventHook,
-            logHook            = myLogHook,
+            logHook            =  myLogHook <+> dynamicLogWithPP xmobarPP
+                                { ppOutput = hPutStrLn xmproc
+                                , ppCurrent = xmobarColor "#ab47bc" "" .wrap "[" "]" -- Current workspace
+                                , ppVisible = xmobarColor  "#676e95" ""              -- workspace visible
+                                , ppTitle = mempty
+                                },
             startupHook        = myStartupHook
     };
