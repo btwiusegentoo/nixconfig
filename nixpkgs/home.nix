@@ -381,10 +381,10 @@ in
     kitty = {
         enable = true;
         settings = {
-            font_size = 8;
+            font_size = 9;
             disable_ligatures = "never";    
             window_padding_width = 4;
-            background_opacity = "0.8";
+            background_opacity = "1";
         };
 
         font.name = "Monoid Nerd Font Mono";
@@ -441,7 +441,6 @@ in
     # qutebrowser{{{
     ".config/qutebrowser/config.py".text = 
     ''
-        c.zoom.default = "75%"
         c.url.start_pages = ["https://btwiusegentoo.github.io/start.html"]
         c.url.default_page = "https://btwiusegentoo.github.io/start.html"
         c.url.searchengines = {'DEFAULT': 'https://google.com/search?q={}'}
@@ -451,21 +450,21 @@ in
         # Fonts
         c.fonts.default_family="SFNS Diplay"
         c.fonts.web.family.fixed="Monoid Nerd Font Mono"
-        c.fonts.completion.category="8pt Monoid Nerd Font Mono"
-        c.fonts.completion.entry="8pt Monoid Nerd Font Mono"
-        c.fonts.contextmenu="8pt Monoid Nerd Font Mono"
-        c.fonts.debug_console="8pt Monoid Nerd Font Mono"
-        c.fonts.default_size="8pt"
-        c.fonts.downloads="8pt Monoid Nerd Font Mono"
-        c.fonts.hints="8pt Monoid Nerd Font Mono"
-        c.fonts.keyhint="8pt Monoid Nerd Font Mono"
-        c.fonts.messages.error="8pt Monoid Nerd Font Mono"
-        c.fonts.messages.info="8pt Monoid Nerd Font Mono"
-        c.fonts.messages.warning="8pt Monoid Nerd Font Mono"
-        c.fonts.prompts="8pt Monoid Nerd Font Mono"
-        c.fonts.statusbar="8pt Monoid Nerd Font Mono"
-        c.fonts.tabs.selected="8pt Monoid Nerd Font Mono"
-        c.fonts.tabs.unselected="8pt Monoid Nerd Font Mono"
+        c.fonts.completion.category="9pt Monoid Nerd Font Mono"
+        c.fonts.completion.entry="9pt Monoid Nerd Font Mono"
+        c.fonts.contextmenu="9pt Monoid Nerd Font Mono"
+        c.fonts.debug_console="9pt Monoid Nerd Font Mono"
+        c.fonts.default_size="9pt"
+        c.fonts.downloads="9pt Monoid Nerd Font Mono"
+        c.fonts.hints="9pt Monoid Nerd Font Mono"
+        c.fonts.keyhint="9pt Monoid Nerd Font Mono"
+        c.fonts.messages.error="9pt Monoid Nerd Font Mono"
+        c.fonts.messages.info="9pt Monoid Nerd Font Mono"
+        c.fonts.messages.warning="9pt Monoid Nerd Font Mono"
+        c.fonts.prompts="9pt Monoid Nerd Font Mono"
+        c.fonts.statusbar="9pt Monoid Nerd Font Mono"
+        c.fonts.tabs.selected="9pt Monoid Nerd Font Mono"
+        c.fonts.tabs.unselected="9pt Monoid Nerd Font Mono"
 
         # mpv youtube
         config.bind('yd', 'spawn mpv {url}')
@@ -964,8 +963,7 @@ in
     xsession = {
         enable = true;
         scriptPath = ".hm-xsession";
-        # scale from 1080p to WQHD on startup. disabled because becomes blurry
-        #profileExtra = "xrandr --output DVI-D-1 --scale 1.33333333333333x1.33333333333333 --panning 2560x1440 ";
+        profileExtra = "xrandr --output DVI-D-1 --scale 1.33333333333333x1.33333333333333 --panning 2560x1440 ";
 
         #xmonad{{{
         windowManager.xmonad = {

@@ -37,7 +37,7 @@ config = defaultConfig {
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%cpu% | %memory% * %swap% | %eth0% - %eth1% }\
+       , template = "%StdinReader% | %cpu% | %memory% * %swap% | %eth0% - %eth1% }\
                     \{ <fc=#ee9a00>%date%</fc>| %EGPF% | %uname%"
        }
 

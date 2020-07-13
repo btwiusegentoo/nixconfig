@@ -2,6 +2,7 @@
 import           Data.Monoid
 import           System.Exit
 import           XMonad
+import           XMonad.Hooks.DynamicLog
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Layout.Spacing
 import           XMonad.Util.Run
@@ -85,7 +86,7 @@ myManageHook = composeAll
     , resource  =? "desktop_window" --> doIgnore]
 
 myEventHook = mempty
-myLogHook = return ()
+myLogHook = return()
 
 myStartupHook = do
     spawnOnce "feh --bg-fill ~/Pictures/nix-wallpaper-dracula.png"
@@ -94,24 +95,23 @@ myStartupHook = do
 
 main = do
     xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
-
     xmonad $ docks def {
-      -- simple stuff
-        terminal           = myTerminal,
-        focusFollowsMouse  = myFocusFollowsMouse,
-        clickJustFocuses   = myClickJustFocuses,
-        borderWidth        = myBorderWidth,
-        modMask            = myModMask,
-        workspaces         = myWorkspaces,
-        normalBorderColor  = myNormalBorderColor,
-        focusedBorderColor = myFocusedBorderColor,
-      -- key bindings
-        keys               = myKeys,
-        mouseBindings      = myMouseBindings,
-      -- hooks, layouts
-        layoutHook         = myLayout,
-        manageHook         = myManageHook,
-        handleEventHook    = myEventHook,
-        logHook            = myLogHook,
-        startupHook        = myStartupHook
-    }
+        -- simple stuff
+            terminal           = myTerminal,
+            focusFollowsMouse  = myFocusFollowsMouse,
+            clickJustFocuses   = myClickJustFocuses,
+            borderWidth        = myBorderWidth,
+            modMask            = myModMask,
+            workspaces         = myWorkspaces,
+            normalBorderColor  = myNormalBorderColor,
+            focusedBorderColor = myFocusedBorderColor,
+        -- key bindings
+            keys               = myKeys,
+            mouseBindings      = myMouseBindings,
+        -- hooks, layouts
+            layoutHook         = myLayout,
+            manageHook         = myManageHook,
+            handleEventHook    = myEventHook,
+            logHook            = myLogHook,
+            startupHook        = myStartupHook
+    };

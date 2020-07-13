@@ -126,6 +126,7 @@ in
         autorun = true;
         layout = "us";
         xkbVariant = "dvorak";
+        dpi = 96;
         desktopManager.session = [
             {
                 name = "home-manager";
