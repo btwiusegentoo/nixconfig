@@ -40,7 +40,6 @@ in
         ipad_charge
     ];
 
-
     #Boot{{{
     # Use the systemd-boot EFI boot loader.
     boot.loader.systemd-boot.enable = true;
@@ -53,6 +52,15 @@ in
     systemd.services.systemd-udev-settle.enable = false;
     systemd.services.NetworkManager-wait-online.enable = false;
     # }}}
+
+    # Hardware{{{
+    hardware = {
+        pulseaudio.enable = true;
+        opengl.enable = true;
+        opengl.driSupport = true;
+        cpu.amd.updateMicrocode = true;
+    };
+# }}}
 
     #Networking{{{
     networking.hostName = "nixos"; # Define your hostname.
@@ -119,7 +127,6 @@ in
 
     # Enable sound.
     sound.enable = true;
-    hardware.pulseaudio.enable = true;
 
     #xserver{{{
     services.xserver = {
@@ -128,6 +135,7 @@ in
         layout = "us";
         xkbVariant = "dvorak";
         dpi = 96;
+        videoDrivers = [ "amdgpu" ];
         desktopManager.session = [
             {
                 name = "home-manager";

@@ -974,7 +974,7 @@ in
     xsession = {
         enable = true;
         scriptPath = ".hm-xsession";
-        profileExtra = "xrandr --output DVI-D-1 --scale 1.33333333333333x1.33333333333333 --panning 2560x1440 ";
+        profileExtra = "xrandr --output DVI-D-0 --scale 1.33333333333333x1.33333333333333 --panning 2560x1440 ";
 
         #xmonad{{{
         windowManager.xmonad = {
