@@ -37,6 +37,7 @@ in
         gcc
         python-with-my-packages
         cachix
+        ipad_charge
     ];
 
 
