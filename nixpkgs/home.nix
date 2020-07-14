@@ -33,6 +33,7 @@ in
         ranger
         cava
         xclip
+        tree
         kitty
         lsd
         bat
@@ -60,6 +61,7 @@ in
         unstable.xdotool
         scrot
         gimp
+        krita
         #misc
         cowsay cmatrix espeak figlet
     ];
@@ -1006,7 +1008,7 @@ in
     };
     # }}}
 
-    # fontconfig
+    # fontconfig{{{
     ".config/fontconfig/conf.d/10-prefer-emoji.conf".text = ''
         <?xml version="1.0"?>
         <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -1042,8 +1044,7 @@ in
                 </prefer>
             </alias>
         </fontconfig>
-    '';
-# }}}
+    '';# }}}
 
 
     };
