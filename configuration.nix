@@ -17,6 +17,8 @@ in
     imports =
         [ # Include the results of the hardware scan.
         ./hardware-configuration.nix
+          # Includes private ssh config.
+        ./sshconfig.nix
         ];
 
 
@@ -38,6 +40,7 @@ in
         python-with-my-packages
         cachix
         ipad_charge
+        mosh-master
     ];
 
     #Boot{{{
@@ -118,7 +121,6 @@ in
     # services{{{
 
     services = {
-        openssh.enable = true;
         fstrim.enable = true;
     };
 
@@ -176,7 +178,10 @@ in
         extraGroups = [ "wheel" "input" ]; # Enable ‘sudo’ for the user.
         shell = pkgs.fish;
     };
-    security.sudo.enable = true;# }}}
+    security.sudo = {
+        enable = true;
+    };
+    # }}}
 
     #etcfiles{{{
     environment.etc."X11/xorg.conf.d/50-wacomtweak.conf".text = ''

@@ -101,7 +101,7 @@ myEventHook = mempty
 myLogHook =  return()
 
 myStartupHook = do
-    spawnOnce "feh --bg-fill ~/Pictures/wallpapernix.png"
+    spawnOnce "feh --bg-fill ~/Pictures/wallpaper.png"
     spawnOnce "fcitx &"
 
 main = do
