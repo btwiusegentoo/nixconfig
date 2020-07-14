@@ -312,13 +312,28 @@ in
                 \ 'colorscheme': 'material_vim',
                 \ 'active': {
                 \   'left': [ [ 'mode', 'paste' ],
-                \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
+                \             [ 'cocstatus', 'currentfunction', 'gitbranch', 'readonly', 'filename', 'modified' ] ]
                 \ },
                 \ 'component_function': {
+                \   'gitbranch': 'fugitive#head',
                 \   'cocstatus': 'coc#status',
-                \   'currentfunction': 'CocCurrentFunction'
+                \   'currentfunction': 'CocCurrentFunction',
+                \   'filetype': 'MyFiletype',
+                \   'fileformat': 'MyFileformat',
                 \ },
                 \ }
+
+                if !has('gui_running')
+                    set t_Co=256
+                endif
+
+                function! MyFiletype()
+                    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ""
+                endfunction
+
+                function! MyFileformat()
+                    return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ""
+                endfunction
 
                 "Keybinds
                 let mapleader = "\<Space>"
@@ -480,6 +495,8 @@ in
             xmobar --recompile ~/.xmonad/xmobar.hs &
             disown
             killall xmobar
+            echo "Restarting"
+            xmonad --restart
         fi
     '';
 
@@ -989,7 +1006,7 @@ in
     };
     # }}}
 
-    # Give highest priority to apple emoji {{{
+    # fontconfig
     ".config/fontconfig/conf.d/10-prefer-emoji.conf".text = ''
         <?xml version="1.0"?>
         <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -999,6 +1016,31 @@ in
                     <string> Apple Color Emoji</string>
                 </edit>
             </match>
+        </fontconfig>
+    '';
+
+    ".config/fontconfig/conf.d/65-nonlatin.conf".text = ''
+        <?xml version="1.0"?>
+        <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+        <fontconfig>
+            <alias>
+                <family>serif</family>
+                <prefer>
+                    <family>Noto Sans CJK JP</family>
+                </prefer>
+            </alias>
+            <alias>
+                <family>sans-serif</family>
+                <prefer>
+                    <family>Noto Sans CJK JP</family>
+                </prefer>
+            </alias>
+            <alias>
+                <family>monospace</family>
+                <prefer>
+                    <family>Noto Sans CJK JP</family>
+                </prefer>
+            </alias>
         </fontconfig>
     '';
 # }}}

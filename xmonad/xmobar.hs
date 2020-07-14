@@ -4,7 +4,7 @@ config :: Config
 config = defaultConfig {
         font = "xft:Monoid Nerd Font:pixelsize=14:antialias=true:hinting=false"
        , additionalFonts = []
-       , borderColor = "black"
+       , borderColor = "#2b2a3e"
        , border = TopB
        , alpha = 255
        , bgColor = "#34324a"

@@ -113,7 +113,7 @@ in
         EDITOR = "nvim";
         XMODIFIERS = "@im=fcitx";
         XMODIFIER = "@im=fcitx";
-        PAGER = "nvim +Man!";
+        MANPAGER = "nvim +Man!";
     };
 
     # }}}

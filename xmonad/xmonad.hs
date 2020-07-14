@@ -1,4 +1,5 @@
 
+import           Control.Arrow                      (first)
 import           Data.Monoid
 import           System.Exit
 import           XMonad                             hiding ((|||))
@@ -8,6 +9,9 @@ import           XMonad.Layout.BinarySpacePartition
 import           XMonad.Layout.LayoutCombinators
 import           XMonad.Layout.Spacing
 import           XMonad.Layout.Spiral
+import           XMonad.Prompt
+import           XMonad.Prompt.FuzzyMatch
+import           XMonad.Prompt.Shell
 import           XMonad.Util.Run
 import           XMonad.Util.SpawnOnce
 
@@ -16,6 +20,7 @@ import qualified XMonad.StackSet                    as W
 
 myModMask       = mod4Mask
 myTerminal      = "kitty --single-instance"
+myFont = "xft:Monoid Nerd Font Mono:pixelsize=14:antialias=true:hinting=false"
 myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 myClickJustFocuses :: Bool
@@ -29,7 +34,8 @@ myGaps = spacingRaw True (Border 10 10 10 10) True (Border 10 10 10 10) True
 myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
 
     [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
-    , ((modm,               xK_d     ), spawn "dmenu_run")
+    --, ((modm,               xK_d     ), spawn "dmenu_run")
+    , ((modm,               xK_d     ), shellPrompt myXPConfig)
     , ((modm,               xK_b     ), spawn "qutebrowser")
     , ((modm .|. shiftMask, xK_c     ), kill)
     , ((modm,               xK_space ), sendMessage NextLayout)
@@ -60,6 +66,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
         | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
 
+
 myMouseBindings XConfig {XMonad.modMask = modm} = M.fromList
 
     -- mod-button1, Set the window to floating mode and move by dragging
@@ -75,6 +82,35 @@ myMouseBindings XConfig {XMonad.modMask = modm} = M.fromList
 
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
     ]
+
+myXPKeymap = M.fromList $
+        map (first $ (,) 0)
+        [ (xK_Return, setSuccess True >> setDone True)
+        , (xK_KP_Enter, setSuccess True >> setDone True)
+        , (xK_BackSpace, deleteString Prev)
+        , (xK_Delete, deleteString Prev)
+        , (xK_Left, moveCursor Prev)
+        , (xK_Right, moveCursor Next)
+        , (xK_Down, moveHistory W.focusUp')
+        , (xK_Up, moveHistory W.focusDown')
+        , (xK_Escape, quit)
+        ]
+
+myXPConfig = def
+        { font = myFont
+        , bgColor = "#34324a"
+        , fgColor = "#676E95"
+        , bgHLight = "#444267"
+        , fgHLight = "#A6ACCD"
+        , borderColor = "#2b2a3e"
+        , promptKeymap = myXPKeymap
+        , promptBorderWidth = 0
+        , position = Top
+        , height = 22
+        , autoComplete = Nothing
+        , searchPredicate = fuzzyMatch
+        , alwaysHighlight = True
+        }
 
 myLayout = avoidStruts(tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| Full)
     where
