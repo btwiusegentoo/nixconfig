@@ -961,7 +961,7 @@ in
         image_source="auto"
         ascii_distro="nixos"
         ascii_colors=(4 6)
-        ascii_bold="on"
+        ascii_bold="off"
         gap=3
         stdout="off"
     '';
