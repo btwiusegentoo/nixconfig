@@ -20,10 +20,10 @@ myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 myClickJustFocuses :: Bool
 myClickJustFocuses = False
-myBorderWidth   = 2
+myBorderWidth   = 5
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
-myNormalBorderColor  = "#fefefe"
-myFocusedBorderColor = "#f07178"
+myNormalBorderColor  = "#a6accd"
+myFocusedBorderColor = "#c792ea"
 myGaps = spacingRaw True (Border 10 10 10 10) True (Border 10 10 10 10) True
 
 myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
@@ -101,8 +101,7 @@ myEventHook = mempty
 myLogHook =  return()
 
 myStartupHook = do
-    spawnOnce "feh --bg-fill ~/Pictures/nix-wallpaper-dracula.png"
-    spawnOnce "picom &"
+    spawnOnce "feh --bg-fill ~/Pictures/wallpapernix.png"
     spawnOnce "fcitx &"
 
 main = do
@@ -127,8 +126,9 @@ main = do
             logHook            =  myLogHook <+> dynamicLogWithPP xmobarPP
                                 { ppOutput = hPutStrLn xmproc
                                 , ppCurrent = xmobarColor "#ab47bc" "" .wrap "[" "]" -- Current workspace
-                                , ppVisible = xmobarColor  "#676e95" ""              -- workspace visible
+                                , ppVisible = xmobarColor  "#414863" ""              -- workspace visible
                                 , ppTitle = mempty
                                 },
             startupHook        = myStartupHook
     };
+

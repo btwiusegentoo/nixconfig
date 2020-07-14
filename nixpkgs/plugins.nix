@@ -94,6 +94,15 @@ in {
         };
     };
 
+    "lightline-onedark" = buildVimPlugin {
+        name = "lightline-onedark";
+        src = fetchgit {
+            "url" = "https://github.com/hallzy/lightline-onedark";
+            "rev" = "b3e9d9c35a347e25fb84c51c73fdb084cec4fb96";
+            "sha256" = "0xc14cyx1v7rk1w739fq0zrkjma1ykj3sl519mf8vmpzy4fb4als";
+        };
+    };
+
 }
 
 # vim: foldmethod=marker shiftwidth=4:

@@ -37,3 +37,6 @@ I don't recommend installing this config, but you can clone inside <code>$HOME/m
     <li>Some packages from unstable while running stable branch</li>
 
 </ul>
+
+<h2>Credits</h2>
+<a href="https://github.com/NixOS/nixos-artwork/tree/master/logo">NixOS/nixos-artwork</a> -> NixOS logo. used on wallpaper. distributed under <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY license</a>

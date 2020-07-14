@@ -2,13 +2,13 @@ import           Xmobar
 
 config :: Config
 config = defaultConfig {
-        font = "xft:SFNS Display:pixelsize=17:antialias=true:hinting=false"
+        font = "xft:Monoid Nerd Font:pixelsize=14:antialias=true:hinting=false"
        , additionalFonts = []
        , borderColor = "black"
        , border = TopB
-       , bgColor = "#2b2a3e"
-       , fgColor = "#A6ACCD"
        , alpha = 255
+       , bgColor = "#34324a"
+       , fgColor = "#A6ACCD"
        , position = TopSize L 100 20
        , textOffset = -1
        , iconOffset = -1
@@ -30,7 +30,7 @@ config = defaultConfig {
        , sepChar = "%"
        , alignSep = "}{"
        , template = "%StdinReader% | %cpu% | %memory% * %swap% }\
-                    \{ <fc=#ffcb6b>%date%</fc> | %uname%"
+                    \{ <fc=#f78c6c>%date%</fc> | %uname%"
        }
 
 main :: IO()

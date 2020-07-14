@@ -56,10 +56,10 @@ in
         glxinfo
         glibc
         haskell-env
-        unstable.picom
         unstable.libinput-gestures
         unstable.xdotool
         scrot
+        gimp
         #misc
         cowsay cmatrix espeak figlet
     ];
@@ -71,11 +71,14 @@ in
         variant = "dvorak";
     };#}}}
 
-    #services{{{
-    #services.picom = {
-        #enable = true;
-        #blur = true;
-    #};
+    services = { #{{{
+        picom = {
+            enable = true;
+            fade = true;
+            fadeDelta = 3;
+            backend = "glx";
+        };
+    };
     #}}}
 
     #programs{{{
@@ -176,6 +179,33 @@ in
             ''
                 fish_vi_key_bindings
                 set fish_greeting
+
+                set -U fish_color_autosuggestion 676e95
+                set -U fish_color_cancel -r
+                set -U fish_color_command green #white
+                set -U fish_color_comment 32374D
+                set -U fish_color_cwd green
+                set -U fish_color_cwd_root red
+                set -U fish_color_end brblack #blue
+                set -U fish_color_error red
+                set -U fish_color_escape yellow #green
+                set -U fish_color_history_current --bold
+                set -U fish_color_host normal
+                set -U fish_color_match --background=brblue
+                set -U fish_color_normal normal
+                set -U fish_color_operator blue #green
+                set -U fish_color_param 8796B0
+                set -U fish_color_quote yellow #brblack
+                set -U fish_color_redirection cyan
+                set -U fish_color_search_match bryellow --background=32374D
+                set -U fish_color_selection white --bold --background=32374D
+                set -U fish_color_status red
+                set -U fish_color_user brgreen
+                set -U fish_color_valid_path --underline
+                set -U fish_pager_color_completion normal
+                set -U fish_pager_color_description yellow --dim
+                set -U fish_pager_color_prefix white --bold #--underline
+                set -U fish_pager_color_progress brwhite --background=cyan
             '';
 
         };
@@ -188,8 +218,10 @@ in
             vimAlias = true;
             withPython3 = true;
 
-            configure.plug.plugins = with pkgs.vimPlugins // plugins; [# {{{
+            configure.plug.plugins = with unstable.vimPlugins // plugins; [# {{{
                 coc-nvim
+                #onedark-vim
+                #lightline-onedark
                 material-vim #kaicataldo/material.vim
                 nvim-colorizer-lua #norcalli/nvim-colorizer.lua
                 indentLine
@@ -252,6 +284,8 @@ in
                 let g:auto_comma_or_semicolon = 1
                 let g:material_theme_style = 'palenight'
                 let g:material_terminal_italics = 1
+                let g:onedark_terminal_italics = 1
+                let g:onedark_termcolors = 256
                 set background=dark
                 colorscheme material
                 set termguicolors
@@ -387,7 +421,7 @@ in
             font_size = 9;
             disable_ligatures = "never";    
             window_padding_width = 4;
-            background_opacity = "1";
+            background_opacity = "0.9";
         };
 
         font.name = "Monoid Nerd Font Mono";
@@ -425,7 +459,7 @@ in
         color7   #d0d0d0
         color15  #fefefe
         #}}}
-        cursor #fefefe
+
         symbol_map U+E000-U+FFFF Monoid Nerd Font
         # symbol_map above Fixes Nerd Font glyph small size issue.
         '';
@@ -449,6 +483,9 @@ in
         fi
     '';
 
+    # wallpaper
+    "Pictures/wallpaper.png".source = ../wallpaper.png;
+
     # qutebrowser{{{
     ".config/qutebrowser/config.py".text = 
     ''
@@ -461,21 +498,21 @@ in
         # Fonts
         c.fonts.default_family="SFNS Diplay"
         c.fonts.web.family.fixed="Monoid Nerd Font Mono"
-        c.fonts.completion.category="9pt Monoid Nerd Font Mono"
-        c.fonts.completion.entry="9pt Monoid Nerd Font Mono"
-        c.fonts.contextmenu="9pt Monoid Nerd Font Mono"
-        c.fonts.debug_console="9pt Monoid Nerd Font Mono"
+        c.fonts.completion.category="9pt Monoid Nerd Font"
+        c.fonts.completion.entry="9pt Monoid Nerd Font"
+        c.fonts.contextmenu="9pt Monoid Nerd Font"
+        c.fonts.debug_console="9pt Monoid Nerd Font"
         c.fonts.default_size="9pt"
-        c.fonts.downloads="9pt Monoid Nerd Font Mono"
-        c.fonts.hints="9pt Monoid Nerd Font Mono"
-        c.fonts.keyhint="9pt Monoid Nerd Font Mono"
-        c.fonts.messages.error="9pt Monoid Nerd Font Mono"
-        c.fonts.messages.info="9pt Monoid Nerd Font Mono"
-        c.fonts.messages.warning="9pt Monoid Nerd Font Mono"
-        c.fonts.prompts="9pt Monoid Nerd Font Mono"
-        c.fonts.statusbar="9pt Monoid Nerd Font Mono"
-        c.fonts.tabs.selected="9pt Monoid Nerd Font Mono"
-        c.fonts.tabs.unselected="9pt Monoid Nerd Font Mono"
+        c.fonts.downloads="9pt Monoid Nerd Font"
+        c.fonts.hints="9pt Monoid Nerd Font"
+        c.fonts.keyhint="9pt Monoid Nerd Font"
+        c.fonts.messages.error="9pt Monoid Nerd Font"
+        c.fonts.messages.info="9pt Monoid Nerd Font"
+        c.fonts.messages.warning="9pt Monoid Nerd Font"
+        c.fonts.prompts="9pt Monoid Nerd Font"
+        c.fonts.statusbar="9pt Monoid Nerd Font"
+        c.fonts.tabs.selected="9pt Monoid Nerd Font"
+        c.fonts.tabs.unselected="9pt Monoid Nerd Font"
 
         # mpv youtube
         config.bind('yd', 'spawn mpv {url}')
@@ -882,7 +919,7 @@ in
     ".config/neofetch/config.conf".text = ''
         print_info() {
 
-            prin "$(color 12)────────────────────────────────────────────" 
+            prin "$(color 4)────────────────────────────────────────────" 
             info "OS" distro
             info "Uptime" uptime
             info "Packages" packages
@@ -891,7 +928,7 @@ in
             info "Terminal" term
             info "CPU" cpu
             info "Memory" memory
-            prin "$(color 12)────────────────────────────────────────────"
+            prin "$(color 4)────────────────────────────────────────────"
             info cols
         }
         title_fqdn="off"
@@ -910,7 +947,7 @@ in
         cpu_temp="off"
         refresh_rate="off"
         de_version="off"
-        colors=(12 14)
+        colors=(distro)
         bold="on"
         underline_enabled="on"
         underline_char="-"
@@ -923,8 +960,8 @@ in
         image_backend="ascii"
         image_source="auto"
         ascii_distro="nixos"
-        ascii_colors=(distro)
-        ascii_bold="off"
+        ascii_colors=(4 6)
+        ascii_bold="on"
         gap=3
         stdout="off"
     '';

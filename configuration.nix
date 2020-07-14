@@ -120,9 +120,6 @@ in
     services = {
         openssh.enable = true;
         fstrim.enable = true;
-        redshift = {
-            enable = true;
-        };
     };
 
     # Enable sound.
@@ -190,6 +187,20 @@ in
         Option "Rotate" "Half"
         Option "AccelerationProfile" "-1"
         Option "AccelerationThreshold" "0.1"
+    EndSection
+
+    Section "InputClass" 
+        Identifier "Wacom"
+        MatchProduct "Wacom Bamboo 16FG 4x5 Pen"
+        Driver "wacom"
+        Option "Rotate" "Half"
+    EndSection
+
+    Section "InputClass" 
+        Identifier "Wacom"
+        MatchProduct "Wacom Bamboo 16FG 4x5 Pad"
+        Driver "wacom"
+        Option "Rotate" "Half"
     EndSection
     '';
 # }}}
