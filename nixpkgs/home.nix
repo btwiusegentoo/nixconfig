@@ -234,6 +234,7 @@ in
                 nerdcommenter
                 lightline-vim
                 lightline-ale
+                lightline-bufferline
                 nerdtree
                 vim-devicons
                 nerdtree-git-plugin
@@ -323,7 +324,20 @@ in
                 \   'filetype': 'MyFiletype',
                 \   'fileformat': 'MyFileformat',
                 \ },
+                \ 'tabline': {
+                \   'left': [ ['buffers'] ],
+                \   'right': [ ['close'] ]
+                \ },
+                \ 'component_expand': {
+                \   'buffers': 'lightline#bufferline#buffers'
+                \ },
+                \ 'component_type': {
+                \   'buffers': 'tabsel'
+                \ },
                 \ }
+
+                let g:lightline#bufferline#enable_devicons = 1
+                let g:lightline#bufferline#unicode_symbols = 1
 
                 if !has('gui_running')
                     set t_Co=256
@@ -370,9 +384,17 @@ in
                 nnoremap <leader>P "+P
                 vnoremap <leader>p "+p
                 vnoremap <leader>P "+P
-                "move tab with Shift JK like qutebrowser
-                nnoremap <S-j> gT
-                nnoremap <S-k> gt
+                "move buffers with Shift JK like qutebrowser
+                nnoremap <S-j> :bnext<CR>
+                nnoremap <S-k> :bprevious<CR>
+
+                " buffers
+                " new buffer
+                nnoremap <leader>T :enew<cr>
+                " Close the current buffer and move to the previous one
+                nnoremap <leader>bq :bp <BAR> bd #<CR>
+                " Show all open buffers and their status
+                nnoremap <leader>bl :ls<CR>
 
                 "Coc
                 set hidden
