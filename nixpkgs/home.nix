@@ -254,6 +254,8 @@ in
                 indenthaskell
                 vim-stylishask
                 haskell-vim
+                vim-tmux-navigator
+                tmuxline
             ]; #}}}
 
             configure.customRC = '' "{{{
@@ -505,6 +507,25 @@ in
     };
     # }}}
 
+    # tmux{{{
+    tmux = {
+        enable = true;
+        plugins = with pkgs; [
+            tmuxPlugins.vim-tmux-navigator        
+            tmuxPlugins.prefix-highlight
+        ];
+        keyMode = "vi";
+        extraConfig = ''
+            set -g default-terminal "screen-256color"
+            set -ga terminal-overrides ",*256col*:Tc"
+            set-option -g prefix C-Space
+            bind C-Space send-prefix
+            bind-key v split-window -h
+            bind-key s split-window -v
+            source-file ./.palenight-tmux
+        '';
+    };# }}}
+
     };
     #}}}
 
@@ -527,6 +548,9 @@ in
 
     # wallpaper
     "Pictures/wallpaper.png".source = ../wallpaper.png;
+
+    # tmux theme
+    ".palenight-tmux".source = ../.palenight-tmux;
 
     # qutebrowser{{{
     ".config/qutebrowser/config.py".text = 

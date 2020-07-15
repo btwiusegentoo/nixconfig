@@ -103,6 +103,15 @@ in {
         };
     };
 
+    "tmuxline" = buildVimPlugin {
+        name = "tmuxline";
+        src = fetchgit {
+            "url" = "https://github.com/edkolev/tmuxline.vim";
+            "rev" = "7001ab359f2bc699b7000c297a0d9e9a897b70cf";
+            "sha256" = "13d87zxpdzryal5dkircc0sm88mwwq7f5n4j3jn9f09fmg9siifb";
+        };
+    };
+
 }
 
 # vim: foldmethod=marker shiftwidth=4:
