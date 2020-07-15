@@ -108,7 +108,7 @@ myXPKeymap = M.fromList $
 -- prompt config{{{
 myXPConfig = def
         { font = myFont
-        , bgColor = "#34324a"
+        , bgColor = "#202331"
         , fgColor = "#676E95"
         , bgHLight = "#444267"
         , fgHLight = "#A6ACCD"
