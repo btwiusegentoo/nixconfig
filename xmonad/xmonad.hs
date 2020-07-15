@@ -1,4 +1,5 @@
 
+-- imports{{{
 import           Control.Arrow                      (first)
 import           Data.Monoid
 import           System.Exit
@@ -17,7 +18,9 @@ import           XMonad.Util.SpawnOnce
 
 import qualified Data.Map                           as M
 import qualified XMonad.StackSet                    as W
+-- }}}
 
+-- variables{{{
 myModMask       = mod4Mask
 myTerminal      = "kitty --single-instance"
 myFont = "xft:Monoid Nerd Font Mono:pixelsize=14:antialias=true:hinting=false"
@@ -30,7 +33,9 @@ myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 myNormalBorderColor  = "#a6accd"
 myFocusedBorderColor = "#c792ea"
 myGaps = spacingRaw True (Border 10 10 10 10) True (Border 10 10 10 10) True
+-- }}}
 
+-- keybindings{{{
 myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
 
     [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
@@ -65,8 +70,9 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     [((m .|. modm, k), windows $ f i)
         | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
+-- }}}
 
-
+-- mouse bindings{{{
 myMouseBindings XConfig {XMonad.modMask = modm} = M.fromList
 
     -- mod-button1, Set the window to floating mode and move by dragging
@@ -82,7 +88,9 @@ myMouseBindings XConfig {XMonad.modMask = modm} = M.fromList
 
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
     ]
+-- }}}
 
+-- prompt keybindings{{{
 myXPKeymap = M.fromList $
         map (first $ (,) 0)
         [ (xK_Return, setSuccess True >> setDone True)
@@ -95,7 +103,9 @@ myXPKeymap = M.fromList $
         , (xK_Up, moveHistory W.focusDown')
         , (xK_Escape, quit)
         ]
+-- }}}
 
+-- prompt config{{{
 myXPConfig = def
         { font = myFont
         , bgColor = "#34324a"
@@ -111,7 +121,9 @@ myXPConfig = def
         , searchPredicate = fuzzyMatch
         , alwaysHighlight = True
         }
+-- }}}
 
+-- layout{{{
 myLayout = avoidStruts(tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| Full)
     where
         tiledgaps = myGaps $ Tall nmaster delta ratio
@@ -127,18 +139,23 @@ myLayout = avoidStruts(tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps
 
         bspgaps = myGaps emptyBSP
         spiralgaps = myGaps $ spiral (6/7)
+-- }}}
 
-
+-- managehook{{{
 myManageHook = composeAll
     [ className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore]
+-- }}}
 
 myEventHook = mempty
 myLogHook =  return()
 
+-- startuphook{{{
 myStartupHook = do
     spawnOnce "feh --bg-fill ~/Pictures/wallpaper.png"
     spawnOnce "fcitx &"
+-- }}}
+
 
 main = do
     xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
@@ -169,3 +186,4 @@ main = do
             startupHook        = myStartupHook
     };
 
+-- vim: foldmethod=marker:
