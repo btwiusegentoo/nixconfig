@@ -60,7 +60,12 @@ in
 
     # Hardware{{{
     hardware = {
-        pulseaudio.enable = true;
+        pulseaudio = {
+            enable = true;
+            extraModules = [ pkgs.pulseaudio-modules-bt ];
+            package = pkgs.pulseaudioFull;
+        };
+        bluetooth.enable = true;
         opengl.enable = true;
         opengl.driSupport = true;
         cpu.amd.updateMicrocode = true;
@@ -124,6 +129,7 @@ in
 
     services = {
         fstrim.enable = true;
+        blueman.enable = true;
     };
 
     # Enable sound.

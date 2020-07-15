@@ -281,6 +281,7 @@ in
                 set wrapscan
                 set incsearch
                 set inccommand=split
+                "indent
                 set tabstop=4
                 set shiftwidth=4
                 set softtabstop=0
@@ -288,6 +289,8 @@ in
                 set smarttab
                 set shiftround
                 set cursorline
+                let g:nix_recommended_style=0
+
                 let g:auto_comma_or_semicolon = 1
                 let g:material_theme_style = 'palenight'
                 let g:material_terminal_italics = 1
