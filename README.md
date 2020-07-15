@@ -3,8 +3,11 @@
 <p align="center"><code>home-manager + xmonad + neovim💛</code></p>
 <br>
 <br>
+<br>
 
 ![screenshot](/screenshot.png)
+<br>
+<br>
 <br>
 
 [![nixos](https://img.shields.io/static/v1?style=for-the-badge&logo=nixos&label=%E2%A0%80&message=nixos&labelColor=azure&color=cornflowerblue)](https://nixos.org/)
