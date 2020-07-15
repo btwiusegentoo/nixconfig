@@ -520,8 +520,8 @@ in
             set -ga terminal-overrides ",*256col*:Tc"
             set-option -g prefix C-Space
             bind C-Space send-prefix
-            bind-key v split-window -h
-            bind-key s split-window -v
+            bind-key s split-window -h
+            bind-key v split-window -v
             source-file ./.palenight-tmux
         '';
     };# }}}
