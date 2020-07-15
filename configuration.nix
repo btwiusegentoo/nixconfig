@@ -41,6 +41,7 @@ in
         cachix
         ipad_charge
         mosh-master
+        unstable.sudo
     ];
 
     #Boot{{{
@@ -180,6 +181,9 @@ in
     };
     security.sudo = {
         enable = true;
+        configFile = ''
+            %wheel  ALL=(ALL:ALL)   FOLLOW: ALL
+        '';
     };
     # }}}
 

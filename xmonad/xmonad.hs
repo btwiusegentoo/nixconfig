@@ -141,7 +141,8 @@ myStartupHook = do
     spawnOnce "fcitx &"
 
 main = do
-    xmproc <- spawnPipe "xmobar -r ~/.xmonad/xmobar.hs"
+    xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
+
     xmonad $ docks def {
         -- simple stuff
             terminal           = myTerminal,

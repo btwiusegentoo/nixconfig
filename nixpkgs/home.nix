@@ -494,7 +494,8 @@ in
     ".xmonad/xmobar.hs".onChange = ''
         if [[ -v DISPLAY ]] ; then
             echo "Recompiling xmobar"
-            xmobar --recompile ~/.xmonad/xmobar.hs &
+            xmobar -r ~/.xmonad/xmobar.hs &
+            sleep 2
             disown
             killall xmobar
             echo "Restarting"

@@ -23,15 +23,16 @@ config = defaultConfig {
                                "--normal","green","--high","red"] 10
                     , Run $ Memory ["-t","Mem: <usedratio>%"] 10
                     , Run $ Swap [] 10
-                    , Run $ Com "uname" [ "-s" , "-r" ] "" 3600
                     , Run $ Date "%a %b %_d %Y %H:%M:%S" "date" 10
+                    , Run $ Com "uname" [ "-s" , "-r" ] "" 36000
                     , Run StdinReader
                     ]
        , sepChar = "%"
        , alignSep = "}{"
        , template = "%StdinReader% | %cpu% | %memory% * %swap% }\
-                    \{ <fc=#f78c6c>%date%</fc> | %uname%"
+                    \{ <fc=#f78c6c>%date%</fc> | \61820 %uname%"
        }
 
 main :: IO()
-main = xmobar config
+main = do
+    xmobar config
