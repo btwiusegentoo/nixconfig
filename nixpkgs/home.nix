@@ -263,7 +263,8 @@ in
                 set modelines=5
                 syntax enable
                 filetype plugin on
-                set number relativenumber
+                set nu
+                set nornu
                 set foldmethod=manual
                 set pumblend=10
                 set wildmenu
@@ -286,6 +287,7 @@ in
                 set expandtab
                 set smarttab
                 set shiftround
+                set cursorline
                 let g:auto_comma_or_semicolon = 1
                 let g:material_theme_style = 'palenight'
                 let g:material_terminal_italics = 1
@@ -516,12 +518,13 @@ in
         ];
         keyMode = "vi";
         extraConfig = ''
-            set -g default-terminal "screen-256color"
+            set-option -g default-shell /home/btw/.nix-profile/bin/fish
+            set-option -g default-terminal "screen-256color"
             set -ga terminal-overrides ",*256col*:Tc"
             set-option -g prefix C-Space
             bind C-Space send-prefix
-            bind-key s split-window -h
-            bind-key v split-window -v
+            bind s split-window -h
+            bind v split-window -v
             source-file ./.palenight-tmux
         '';
     };# }}}

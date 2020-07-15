@@ -31,9 +31,9 @@ in
         unstable.neovim
         unstable.nodejs
         unstable.yarn
+        unstable.openssh
         unzip
         home-manager
-        fish
         nix-prefetch-git
         gnumake
         gcc
@@ -42,6 +42,7 @@ in
         ipad_charge
         mosh-master
         unstable.sudo
+        fish
     ];
 
     #Boot{{{
