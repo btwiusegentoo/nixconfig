@@ -1,6 +1,6 @@
 # nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs-unstable
 
-{ config, pkgs, ... }:
+{ config, pkgs, fetchgit, ... }:
 
 let
     unstable = import <nixpkgs-unstable> {};
@@ -10,8 +10,20 @@ let
         numpy
         pip
         pylint
+        pymodoro
     ];
     python-with-my-packages = unstable.python3.withPackages my-python-packages;
+
+    # How to add custom python packages. 
+    pymodoro = unstable.python3Packages.buildPythonPackage rec {
+        pname = "pymodoro";
+        version = "1.14";
+        src = pkgs.fetchgit {
+            url = "https://github.com/dattanchu/pymodoro";
+            rev = "f666ef9c62261e91351cc734ada23b5a2f029220";
+            sha256 = "1gkq989cfq19cm4nxch6lf63sz9rmkkibaw7r0n2pcwdamjssgj1";
+        };
+    };
 
 in
 {

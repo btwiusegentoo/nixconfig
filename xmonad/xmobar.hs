@@ -26,7 +26,7 @@ config = defaultConfig {
                     , Run $ Date "%a %b %_d %H:%M:%S" "date" 10
                     , Run $ Com "uname" [ "-s" , "-r" ] "" 36000
                     , Run $ Com "qdbus" [ "org.fcitx.Fcitx" , "/inputmethod" , "GetCurrentIM" ] "kbd" 10
-                    , Run $ CommandReader "~/.scripts/pymodoro.py" "pomodoro"
+                    , Run $ CommandReader "pymodoro" "pomodoro"
                     , Run StdinReader
                     ]
        , sepChar = "%"

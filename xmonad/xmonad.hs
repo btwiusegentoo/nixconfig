@@ -42,6 +42,8 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     --, ((modm,               xK_d     ), spawn "dmenu_run")
     , ((modm,               xK_d     ), shellPrompt myXPConfig)
     , ((modm,               xK_b     ), spawn "qutebrowser")
+    , ((modm,               xK_p     ), spawn "touch ~/.cache/pomodoro_session") -- start pomodoro
+    , ((modm .|. shiftMask, xK_p     ), spawn "rm ~/.cache/pomodoro_session")    -- stop pomodoro
     , ((modm .|. shiftMask, xK_c     ), kill)
     , ((modm,               xK_space ), sendMessage NextLayout)
     , ((modm,               xK_t     ), sendMessage $ JumpToLayout "Spacing Tall")

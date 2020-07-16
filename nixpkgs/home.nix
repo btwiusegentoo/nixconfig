@@ -575,10 +575,12 @@ in
     ".palenight-tmux".source = ../.palenight-tmux;
 
     # scripts
+    #  example to make executable
     #".scripts/pymodoro.py".source = pkgs.writeScript "pymodoro.py" (builtins.readFile ( pkgs.fetchurl {
         #url = "https://raw.githubusercontent.com/dattanchu/pymodoro/master/pymodoro/pymodoro.py";
         #sha256 = "076gd0kkc3mn1rkw1hmhxf9iiyl0qz4rs5mjlaqpby3ww14dp1mn";
     #} ) );
+
 
     # qutebrowser{{{
     ".config/qutebrowser/config.py".text = 
