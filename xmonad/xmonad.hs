@@ -8,6 +8,7 @@ import           XMonad.Hooks.DynamicLog
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Layout.BinarySpacePartition
 import           XMonad.Layout.LayoutCombinators
+import           XMonad.Layout.NoBorders            (noBorders, smartBorders)
 import           XMonad.Layout.Spacing
 import           XMonad.Layout.Spiral
 import           XMonad.Prompt
@@ -38,35 +39,37 @@ myGaps = spacingRaw True (Border 10 10 10 10) True (Border 10 10 10 10) True
 -- keybindings{{{
 myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
 
-    [ ((modm,               xK_Return), spawn $ XMonad.terminal conf)
-    --, ((modm,               xK_d     ), spawn "dmenu_run")
-    , ((modm,               xK_d     ), shellPrompt myXPConfig)
-    , ((modm,               xK_b     ), spawn "qutebrowser")
-    , ((modm,               xK_p     ), spawn "touch ~/.cache/pomodoro_session") -- start pomodoro
-    , ((modm .|. shiftMask, xK_p     ), spawn "rm ~/.cache/pomodoro_session")    -- stop pomodoro
-    , ((modm .|. shiftMask, xK_c     ), kill)
-    , ((modm,               xK_space ), sendMessage NextLayout)
-    , ((modm,               xK_t     ), sendMessage $ JumpToLayout "Spacing Tall")
-    , ((modm,               xK_f     ), sendMessage $ JumpToLayout "Full")
-    , ((modm,               xK_m     ), sendMessage $ JumpToLayout "Mirror Spacing Tall")
-    , ((modm,               xK_n     ), sendMessage $ JumpToLayout "Spacing BSP")
-    , ((modm,               xK_s     ), sendMessage $ JumpToLayout "Spacing Spiral")
-    , ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
-    , ((modm,               xK_r     ), refresh)
-    , ((modm,               xK_j     ), windows W.focusDown)
-    , ((modm,               xK_k     ), windows W.focusUp  )
-    , ((modm,               xK_g     ), windows W.focusMaster)
-    , ((modm .|. shiftMask, xK_g     ), windows W.swapMaster)
-    , ((modm .|. shiftMask, xK_j     ), windows W.swapDown  )
-    , ((modm .|. shiftMask, xK_k     ), windows W.swapUp    )
-    , ((modm,               xK_h     ), sendMessage Shrink)
-    , ((modm,               xK_l     ), sendMessage Expand)
-    , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
-    , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
-    , ((modm              , xK_comma ), sendMessage Swap)
-    , ((modm              , xK_period), sendMessage Rotate)
-    , ((modm .|. shiftMask, xK_q     ), io exitSuccess)
-    , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
+    [ ((modm,               xK_Return ), spawn $ XMonad.terminal conf)
+    , ((modm,               xK_d      ), shellPrompt myXPConfig)                  -- use xmonad prompt instead of dmenu.
+    , ((modm,               xK_b      ), spawn "qutebrowser")                     -- launch qutebrowser
+    , ((modm,               xK_p      ), spawn "touch ~/.cache/pomodoro_session") -- start pomodoro
+    , ((modm .|. shiftMask, xK_p      ), spawn "rm ~/.cache/pomodoro_session")    -- stop pomodoro
+    , ((0                 , 0x1008ff11), spawn "amixer -q sset Master 2%-")       -- decrease volume
+    , ((0                 , 0x1008ff13), spawn "amixer -q sset Master 2%+")       -- increase volume
+    , ((0                 , 0x1008FF12), spawn "amixer set Master toggle")        -- mute/unmute sound
+    , ((modm .|. shiftMask, xK_c      ), kill)
+    , ((modm,               xK_space  ), sendMessage NextLayout)
+    , ((modm,               xK_t      ), sendMessage $ JumpToLayout "Spacing Tall")
+    , ((modm,               xK_f      ), sendMessage $ JumpToLayout "Full")
+    , ((modm,               xK_m      ), sendMessage $ JumpToLayout "Mirror Spacing Tall")
+    , ((modm,               xK_n      ), sendMessage $ JumpToLayout "Spacing BSP")
+    , ((modm,               xK_s      ), sendMessage $ JumpToLayout "Spacing Spiral")
+    , ((modm .|. shiftMask, xK_space  ), setLayout $ XMonad.layoutHook conf)
+    , ((modm,               xK_r      ), refresh)
+    , ((modm,               xK_j      ), windows W.focusDown)
+    , ((modm,               xK_k      ), windows W.focusUp  )
+    , ((modm,               xK_g      ), windows W.focusMaster)
+    , ((modm .|. shiftMask, xK_g      ), windows W.swapMaster)
+    , ((modm .|. shiftMask, xK_j      ), windows W.swapDown  )
+    , ((modm .|. shiftMask, xK_k      ), windows W.swapUp    )
+    , ((modm,               xK_h      ), sendMessage Shrink)
+    , ((modm,               xK_l      ), sendMessage Expand)
+    , ((modm              , xK_comma  ), sendMessage (IncMasterN 1))
+    , ((modm              , xK_period ), sendMessage (IncMasterN (-1)))
+    , ((modm              , xK_comma  ), sendMessage Swap)
+    , ((modm              , xK_period ), sendMessage Rotate)
+    , ((modm .|. shiftMask, xK_q      ), io exitSuccess)
+    , ((modm              , xK_q      ), spawn "xmonad --recompile; xmonad --restart")
     ]
     ++
     [((m .|. modm, k), windows $ f i)
@@ -126,7 +129,7 @@ myXPConfig = def
 -- }}}
 
 -- layout{{{
-myLayout = avoidStruts(tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| Full)
+myLayout = avoidStruts $ smartBorders (tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| noBorders Full)
     where
         tiledgaps = myGaps $ Tall nmaster delta ratio
 

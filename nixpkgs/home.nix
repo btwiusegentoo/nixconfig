@@ -73,6 +73,7 @@ in
         xkb-switch
         unstable.libinput-gestures
         unstable.xdotool
+        xorg.xev
         # joke command
         cowsay cmatrix espeak figlet
     ];
