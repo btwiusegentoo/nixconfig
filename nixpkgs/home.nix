@@ -27,14 +27,8 @@ in
 
     # Packages to install{{{
     home.packages = with pkgs; [
-        feh
-        dmenu
-        htop
-        ranger
-        cava
-        xclip
+        trash-cli
         tree
-        kitty
         lsd
         bat
         bc
@@ -42,27 +36,44 @@ in
         fish
         binutils
         killall
-        discord
-        unstable.tdesktop
         git
-        pavucontrol
         python
         neofetch
         pfetch
-        unstable.qutebrowser
-        unstable.qt5.qtwebengine
         nodePackages.node2nix
-        mpv
         binutils
-        glxinfo
         glibc
         haskell-env
-        unstable.libinput-gestures
-        unstable.xdotool
+        rnix-lsp
         scrot
+        feh
+        # tui apps
+        cava
+        nnn
+        htop
+        # gui apps
+        kitty
+        unstable.qutebrowser
         gimp
         krita
-        #misc
+        kdenlive
+        blender
+        discord
+        unstable.tdesktop
+        pavucontrol
+        mpv
+        # dependencies
+        ffmpeg-full
+        frei0r
+        unstable.qt5.qtwebengine
+        # misc
+        glxinfo
+        xclip
+        qt5.qttools
+        xkb-switch
+        unstable.libinput-gestures
+        unstable.xdotool
+        # joke command
         cowsay cmatrix espeak figlet
     ];
     #}}}
@@ -136,7 +147,11 @@ in
                 "cmonad" = "nvim ~/mygit/nixconfig/xmonad/xmonad.hs";
                 "cmobar" = "nvim ~/mygit/nixconfig/xmonad/xmobar.hs";
                 #screenshot
-                "scrotclip" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
+                "scrotclipsel" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
+                "scrotclip" = "scrot ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
+                # nnn(filemanager)
+                "n" = "nnn";
+                "nh" = "nnn -H";
             };
 # }}}
 
@@ -177,6 +192,7 @@ in
                 ];
             # }}}
 
+            # config{{{
             interactiveShellInit =
             ''
                 fish_vi_key_bindings
@@ -208,7 +224,7 @@ in
                 set -U fish_pager_color_description yellow --dim
                 set -U fish_pager_color_prefix white --bold #--underline
                 set -U fish_pager_color_progress brwhite --background=cyan
-            '';
+            '';# }}}
 
         };
         #}}}
@@ -557,6 +573,12 @@ in
 
     # tmux theme
     ".palenight-tmux".source = ../.palenight-tmux;
+
+    # scripts
+    #".scripts/pymodoro.py".source = pkgs.writeScript "pymodoro.py" (builtins.readFile ( pkgs.fetchurl {
+        #url = "https://raw.githubusercontent.com/dattanchu/pymodoro/master/pymodoro/pymodoro.py";
+        #sha256 = "076gd0kkc3mn1rkw1hmhxf9iiyl0qz4rs5mjlaqpby3ww14dp1mn";
+    #} ) );
 
     # qutebrowser{{{
     ".config/qutebrowser/config.py".text = 
@@ -958,6 +980,12 @@ in
                     "completionSnippetsOn": true
                     }
             }
+            },
+            "nix": {
+                "command": "rnix-lsp",
+                "filetypes": [
+                    "nix"
+                ]
             }
         }
     }
@@ -1039,27 +1067,27 @@ in
     '';
 # }}}
 
-    #ranger{{{
-    ".config/ranger/rc.conf".text = ''
-        set show_hidden true
-        set confirm_on_delete always
-        set preview_images true
-        set preview_images_method kitty
-        set wrap_plaintext_previews true
-        set draw_borders both
-        set dirname_in_tabs true
-        default_linemode devicons
-    '';
-    # }}}
+    ##ranger{{{
+    #".config/ranger/rc.conf".text = ''
+        #set show_hidden true
+        #set confirm_on_delete always
+        #set preview_images true
+        #set preview_images_method kitty
+        #set wrap_plaintext_previews true
+        #set draw_borders both
+        #set dirname_in_tabs true
+        #default_linemode devicons
+    #'';
+    ## }}}
 
-    #ranger plugins{{{
-    ".config/ranger/plugins/ranger_devicons".source = pkgs.fetchFromGitHub {
-        owner = "alexanderjeurissen";
-        repo = "ranger_devicons";
-        rev = "86a0810e744d33278d5dd74f57336c066a806c9d";
-        sha256 = "0vhnvmcv5qq8hnxpzvq47cls0pax84ar9rzw9pxzliabfs6fy3g2";
-    };
-    # }}}
+    ##ranger plugins{{{
+    #".config/ranger/plugins/ranger_devicons".source = pkgs.fetchFromGitHub {
+        #owner = "alexanderjeurissen";
+        #repo = "ranger_devicons";
+        #rev = "86a0810e744d33278d5dd74f57336c066a806c9d";
+        #sha256 = "0vhnvmcv5qq8hnxpzvq47cls0pax84ar9rzw9pxzliabfs6fy3g2";
+    #};
+    ## }}}
 
     # fontconfig{{{
     ".config/fontconfig/conf.d/10-prefer-emoji.conf".text = ''

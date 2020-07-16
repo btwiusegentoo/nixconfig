@@ -9,6 +9,7 @@ let
         pynvim
         numpy
         pip
+        pylint
     ];
     python-with-my-packages = unstable.python3.withPackages my-python-packages;
 
@@ -43,6 +44,7 @@ in
         mosh-master
         unstable.sudo
         fish
+        pypi2nix
     ];
 
     #Boot{{{
