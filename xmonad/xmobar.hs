@@ -32,7 +32,7 @@ config = defaultConfig {
        , sepChar = "%"
        , alignSep = "}{"
        , template = " %StdinReader% }\
-                    \{ <fc=#f07178>\57345 %pomodoro%</fc> <fc=#676e95>\63506 %kbd%</fc> \63192 <fc=#f07178>%cpu%</fc> \63192 <fc=#80cbc4>%memory% %swap%</fc> \63192 <fc=#f78c6c>\61555 %date%</fc>\
+                    \{ <fc=#f07178>\57345 %pomodoro%</fc> \63192 <fc=#676e95>\63506 %kbd%</fc> \63192 <fc=#f07178>%cpu%</fc> \63192 <fc=#80cbc4>%memory% %swap%</fc> \63192 <fc=#f78c6c>\61555 %date%</fc>\
                     \ \63192 <fc=#ffcb6b>\61820 %uname% </fc><fc=#82aaff>\62227 </fc> <fc=#c792ea>\58911 </fc> "
        }
 
