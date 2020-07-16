@@ -51,6 +51,7 @@ in
         cava
         nnn
         htop
+        ncpamixer
         # gui apps
         kitty
         unstable.qutebrowser
