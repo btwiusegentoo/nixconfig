@@ -8,6 +8,7 @@
 let
     plugins = pkgs.callPackage ./plugins.nix {};
     unstable = import <nixpkgs-unstable> {};
+    # Haskell packages{{{
     haskell-env = unstable.haskellPackages.ghcWithHoogle ( hp: with hp; [
         xmonad
         xmonad-contrib
@@ -19,6 +20,7 @@ let
         hlint
         xmobar
     ]);
+# }}}
 
 in
 {
@@ -1344,10 +1346,11 @@ in
 
     nixpkgs.overlays = [ (import ../overlays/packages.nix) ];
 
-    # override modules.
+    # override modules.{{{
     nixpkgs.config.packageOverrides = pkgs: {
         kitty = unstable.kitty;
     };
+# }}}
 
 }
 # vim:ft=nix foldmethod=marker shiftwidth=4:
