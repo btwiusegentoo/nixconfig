@@ -4,6 +4,7 @@
 
 let
     unstable = import <nixpkgs-unstable> {};
+    # Python packages{{{
     my-python-packages = python-packages: with python-packages; [
         jedi
         pynvim
@@ -14,6 +15,7 @@ let
         pyqtwebengine
     ];
     python-with-my-packages = unstable.python3.withPackages my-python-packages;
+    # }}}
 
     # How to add custom python packages. 
     pymodoro = unstable.python3Packages.buildPythonPackage rec {
@@ -36,7 +38,8 @@ in
         ];
 
 
-    # List packages installed in system profile. To search, run:
+    # systemPackages{{{
+    # packages that will be installed system-wide. to search, run
     # $ nix search wget
     environment.systemPackages = with pkgs; [
         wget
@@ -60,13 +63,14 @@ in
         fish
         pypi2nix
     ];
+# }}}
 
     #Boot{{{
     # Use the systemd-boot EFI boot loader.
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
     # Enable latest linux kernel
-    boot.kernelPackages = pkgs.linuxPackages_latest;
+    boot.kernelPackages = unstable.linuxPackages_latest;
     # Supposedly better for the SSD.
     fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
     # Boot faster
@@ -210,6 +214,7 @@ in
             %wheel  ALL=(ALL:ALL)   FOLLOW: ALL
         '';
     };
+    nix.allowedUsers = [ "@wheel" ];
     # }}}
 
     #etcfiles{{{

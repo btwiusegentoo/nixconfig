@@ -46,13 +46,15 @@ in
         rnix-lsp
         scrot
         feh
+        tty-clock
+        appimage-run
         # tui apps
         cava
         unstable.nnn
         htop
         ncpamixer
         # gui apps
-        unstable.qutebrowser
+        qutebrowser
         gimp
         krita
         kdenlive
@@ -64,12 +66,10 @@ in
         # dependencies
         ffmpeg-full
         frei0r
-        unstable.qt5.qtbase
-        unstable.qt5.qtwebengine
         # misc
         glxinfo
         xclip
-        unstable.qt5.qttools
+        qt5.qttools
         xkb-switch
         unstable.libinput-gestures
         unstable.xdotool
@@ -77,7 +77,7 @@ in
         file
         catimg
         # joke command
-        cowsay cmatrix espeak figlet
+        cowsay cmatrix espeak figlet fortune
     ];
     #}}}
 
@@ -91,7 +91,7 @@ in
         picom = {
             enable = true;
             fade = true;
-            fadeDelta = 3;
+            fadeDelta = 5;
             backend = "glx";
         };
     };
@@ -126,6 +126,7 @@ in
                 "find" = "fd";
                 "top" = "htop";
                 "untar" = "tar -xvzf";
+                "ncpa" = "ncpamixer";
                 #Git
                 "g" = "git";
                 "ga" = "git add";
@@ -135,6 +136,7 @@ in
                 "gp" = "git push";
                 "gb" = "git branch";
                 "gd" = "git diff";
+                "gdst" = "git diff --staged";
                 "gst" = "git status";
                 "gch" = "git checkout";
                 "gf" = "git fetch";
@@ -156,6 +158,9 @@ in
                 "n" = "nnn -a";
                 "nh" = "nnn -a -H";
                 "nnnplugins" = "curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh";
+                # nixos
+                "homesw" = "home-manager switch";
+                "nore" = "sudo nixos-rebuild switch";
             };
 # }}}
 
@@ -572,7 +577,7 @@ in
     # generate dotfiles{{{
     home.file = {
 
-    # xmobar
+    # xmobar{{{
     ".xmonad/xmobar.hs".source = ../xmonad/xmobar.hs;
     ".xmonad/xmobar.hs".onChange = ''
         if [[ -v DISPLAY ]] ; then
@@ -584,7 +589,7 @@ in
             echo "Restarting"
             xmonad --restart
         fi
-    '';
+    '';# }}}
 
     # wallpaper
     "Pictures/wallpaper.png".source = ../wallpaper.png;
@@ -592,13 +597,13 @@ in
     # tmux theme
     ".palenight-tmux".source = ../.palenight-tmux;
 
-    # scripts
+    # scripts{{{
     #  example to make executable
     #".scripts/pymodoro.py".source = pkgs.writeScript "pymodoro.py" (builtins.readFile ( pkgs.fetchurl {
         #url = "https://raw.githubusercontent.com/dattanchu/pymodoro/master/pymodoro/pymodoro.py";
         #sha256 = "076gd0kkc3mn1rkw1hmhxf9iiyl0qz4rs5mjlaqpby3ww14dp1mn";
     #} ) );
-
+    # }}}
 
     # qutebrowser{{{
     ".config/qutebrowser/config.py".text = 
@@ -625,8 +630,9 @@ in
         c.fonts.messages.warning="9pt Monoid Nerd Font"
         c.fonts.prompts="9pt Monoid Nerd Font"
         c.fonts.statusbar="9pt Monoid Nerd Font"
-        c.fonts.tabs.selected="9pt Monoid Nerd Font"
-        c.fonts.tabs.unselected="9pt Monoid Nerd Font"
+        #c.fonts.tabs.selected="9pt Monoid Nerd Font"
+        #c.fonts.tabs.unselected="9pt Monoid Nerd Font"
+        c.fonts.tabs="9pt Monoid Nerd Font"
 
         # mpv youtube
         config.bind('yd', 'spawn mpv {url}')
@@ -1147,6 +1153,78 @@ in
         </fontconfig>
     '';# }}}
 
+    # ncpamixer{{{
+    ".config/ncpamixer.conf".text = ''
+        "theme" = "c0r73x"
+
+        # c0r73x theme {
+        "theme.c0r73x.static_bar"             = false
+        "theme.c0r73x.default_indicator"      = "■ "
+        "theme.c0r73x.bar_style.bg"           = "■"
+        "theme.c0r73x.bar_style.fg"           = "■"
+        "theme.c0r73x.bar_style.indicator"    = "■"
+        "theme.c0r73x.bar_style.top"          = "" 
+        "theme.c0r73x.bar_style.bottom"       = "" 
+        "theme.c0r73x.bar_low.front"          = 0
+        "theme.c0r73x.bar_low.back"           = -1
+        "theme.c0r73x.bar_mid.front"          = 0
+        "theme.c0r73x.bar_mid.back"           = -1
+        "theme.c0r73x.bar_high.front"         = 0
+        "theme.c0r73x.bar_high.back"          = -1
+        "theme.c0r73x.volume_low"             = 6
+        "theme.c0r73x.volume_mid"             = 6
+        "theme.c0r73x.volume_high"            = 6
+        "theme.c0r73x.volume_peak"            = 1
+        "theme.c0r73x.volume_indicator"       = 15
+        "theme.c0r73x.selected"               = 6
+        "theme.c0r73x.default"                = -1
+        "theme.c0r73x.border"                 = -1
+        "theme.c0r73x.dropdown.selected_text" = 0
+        "theme.c0r73x.dropdown.selected"      = 6
+        "theme.c0r73x.dropdown.unselected"    = -1
+        # }
+
+        # maybe this uses keycode from here
+        # https://blogs.longwin.com.tw/lifetype/key_codes.html
+        # something releated to javascript? idk
+        # Keybinds {
+        "keycode.99"    = "switch"         # tab
+        "keycode.13"   = "select"          # enter
+        "keycode.27"   = "quit"            # escape
+        "keycode.9"   = "dropdown"         # c
+        "keycode.113"  = "quit"            # q
+        "keycode.109"  = "mute"            # m
+        "keycode.100"  = "set_default"     # d
+        "keycode.108"  = "volume_up"       # l
+        "keycode.104"  = "volume_down"     # h
+        "keycode.107"  = "move_up"         # k
+        "keycode.106"  = "move_down"       # j
+        "keycode.74"   = "tab_next"        # J
+        "keycode.75"   = "tab_prev"        # K
+        "keycode.265"  = "tab_playback"    # f1
+        "keycode.266"  = "tab_recording"   # f2
+        "keycode.267"  = "tab_output"      # f3
+        "keycode.268"  = "tab_input"       # f4
+        "keycode.269"  = "tab_config"      # f5
+        "keycode.f.80" = "tab_playback"    # f1 VT100
+        "keycode.f.81" = "tab_recording"   # f2 VT100
+        "keycode.f.82" = "tab_output"      # f3 VT100
+        "keycode.f.83" = "tab_input"       # f4 VT100
+        "keycode.f.84" = "tab_config"      # f5 VT100
+        "keycode.71"   = "move_last"       # G
+        "keycode.103"  = "move_first"      # g
+        "keycode.48"   = "set_volume_0"    # 0
+        "keycode.49"   = "set_volume_10"   # 1
+        "keycode.50"   = "set_volume_20"   # 2
+        "keycode.51"   = "set_volume_30"   # 3
+        "keycode.52"   = "set_volume_40"   # 4
+        "keycode.53"   = "set_volume_50"   # 5
+        "keycode.54"   = "set_volume_60"   # 6
+        "keycode.55"   = "set_volume_70"   # 7
+        "keycode.56"   = "set_volume_80"   # 8
+        "keycode.57"   = "set_volume_90"   # 9
+        # }
+    '';# }}}
 
     };
     #}}}
@@ -1258,6 +1336,11 @@ in
 
     nixpkgs.config.allowUnfree = true;
     #}}}
+
+    # local env variables{{{
+    home.sessionVariables = {
+        "XDG_CONFIG_HOME" = "$HOME/.config";
+    };# }}}
 
     nixpkgs.overlays = [ (import ../overlays/packages.nix) ];
 
