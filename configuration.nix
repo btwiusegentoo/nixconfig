@@ -11,6 +11,7 @@ let
         pip
         pylint
         pymodoro
+        pyqtwebengine
     ];
     python-with-my-packages = unstable.python3.withPackages my-python-packages;
 
@@ -41,6 +42,7 @@ in
         wget
         sudo
         git
+        bat
         unstable.neovim
         unstable.nodejs
         unstable.yarn
@@ -134,7 +136,8 @@ in
         EDITOR = "nvim";
         XMODIFIERS = "@im=fcitx";
         XMODIFIER = "@im=fcitx";
-        MANPAGER = "nvim +Man!";
+        MANPAGER = "sh -c 'col -bx | bat -l man -p'";
+        NNN_PLUG = "p:preview-tui";
     };
 
     # }}}
@@ -172,6 +175,7 @@ in
         enable = true;
         autoLogin.enable = true;
         autoLogin.user = "btw";
+        greeter.enable = true;
         };
         #windowManager.i3.enable = true;
         #windowManager.i3.package = pkgs.i3-gaps;

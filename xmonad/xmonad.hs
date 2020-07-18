@@ -157,7 +157,7 @@ myLogHook =  return()
 
 -- startuphook{{{
 myStartupHook = do
-    spawnOnce "feh --bg-fill ~/Pictures/wallpaper.png"
+    spawnOnce "feh --bg-fill ~/Pictures/wallpaper.png &"
     spawnOnce "fcitx &"
 -- }}}
 

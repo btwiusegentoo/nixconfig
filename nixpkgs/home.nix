@@ -30,7 +30,6 @@ in
         trash-cli
         tree
         lsd
-        bat
         bc
         gitAndTools.diff-so-fancy
         fish
@@ -49,11 +48,10 @@ in
         feh
         # tui apps
         cava
-        nnn
+        unstable.nnn
         htop
         ncpamixer
         # gui apps
-        kitty
         unstable.qutebrowser
         gimp
         krita
@@ -66,15 +64,18 @@ in
         # dependencies
         ffmpeg-full
         frei0r
+        unstable.qt5.qtbase
         unstable.qt5.qtwebengine
         # misc
         glxinfo
         xclip
-        qt5.qttools
+        unstable.qt5.qttools
         xkb-switch
         unstable.libinput-gestures
         unstable.xdotool
         xorg.xev
+        file
+        catimg
         # joke command
         cowsay cmatrix espeak figlet
     ];
@@ -152,8 +153,9 @@ in
                 "scrotclipsel" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
                 "scrotclip" = "scrot ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
                 # nnn(filemanager)
-                "n" = "nnn";
-                "nh" = "nnn -H";
+                "n" = "nnn -a";
+                "nh" = "nnn -a -H";
+                "nnnplugins" = "curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh";
             };
 # }}}
 
@@ -226,6 +228,7 @@ in
                 set -U fish_pager_color_description yellow --dim
                 set -U fish_pager_color_prefix white --bold #--underline
                 set -U fish_pager_color_progress brwhite --background=cyan
+
             '';# }}}
 
         };
@@ -254,7 +257,8 @@ in
                 lightline-ale
                 lightline-bufferline
                 nerdtree
-                vim-devicons
+                #vim-devicons
+                vim-deviconsfork
                 nerdtree-git-plugin
                 semshi
                 vim-python-pep8-indent
@@ -486,6 +490,7 @@ in
             disable_ligatures = "never";    
             window_padding_width = 4;
             background_opacity = "0.9";
+            allow_remote_control = "yes";
         };
 
         font.name = "Monoid Nerd Font Mono";
@@ -526,6 +531,17 @@ in
 
         symbol_map U+E000-U+FFFF Monoid Nerd Font
         # symbol_map above Fixes Nerd Font glyph small size issue.
+
+        # keymaps
+        map alt+h neighboring_window left 
+        map alt+j neighboring_window down
+        map alt+k neighboring_window up
+        map alt+l neighboring_window right
+
+        map alt+shift+h move_window left 
+        map alt+shift+j move_window down
+        map alt+shift+k move_window up
+        map alt+shift+l move_window right
         '';
     };
     # }}}
@@ -1244,6 +1260,11 @@ in
     #}}}
 
     nixpkgs.overlays = [ (import ../overlays/packages.nix) ];
+
+    # override modules.
+    nixpkgs.config.packageOverrides = pkgs: {
+        kitty = unstable.kitty;
+    };
 
 }
 # vim:ft=nix foldmethod=marker shiftwidth=4:

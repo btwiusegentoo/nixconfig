@@ -112,6 +112,15 @@ in {
         };
     };
 
+    "vim-deviconsfork" = buildVimPlugin {
+        name = "vim-deviconsfork";
+        src = fetchgit {
+            "url" = "https://github.com/btwiusegentoo/vim-devicons";
+            "rev" = "2b98a4e3ed5d7013c5525cfec0df3c333f6098b0";
+            "sha256" = "1d4dq1dw7jd9isnqmw29k1al4hz186vq4r79qlka5h8awrlx0nrs";
+        };
+    };
+
 }
 
 # vim: foldmethod=marker shiftwidth=4:
