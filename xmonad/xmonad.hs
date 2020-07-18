@@ -68,6 +68,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     , ((modm              , xK_period ), sendMessage (IncMasterN (-1)))
     , ((modm              , xK_comma  ), sendMessage Swap)
     , ((modm              , xK_period ), sendMessage Rotate)
+    , ((modm              , xK_o      ), spawn "light-locker-command --lock")
     , ((modm .|. shiftMask, xK_q      ), io exitSuccess)
     , ((modm              , xK_q      ), spawn "xmonad --recompile; xmonad --restart")
     ]
@@ -157,8 +158,9 @@ myLogHook =  return()
 
 -- startuphook{{{
 myStartupHook = do
-    spawnOnce "feh --bg-fill ~/Pictures/wallpaper.png &"
+    spawnOnce "feh --bg-fill /etc/wallpapers/default.png &"
     spawnOnce "fcitx &"
+    spawnOnce "light-locker &"
 -- }}}
 
 

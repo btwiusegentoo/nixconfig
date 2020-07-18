@@ -67,10 +67,12 @@ in
 
     #Boot{{{
     # Use the systemd-boot EFI boot loader.
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
-    # Enable latest linux kernel
-    boot.kernelPackages = unstable.linuxPackages_latest;
+    boot = {
+        loader.systemd-boot.enable = true;
+        loader.efi.canTouchEfiVariables = true;
+        # Enable latest linux kernel
+        kernelPackages = unstable.linuxPackages_latest;
+    };
     # Supposedly better for the SSD.
     fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
     # Boot faster
@@ -176,10 +178,19 @@ in
         #desktopManager.xterm.enable = false;
         #displayManager.defaultSession = "none+xmonad";
         displayManager.lightdm = {
-        enable = true;
-        autoLogin.enable = true;
-        autoLogin.user = "btw";
-        greeter.enable = true;
+            enable = true;
+            autoLogin.enable = true;
+            autoLogin.user = "btw";
+            greeters.mini = {
+                enable = true;
+                user = "btw";
+                extraConfig = ''
+                    [greeter]
+                    show-password-label = false
+                    [greeter-theme]
+                    background-image = "/etc/wallpapers/default.png"
+                '';
+            };
         };
         #windowManager.i3.enable = true;
         #windowManager.i3.package = pkgs.i3-gaps;
@@ -242,6 +253,8 @@ in
         Option "Rotate" "Half"
     EndSection
     '';
+
+    environment.etc."wallpapers/default.png".source = ./wallpaper.png;
 # }}}
 
     nixpkgs.config = {

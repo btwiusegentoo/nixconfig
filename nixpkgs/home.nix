@@ -50,6 +50,7 @@ in
         feh
         tty-clock
         appimage-run
+        lightlocker
         # tui apps
         cava
         unstable.nnn
@@ -592,9 +593,6 @@ in
             xmonad --restart
         fi
     '';# }}}
-
-    # wallpaper
-    "Pictures/wallpaper.png".source = ../wallpaper.png;
 
     # tmux theme
     ".palenight-tmux".source = ../.palenight-tmux;
@@ -1319,6 +1317,11 @@ in
 
 
     };/*}}}*/
+
+    # xresources config{{{
+    xresources.properties = {
+    };
+# }}}
 
     #Home Manager config{{{
     # Home Manager needs a bit of information about you and the
