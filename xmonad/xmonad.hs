@@ -161,6 +161,11 @@ myScratchPads = [ NS "terminal" spawnTerm  findTerm  manageTerm
                 , NS "nnn"      spawnnnn   findnnn   managennn
                 ]
     where
+        centralh    = 0.9
+        centralw    = 0.95
+        centralt    = 0.95 - centralh
+        centrall    = 0.95 - centralw
+
         spawnTerm   = myTerminal ++ " --name=terminalScratchpad"
         findTerm    = resource   =? "terminalScratchpad"
         manageTerm  = customFloating $ W.RationalRect l t w h
@@ -169,30 +174,18 @@ myScratchPads = [ NS "terminal" spawnTerm  findTerm  manageTerm
                 w   = 1
                 t   = 0
                 l   = (1-w)/2
+
         spawnMixer  = myTerminal ++ " --name=mixerScratchpad" ++ " -e ncpamixer"
         findMixer   = resource   =? "mixerScratchpad"
-        manageMixer = customFloating $ W.RationalRect l t w h
-            where
-                h   = 0.9
-                w   = 0.9
-                t   = 0.95 - h
-                l   = 0.95 - w
+        manageMixer = customFloating $ W.RationalRect centrall centralt centralw centralh
+
         spawnhtop   = myTerminal ++ " --name=htopScratchpad"  ++ " -e htop"
         findhtop    = resource   =? "htopScratchpad"
-        managehtop  = customFloating $ W.RationalRect l t w h
-            where
-                h   = 0.9
-                w   = 0.9
-                t   = 0.95 - h
-                l   = 0.95 - w
+        managehtop  = customFloating $ W.RationalRect centrall centralt centralw centralh
+
         spawnnnn    = myTerminal ++ " --name=nnnScratchpad"   ++ " -e nnn -a"
         findnnn     = resource   =? "nnnScratchpad"
-        managennn   = customFloating $ W.RationalRect l t w h
-            where
-                h   = 0.9
-                w   = 0.9
-                t   = 0.95 - h
-                l   = 0.95 - w
+        managennn   = customFloating $ W.RationalRect centrall centralt centralw centralh
 -- }}}
 
 -- managehook{{{
