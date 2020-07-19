@@ -162,7 +162,7 @@ myScratchPads = [ NS "terminal" spawnTerm  findTerm  manageTerm
                 ]
     where
         centralh    = 0.9
-        centralw    = 0.95
+        centralw    = 0.9
         centralt    = 0.95 - centralh
         centrall    = 0.95 - centralw
 
