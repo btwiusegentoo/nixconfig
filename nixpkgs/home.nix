@@ -61,6 +61,8 @@ in
         discord
         unstable.tdesktop
         pavucontrol
+        # node packages
+        nodePackages.gitmoji-cli
         # dependencies
         ffmpeg-full
         frei0r
