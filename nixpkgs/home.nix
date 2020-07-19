@@ -832,8 +832,8 @@ in
     # }}}
 
     extraConfig = ''
-        config.bind = "('yd', 'spawn mpv {url}')";
-        config.bind = "('yf', 'hint links spawn mpv --force-window yes {hint-url}')";
+        config.bind('yd', 'spawn mpv {url}')
+        config.bind('yf', 'hint links spawn mpv --force-window yes {hint-url}')
         c.url.searchengines = {'DEFAULT': 'https://google.com/search?q={}'}
     '';
 
