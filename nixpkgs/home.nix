@@ -31,13 +31,10 @@ in
     home.packages = with pkgs; [
         trash-cli
         tree
-        lsd
         bc
         gitAndTools.diff-so-fancy
-        fish
         binutils
         killall
-        git
         python
         neofetch
         pfetch
@@ -57,7 +54,6 @@ in
         htop
         ncpamixer
         # gui apps
-        qutebrowser
         gimp
         krita
         kdenlive
@@ -65,7 +61,6 @@ in
         discord
         unstable.tdesktop
         pavucontrol
-        mpv
         # dependencies
         ffmpeg-full
         frei0r
@@ -98,10 +93,12 @@ in
             fadeDelta = 5;
             backend = "glx";
         };
+
+        keynav.enable = true;
     };
     #}}}
 
-    #programs{{{
+    #programs {{{
     programs = {
 
 
@@ -495,321 +492,319 @@ in
         };
         #}}}
 
-    #kitty{{{
-    kitty = {
-        enable = true;
-        settings = {
-            font_size = 9;
-            disable_ligatures = "never";    
-            window_padding_width = 4;
-            background_opacity = "0.9";
-            allow_remote_control = "yes";
-        };
-
-        font.name = "Monoid Nerd Font Mono";
-
-        extraConfig = ''
-        # Palenight Colorscheme{{{
-        # https://github.com/citizen428/kitty-palenight
-        foreground           #959dcb
-        background           #292d3e
-        selection_foreground #eceef0
-        selection_background #607c8b
-        url_color            #82aaff
-        # black
-        color0   #434759
-        color8   #434758
-        # red
-        color1   #f07178
-        color9   #ff8b92
-        # green
-        color2   #c3e88d
-        color10  #ddffa7
-        # yellow
-        color3   #ffcb6b
-        color11  #ffe585
-        # blue
-        color4  #82aaff
-        color12 #9cc4ff
-        # magenta
-        color5   #c792ea
-        color13  #e1acff
-        # cyan
-        color6   #89ddff
-        color14  #a3f7ff
-        # white
-        color7   #d0d0d0
-        color15  #fefefe
-        #}}}
-
-        symbol_map U+E000-U+FFFF Monoid Nerd Font
-        # symbol_map above Fixes Nerd Font glyph small size issue.
-
-        # keymaps
-        map alt+h neighboring_window left 
-        map alt+j neighboring_window down
-        map alt+k neighboring_window up
-        map alt+l neighboring_window right
-
-        map alt+shift+h move_window left 
-        map alt+shift+j move_window down
-        map alt+shift+k move_window up
-        map alt+shift+l move_window right
-        '';
-    };
-    # }}}
-
-    # tmux{{{
-    tmux = {
-        enable = true;
-        plugins = with pkgs; [
-            tmuxPlugins.vim-tmux-navigator        
-            tmuxPlugins.prefix-highlight
-        ];
-        keyMode = "vi";
-        extraConfig = ''
-            set-option -g default-shell /home/btw/.nix-profile/bin/fish
-            set-option -g default-terminal "screen-256color"
-            set -ga terminal-overrides ",*256col*:Tc"
-            set-option -g prefix C-Space
-            bind C-Space send-prefix
-            bind s split-window -h
-            bind v split-window -v
-            source-file ./.palenight-tmux
-        '';
-    };# }}}
-
-    # bat{{{
-    bat = {
-        enable = true;
-        config = {
-            theme = "palenight";
-            style = "numbers,changes,header";
-            italic-text = "always";
-        };
-
-        themes = {
-            palenight = builtins.readFile (pkgs.fetchgit {
-                url = "https://github.com/equinusocio/material-theme";
-                rev = "614b7e8bc7369c32e852297d42253643ebf90d55";
-                sha256 = "1gjfisksvqa2d08na0yln7yxny4i16wrmvlfnwllbqrgwh26v94g";
-            } + "/schemes/Material-Theme-Palenight.tmTheme");
-        };
-    };
-
-    # }}}
-
-    # mpv{{{
-    mpv = {
-        enable = true;
-        config = {
-            volume = 50;
-            ytdl-format = "bestvideo+bestaudio";
-        };
-        bindings = {
-            h = "seek -10";
-            j = "add volume -2";
-            k = "add volume 2";
-            l = "seek 10";
-            "Ctrl+l" = "ab-loob";
-        };
-    };
-    # }}}
-
-    # qutebrowser{{{
-    qutebrowser = {
-        enable = true;
-        #searchEngines = {
-            #DEFAULT = "https://google.com/search?q={}";
-        #};
-
-        # settings{{{
-        settings = {
-            url.start_pages = ["https://btwiusegentoo.github.io/start.html"];
-            url.default_page = "https://btwiusegentoo.github.io/start.html";
-            scrolling = {
-                smooth = true;
-                bar = "always";
+        #kitty{{{
+        kitty = {
+            enable = true;
+            settings = {
+                font_size = 9;
+                disable_ligatures = "never";    
+                window_padding_width = 4;
+                background_opacity = "0.9";
+                allow_remote_control = "yes";
             };
 
-            fonts = {
-                default_family = "SFNS Diplay";
-                web.family.fixed = "Monoid Nerd Font Mono";
-                completion = {
-                    category = "9pt Monoid Nerd Font";
-                    entry = "9pt Monoid Nerd Font";
-                };
-                contextmenu = "9pt Monoid Nerd Font";
-                debug_console = "9pt Monoid Nerd Font";
-                default_size = "9pt";
-                downloads = "9pt Monoid Nerd Font";
-                hints = "9pt Monoid Nerd Font";
-                keyhint = "9pt Monoid Nerd Font";
-                messages = {
-                    error = "9pt Monoid Nerd Font";
-                    info = "9pt Monoid Nerd Font";
-                    warning = "9pt Monoid Nerd Font";
-                };
-                prompts = "9pt Monoid Nerd Font";
-                statusbar = "9pt Monoid Nerd Font";
-                #tabs.selected = "9pt Monoid Nerd Font";
-                #tabs.unselected = "9pt Monoid Nerd Font";
-                tabs = "9pt Monoid Nerd Font";
+            font.name = "Monoid Nerd Font Mono";
+
+            extraConfig = ''
+            # Palenight Colorscheme{{{
+            # https://github.com/citizen428/kitty-palenight
+            foreground           #959dcb
+            background           #292d3e
+            selection_foreground #eceef0
+            selection_background #607c8b
+            url_color            #82aaff
+            # black
+            color0   #434759
+            color8   #434758
+            # red
+            color1   #f07178
+            color9   #ff8b92
+            # green
+            color2   #c3e88d
+            color10  #ddffa7
+            # yellow
+            color3   #ffcb6b
+            color11  #ffe585
+            # blue
+            color4  #82aaff
+            color12 #9cc4ff
+            # magenta
+            color5   #c792ea
+            color13  #e1acff
+            # cyan
+            color6   #89ddff
+            color14  #a3f7ff
+            # white
+            color7   #d0d0d0
+            color15  #fefefe
+            #}}}
+
+            symbol_map U+E000-U+FFFF Monoid Nerd Font
+            # symbol_map above Fixes Nerd Font glyph small size issue.
+
+            # keymaps
+            map alt+h neighboring_window left 
+            map alt+j neighboring_window down
+            map alt+k neighboring_window up
+            map alt+l neighboring_window right
+
+            map alt+shift+h move_window left 
+            map alt+shift+j move_window down
+            map alt+shift+k move_window up
+            map alt+shift+l move_window right
+            '';
+        };
+        # }}}
+
+        # tmux{{{
+        tmux = {
+            enable = true;
+            plugins = with pkgs; [
+                tmuxPlugins.vim-tmux-navigator        
+                tmuxPlugins.prefix-highlight
+            ];
+            keyMode = "vi";
+            extraConfig = ''
+                set-option -g default-shell /home/btw/.nix-profile/bin/fish
+                set-option -g default-terminal "screen-256color"
+                set -ga terminal-overrides ",*256col*:Tc"
+                set-option -g prefix C-Space
+                bind C-Space send-prefix
+                bind s split-window -h
+                bind v split-window -v
+                source-file ./.palenight-tmux
+            '';
+        };# }}}
+
+        # bat{{{
+        bat = {
+            enable = true;
+            config = {
+                theme = "palenight";
+                style = "numbers,changes,header";
+                italic-text = "always";
             };
 
-            # colors{{{
-            # base16-qutebrowser (https://github.com/theova/base16-qutebrowser)
-            # Base16 qutebrowser template by theova
-            # Material Palenight scheme by Nate Peterson
-            colors = {
-                completion = {
-                    fg = "#959DCB";
-                    odd.bg = "#292D3E";
-                    even.bg = "#292D3E";
-                    category = {
-                        fg = "#FFCB6B";
-                        bg = "#292D3E";
-                        border.top = "#292D3E";
-                        border.bottom = "#292D3E";
+            themes = {
+                palenight = builtins.readFile (pkgs.fetchgit {
+                    url = "https://github.com/equinusocio/material-theme";
+                    rev = "614b7e8bc7369c32e852297d42253643ebf90d55";
+                    sha256 = "1gjfisksvqa2d08na0yln7yxny4i16wrmvlfnwllbqrgwh26v94g";
+                } + "/schemes/Material-Theme-Palenight.tmTheme");
+            };
+        };
+
+        # }}}
+
+        # lsd{{{
+        lsd = {
+            enable = true;
+            enableAliases= false; # let me use custom alias.
+        };
+        # }}}
+
+        # mpv{{{
+        mpv = {
+            enable = true;
+            config = {
+                volume = 50;
+                ytdl-format = "bestvideo+bestaudio";
+            };
+            bindings = {
+                h = "seek -10";
+                j = "add volume -2";
+                k = "add volume 2";
+                l = "seek 10";
+                "Ctrl+l" = "ab-loob";
+            };
+        };
+        # }}}
+
+        # qutebrowser{{{
+        qutebrowser = {
+            enable = true;
+            #searchEngines = {
+                #DEFAULT = "https://google.com/search?q={}";
+            #};
+
+            # settings{{{
+            settings = {
+                url.start_pages = ["https://btwiusegentoo.github.io/start.html"];
+                url.default_page = "https://btwiusegentoo.github.io/start.html";
+                scrolling = {
+                    smooth = true;
+                    bar = "always";
+                };
+
+                fonts = {
+                    default_family = "SFNS Diplay";
+                    web.family.fixed = "Monoid Nerd Font Mono";
+                    completion = {
+                        category = "9pt Monoid Nerd Font";
+                        entry = "9pt Monoid Nerd Font";
                     };
-                    item = {
-                        selected.fg = "#444267";
-                        selected.bg = "#FFCB6B";
-                        selected.border.top = "#FFCB6B";
-                        selected.border.bottom = "#FFCB6B";
-                        selected.match.fg = "#F07178";
+                    contextmenu = "9pt Monoid Nerd Font";
+                    debug_console = "9pt Monoid Nerd Font";
+                    default_size = "9pt";
+                    downloads = "9pt Monoid Nerd Font";
+                    hints = "9pt Monoid Nerd Font";
+                    keyhint = "9pt Monoid Nerd Font";
+                    messages = {
+                        error = "9pt Monoid Nerd Font";
+                        info = "9pt Monoid Nerd Font";
+                        warning = "9pt Monoid Nerd Font";
                     };
-                    match.fg = "#C3E88D";
-                    scrollbar = {
+                    prompts = "9pt Monoid Nerd Font";
+                    statusbar = "9pt Monoid Nerd Font";
+                    #tabs.selected = "9pt Monoid Nerd Font";
+                    #tabs.unselected = "9pt Monoid Nerd Font";
+                    tabs = "9pt Monoid Nerd Font";
+                };
+
+                # colors{{{
+                # base16-qutebrowser (https://github.com/theova/base16-qutebrowser)
+                # Base16 qutebrowser template by theova
+                # Material Palenight scheme by Nate Peterson
+                colors = {
+                    completion = {
                         fg = "#959DCB";
-                        bg = "#292D3E";
-                    };
-                };
-                contextmenu = {
-                    menu = {
-                        bg = "#292D3E";
-                        fg =  "#959DCB";
-                    };
-                    selected = {
-                        bg = "#FFCB6B";
-                        fg = "#444267";
-                    };
-                };
-                downloads = {
-                    bar.bg = "#292D3E";
-                    start = {
-                        fg = "#292D3E";
-                        bg = "#82AAFF";
-                    };
-                    stop = {
-                        fg = "#292D3E";
-                        bg = "#89DDFF";
-                    };
-                    error.fg = "#F07178";
-                };
-                hints = {
-                    fg = "#292D3E";
-                    bg = "#FFCB6B";
-                    match.fg = "#959DCB";
-                };
-                keyhint = {
-                    fg = "#959DCB";
-                    suffix.fg = "#959DCB";
-                    bg = "#292D3E";
-                };
-                messages = {
-                    error = {
-                        fg = "#292D3E";
-                        bg = "#F07178";
-                        border = "#F07178";
-                    };
-                    warning = {
-                        fg = "#292D3E";
-                        bg = "#C792EA";
-                        border = "#C792EA";
-                    };
-                    info = {
-                        fg = "#959DCB";
-                        bg = "#292D3E";
-                        border = "#292D3E";
-                    };
-                };
-                prompts = {
-                    fg = "#959DCB";
-                    border = "#292D3E";
-                    bg = "#292D3E";
-                    selected.bg = "#FFCB6B";
-                };
-                statusbar = {
-                    normal = {
-                        fg = "#C3E88D";
-                        bg = "#292D3E";
-                    };
-                    insert = {
-                        fg = "#292D3E";
-                        bg = "#82AAFF";
-                    };
-                    passthrough = {
-                        fg = "#292D3E";
-                        bg = "#89DDFF";
-                    };
-                    private = {
-                        fg = "#292D3E";
-                        bg = "#676E95";
-                    };
-                    command = {
-                        fg = "#959DCB";
-                        bg = "#292D3E";
-                        private = {
+                        odd.bg = "#292D3E";
+                        even.bg = "#292D3E";
+                        category = {
+                            fg = "#FFCB6B";
+                            bg = "#292D3E";
+                            border.top = "#292D3E";
+                            border.bottom = "#292D3E";
+                        };
+                        item = {
+                            selected.fg = "#444267";
+                            selected.bg = "#FFCB6B";
+                            selected.border.top = "#FFCB6B";
+                            selected.border.bottom = "#FFCB6B";
+                            selected.match.fg = "#F07178";
+                        };
+                        match.fg = "#C3E88D";
+                        scrollbar = {
                             fg = "#959DCB";
                             bg = "#292D3E";
                         };
                     };
-                    caret = {
-                        fg = "#292D3E";
-                        bg = "#C792EA";
-                        selection = {
+                    contextmenu = {
+                        menu = {
+                            bg = "#292D3E";
+                            fg =  "#959DCB";
+                        };
+                        selected = {
+                            bg = "#FFCB6B";
+                            fg = "#444267";
+                        };
+                    };
+                    downloads = {
+                        bar.bg = "#292D3E";
+                        start = {
                             fg = "#292D3E";
                             bg = "#82AAFF";
                         };
-                    };
-                    progress.bg = "#82AAFF";
-                    url = {
-                        fg = "#959DCB";
-                        error.fg = "#F07178";
-                        hover.fg = "#959DCB";
-                        success = {
-                            http.fg = "#89DDFF";
-                            https.fg = "#C3E88D";
+                        stop = {
+                            fg = "#292D3E";
+                            bg = "#89DDFF";
                         };
-                        warn.fg = "#C792EA";
+                        error.fg = "#F07178";
                     };
-                };
-                tabs = {
-                    bar.bg = "#292D3E";
-                    indicator = {
-                        start = "#82AAFF";
-                        stop = "#89DDFF";
-                        error = "#F07178";
+                    hints = {
+                        fg = "#292D3E";
+                        bg = "#FFCB6B";
+                        match.fg = "#959DCB";
                     };
-                    odd = {
+                    keyhint = {
                         fg = "#959DCB";
+                        suffix.fg = "#959DCB";
                         bg = "#292D3E";
                     };
-                    even = {
-                        fg = "#959DCB";
-                        bg = "#292D3E";
-                    };
-                    pinned = {
-                        even = {
-                            bg = "#292D3E";
+                    messages = {
+                        error = {
+                            fg = "#292D3E";
+                            bg = "#F07178";
+                            border = "#F07178";
+                        };
+                        warning = {
+                            fg = "#292D3E";
+                            bg = "#C792EA";
+                            border = "#C792EA";
+                        };
+                        info = {
                             fg = "#959DCB";
+                            bg = "#292D3E";
+                            border = "#292D3E";
+                        };
+                    };
+                    prompts = {
+                        fg = "#959DCB";
+                        border = "#292D3E";
+                        bg = "#292D3E";
+                        selected.bg = "#FFCB6B";
+                    };
+                    statusbar = {
+                        normal = {
+                            fg = "#C3E88D";
+                            bg = "#292D3E";
+                        };
+                        insert = {
+                            fg = "#292D3E";
+                            bg = "#82AAFF";
+                        };
+                        passthrough = {
+                            fg = "#292D3E";
+                            bg = "#89DDFF";
+                        };
+                        private = {
+                            fg = "#292D3E";
+                            bg = "#676E95";
+                        };
+                        command = {
+                            fg = "#959DCB";
+                            bg = "#292D3E";
+                            private = {
+                                fg = "#959DCB";
+                                bg = "#292D3E";
+                            };
+                        };
+                        caret = {
+                            fg = "#292D3E";
+                            bg = "#C792EA";
+                            selection = {
+                                fg = "#292D3E";
+                                bg = "#82AAFF";
+                            };
+                        };
+                        progress.bg = "#82AAFF";
+                        url = {
+                            fg = "#959DCB";
+                            error.fg = "#F07178";
+                            hover.fg = "#959DCB";
+                            success = {
+                                http.fg = "#89DDFF";
+                                https.fg = "#C3E88D";
+                            };
+                            warn.fg = "#C792EA";
+                        };
+                    };
+                    tabs = {
+                        bar.bg = "#292D3E";
+                        indicator = {
+                            start = "#82AAFF";
+                            stop = "#89DDFF";
+                            error = "#F07178";
                         };
                         odd = {
-                            bg = "#292D3E";
                             fg = "#959DCB";
+                            bg = "#292D3E";
                         };
-                        selected = {
+                        even = {
+                            fg = "#959DCB";
+                            bg = "#292D3E";
+                        };
+                        pinned = {
                             even = {
                                 bg = "#292D3E";
                                 fg = "#959DCB";
@@ -818,35 +813,45 @@ in
                                 bg = "#292D3E";
                                 fg = "#959DCB";
                             };
+                            selected = {
+                                even = {
+                                    bg = "#292D3E";
+                                    fg = "#959DCB";
+                                };
+                                odd = {
+                                    bg = "#292D3E";
+                                    fg = "#959DCB";
+                                };
+                            };
+                        };
+                        selected = {
+                            odd = {
+                                fg = "#FFFFFF";
+                                bg = "#959DCB";
+                            };
+                            even = {
+                                fg = "#FFFFFF";
+                                bg = "#959DCB";
+                            };
                         };
                     };
-                    selected = {
-                        odd = {
-                            fg = "#FFFFFF";
-                            bg = "#959DCB";
-                        };
-                        even = {
-                            fg = "#FFFFFF";
-                            bg = "#959DCB";
-                        };
-                    };
-                };
-        };# }}}
-    };
-    # }}}
+            };# }}}
+        };
+        # }}}
 
-    extraConfig = ''
-        config.bind('yd', 'spawn mpv {url}')
-        config.bind('yf', 'hint links spawn mpv --force-window yes {hint-url}')
-        c.url.searchengines = {'DEFAULT': 'https://google.com/search?q={}'}
-    '';
+        extraConfig = ''
+            config.bind('yd', 'spawn mpv {url}')
+            config.bind('yf', 'hint links spawn mpv --force-window yes {hint-url}')
+            c.url.searchengines = {'DEFAULT': 'https://google.com/search?q={}'}
+        '';
 
-    };
-    # }}}
+        };
+        # }}}
 
 
-    };
-    #}}}
+        };
+
+        #}}}
 
     # generate dotfiles{{{
     home.file = {
