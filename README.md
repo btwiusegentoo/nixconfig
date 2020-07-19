@@ -25,7 +25,10 @@ If you are new to nixos, maybe you can get idea how to install neovim plugins an
 <br>
 <h2>Installation</h2>
 <br>
-I don't recommend installing this config, but you can clone inside <code>$HOME/mygit/</code> and symlink. Don't forget that nixpkgs directory goes inside <code>$HOME/.config/</code><br>
+I don't recommend installing this config, but you can clone inside <code>$HOME/mygit/nixconfig</code> and symlink. Don't forget that nixpkgs directory go inside <code>$HOME/.config/</code><br>
+Maybe you have to install NixOS once and install home-manager before?
+idk because I never reinstalled now.
+I will test if works, and try to make easier to install someday.
 <br>
 <h2>Summary of Features</h2>
 <br>
