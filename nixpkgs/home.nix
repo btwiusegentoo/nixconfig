@@ -95,6 +95,7 @@ in
         };
 
         keynav.enable = true;
+
     };
     #}}}
 
@@ -125,7 +126,7 @@ in
                 "suv" = "sudoedit";
                 "diff" = "diff-so-fancy";
                 "cat" = "bat";
-                "find" = "fd";
+                "fd" = "find";
                 "top" = "htop";
                 "untar" = "tar -xvzf";
                 "ncpa" = "ncpamixer";
@@ -856,288 +857,294 @@ in
     # generate dotfiles{{{
     home.file = {
 
-    # xmobar{{{
-    ".xmonad/xmobar.hs".source = ../xmonad/xmobar.hs;
-    ".xmonad/xmobar.hs".onChange = ''
-        if [[ -v DISPLAY ]] ; then
-            echo "Recompiling xmobar"
-            xmobar -r ~/.xmonad/xmobar.hs &
-            sleep 2
-            disown
-            killall xmobar
-            echo "Restarting"
-            xmonad --restart
-        fi
-    '';# }}}
+        # xmobar{{{
+        ".xmonad/xmobar.hs".source = ../xmonad/xmobar.hs;
+        ".xmonad/xmobar.hs".onChange = ''
+            if [[ -v DISPLAY ]] ; then
+                echo "Recompiling xmobar"
+                xmobar -r ~/.xmonad/xmobar.hs &
+                sleep 2
+                disown
+                killall xmobar
+                echo "Restarting"
+                xmonad --restart
+            fi
+        '';# }}}
 
-    # tmux theme
-    ".palenight-tmux".source = ../.palenight-tmux;
+        # tmux theme
+        ".palenight-tmux".source = ../.palenight-tmux;
 
-    # scripts{{{
-    #  example to make executable
-    #".scripts/pymodoro.py".source = pkgs.writeScript "pymodoro.py" (builtins.readFile ( pkgs.fetchurl {
-        #url = "https://raw.githubusercontent.com/dattanchu/pymodoro/master/pymodoro/pymodoro.py";
-        #sha256 = "076gd0kkc3mn1rkw1hmhxf9iiyl0qz4rs5mjlaqpby3ww14dp1mn";
-    #} ) );
-    # }}}
+        # scripts{{{
+        #  example to make executable
+        #".scripts/pymodoro.py".source = pkgs.writeScript "pymodoro.py" (builtins.readFile ( pkgs.fetchurl {
+            #url = "https://raw.githubusercontent.com/dattanchu/pymodoro/master/pymodoro/pymodoro.py";
+            #sha256 = "076gd0kkc3mn1rkw1hmhxf9iiyl0qz4rs5mjlaqpby3ww14dp1mn";
+        #} ) );
+        # }}}
 
-    #Coc{{{
-    ".config/nvim/coc-settings.json".text = ''
-    {
+        #Coc{{{
+        ".config/nvim/coc-settings.json".text = ''
+        {
 
-        "html.autoClosingTags": true,
-        "html.format.enable": true,
-        "html.format.indentInnerHtml": true,
+            "html.autoClosingTags": true,
+            "html.format.enable": true,
+            "html.format.indentInnerHtml": true,
 
-        "suggest.completionItemKindLabels": {
-        "function": "\uf794",
-        "method": "\uf6a6",
-        "variable": "\uf71b",
-        "constant": "\uf8ff",
-        "struct": "\ufb44",
-        "class": "\uf0e8",
-        "interface": "\ufa52",
-        "text": "\ue612",
-        "enum": "\uf435",
-        "enumMember": "\uf02b",
-        "module": "\uf668",
-        "color": "\ue22b",
-        "property": "\ufab6",
-        "field": "\uf93d",
-        "unit": "\uf475",
-        "file": "\uf471",
-        "value": "\uf8a3",
-        "event": "\ufacd",
-        "folder": "\uf115",
-        "keyword": "\uf893",
-        "snippet": "\uf64d",
-        "operator": "\uf915",
-        "reference": "\uf87a",
-        "typeParameter": "\uf278",
-        "default": "\uf29c"
-        },
-        "languageserver": {
-            "haskell": {
-            "command": "ghcide",
-            "args": [
-                "--lsp"
-            ],
-            "rootPatterns": [
-                ".stack.yaml",
-                ".hie-bios",
-                "BUILD.bazel",
-                "cabal.config",
-                "package.yaml"
-            ],
-            "filetypes": [
-                "hs",
-                "lhs",
-                "haskell"
-            ],
-            "settings": {
-                "languageServerHaskell": {
-                    "hlintOn": true,
-                    "maxNumberOfProblems": 10,
-                    "completionSnippetsOn": true
-                    }
-            }
+            "suggest.completionItemKindLabels": {
+            "function": "\uf794",
+            "method": "\uf6a6",
+            "variable": "\uf71b",
+            "constant": "\uf8ff",
+            "struct": "\ufb44",
+            "class": "\uf0e8",
+            "interface": "\ufa52",
+            "text": "\ue612",
+            "enum": "\uf435",
+            "enumMember": "\uf02b",
+            "module": "\uf668",
+            "color": "\ue22b",
+            "property": "\ufab6",
+            "field": "\uf93d",
+            "unit": "\uf475",
+            "file": "\uf471",
+            "value": "\uf8a3",
+            "event": "\ufacd",
+            "folder": "\uf115",
+            "keyword": "\uf893",
+            "snippet": "\uf64d",
+            "operator": "\uf915",
+            "reference": "\uf87a",
+            "typeParameter": "\uf278",
+            "default": "\uf29c"
             },
-            "nix": {
-                "command": "rnix-lsp",
+            "languageserver": {
+                "haskell": {
+                "command": "ghcide",
+                "args": [
+                    "--lsp"
+                ],
+                "rootPatterns": [
+                    ".stack.yaml",
+                    ".hie-bios",
+                    "BUILD.bazel",
+                    "cabal.config",
+                    "package.yaml"
+                ],
                 "filetypes": [
-                    "nix"
-                ]
+                    "hs",
+                    "lhs",
+                    "haskell"
+                ],
+                "settings": {
+                    "languageServerHaskell": {
+                        "hlintOn": true,
+                        "maxNumberOfProblems": 10,
+                        "completionSnippetsOn": true
+                        }
+                }
+                },
+                "nix": {
+                    "command": "rnix-lsp",
+                    "filetypes": [
+                        "nix"
+                    ]
+                }
             }
         }
-    }
-    '';
-        ##haskell-language-server
-        #"languageserver": {
-        #"haskell": {
-            #"command": "haskell-language-server-wrapper",
-            #"args": ["--lsp"],
-            #"rootPatterns": [
-            #"*.cabal",
-            #"stack.yaml",
-            #"cabal.project",
-            #"package.yaml"
-            #],
-            #"filetypes": [
-            #"hs",
-            #"lhs",
-            #"haskell"
-            #],
-            #"initializationOptions": {
-            #"languageServerHaskell": {
+        '';
+            ##haskell-language-server
+            #"languageserver": {
+            #"haskell": {
+                #"command": "haskell-language-server-wrapper",
+                #"args": ["--lsp"],
+                #"rootPatterns": [
+                #"*.cabal",
+                #"stack.yaml",
+                #"cabal.project",
+                #"package.yaml"
+                #],
+                #"filetypes": [
+                #"hs",
+                #"lhs",
+                #"haskell"
+                #],
+                #"initializationOptions": {
+                #"languageServerHaskell": {
+                        #}
                     #}
                 #}
             #}
-        #}
 
+        # }}}
+
+        #neofetch{{{
+        ".config/neofetch/config.conf".text = ''
+            print_info() {
+
+                prin "$(color 4)────────────────────────────────────────────" 
+                info "OS" distro
+                info "Uptime" uptime
+                info "Packages" packages
+                info "Shell" shell
+                info "DE" de
+                info "Terminal" term
+                info "CPU" cpu
+                info "Memory" memory
+                prin "$(color 4)────────────────────────────────────────────"
+                info cols
+            }
+            title_fqdn="off"
+            kernel_shorthand="on"
+            os_arch="on"
+            uptime_shorthand="tiny"
+            memory_percent="off"
+            package_managers="on"
+            shell_path="off"
+            shell_version="on"
+            speed_type="bios_limit"
+            speed_shorthand="off"
+            cpu_brand="on"
+            cpu_speed="on"
+            cpu_cores="logical"
+            cpu_temp="off"
+            refresh_rate="off"
+            de_version="off"
+            colors=(distro)
+            bold="on"
+            underline_enabled="on"
+            underline_char="-"
+            separator=" "
+            block_range=(0 15)
+            color_blocks="on"
+            block_width=3
+            block_height=1
+            col_offset="auto"
+            image_backend="ascii"
+            image_source="auto"
+            ascii_distro="nixos"
+            ascii_colors=(4 6)
+            ascii_bold="off"
+            gap=3
+            stdout="off"
+        '';
     # }}}
 
-    #neofetch{{{
-    ".config/neofetch/config.conf".text = ''
-        print_info() {
+        # fontconfig{{{
+        ".config/fontconfig/conf.d/10-prefer-emoji.conf".text = ''
+            <?xml version="1.0"?>
+            <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+            <fontconfig>
+                <match>
+                    <edit name="family" mode="prepend">
+                        <string> Apple Color Emoji</string>
+                    </edit>
+                </match>
+            </fontconfig>
+        '';
 
-            prin "$(color 4)────────────────────────────────────────────" 
-            info "OS" distro
-            info "Uptime" uptime
-            info "Packages" packages
-            info "Shell" shell
-            info "DE" de
-            info "Terminal" term
-            info "CPU" cpu
-            info "Memory" memory
-            prin "$(color 4)────────────────────────────────────────────"
-            info cols
-        }
-        title_fqdn="off"
-        kernel_shorthand="on"
-        os_arch="on"
-        uptime_shorthand="tiny"
-        memory_percent="off"
-        package_managers="on"
-        shell_path="off"
-        shell_version="on"
-        speed_type="bios_limit"
-        speed_shorthand="off"
-        cpu_brand="on"
-        cpu_speed="on"
-        cpu_cores="logical"
-        cpu_temp="off"
-        refresh_rate="off"
-        de_version="off"
-        colors=(distro)
-        bold="on"
-        underline_enabled="on"
-        underline_char="-"
-        separator=" "
-        block_range=(0 15)
-        color_blocks="on"
-        block_width=3
-        block_height=1
-        col_offset="auto"
-        image_backend="ascii"
-        image_source="auto"
-        ascii_distro="nixos"
-        ascii_colors=(4 6)
-        ascii_bold="off"
-        gap=3
-        stdout="off"
-    '';
-# }}}
+        ".config/fontconfig/conf.d/65-nonlatin.conf".text = ''
+            <?xml version="1.0"?>
+            <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+            <fontconfig>
+                <alias>
+                    <family>serif</family>
+                    <prefer>
+                        <family>Noto Sans CJK JP</family>
+                    </prefer>
+                </alias>
+                <alias>
+                    <family>sans-serif</family>
+                    <prefer>
+                        <family>Noto Sans CJK JP</family>
+                    </prefer>
+                </alias>
+                <alias>
+                    <family>monospace</family>
+                    <prefer>
+                        <family>Noto Sans CJK JP</family>
+                    </prefer>
+                </alias>
+            </fontconfig>
+        '';# }}}
 
-    # fontconfig{{{
-    ".config/fontconfig/conf.d/10-prefer-emoji.conf".text = ''
-        <?xml version="1.0"?>
-        <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-        <fontconfig>
-            <match>
-                <edit name="family" mode="prepend">
-                    <string> Apple Color Emoji</string>
-                </edit>
-            </match>
-        </fontconfig>
-    '';
+        # ncpamixer{{{
+        ".config/ncpamixer.conf".text = ''
+            "theme" = "c0r73x"
 
-    ".config/fontconfig/conf.d/65-nonlatin.conf".text = ''
-        <?xml version="1.0"?>
-        <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-        <fontconfig>
-            <alias>
-                <family>serif</family>
-                <prefer>
-                    <family>Noto Sans CJK JP</family>
-                </prefer>
-            </alias>
-            <alias>
-                <family>sans-serif</family>
-                <prefer>
-                    <family>Noto Sans CJK JP</family>
-                </prefer>
-            </alias>
-            <alias>
-                <family>monospace</family>
-                <prefer>
-                    <family>Noto Sans CJK JP</family>
-                </prefer>
-            </alias>
-        </fontconfig>
-    '';# }}}
+            # c0r73x theme {
+            "theme.c0r73x.static_bar"             = false
+            "theme.c0r73x.default_indicator"      = "■ "
+            "theme.c0r73x.bar_style.bg"           = "■"
+            "theme.c0r73x.bar_style.fg"           = "■"
+            "theme.c0r73x.bar_style.indicator"    = "■"
+            "theme.c0r73x.bar_style.top"          = "" 
+            "theme.c0r73x.bar_style.bottom"       = "" 
+            "theme.c0r73x.bar_low.front"          = 0
+            "theme.c0r73x.bar_low.back"           = -1
+            "theme.c0r73x.bar_mid.front"          = 0
+            "theme.c0r73x.bar_mid.back"           = -1
+            "theme.c0r73x.bar_high.front"         = 0
+            "theme.c0r73x.bar_high.back"          = -1
+            "theme.c0r73x.volume_low"             = 6
+            "theme.c0r73x.volume_mid"             = 6
+            "theme.c0r73x.volume_high"            = 6
+            "theme.c0r73x.volume_peak"            = 1
+            "theme.c0r73x.volume_indicator"       = 15
+            "theme.c0r73x.selected"               = 6
+            "theme.c0r73x.default"                = -1
+            "theme.c0r73x.border"                 = -1
+            "theme.c0r73x.dropdown.selected_text" = 0
+            "theme.c0r73x.dropdown.selected"      = 6
+            "theme.c0r73x.dropdown.unselected"    = -1
+            # }
 
-    # ncpamixer{{{
-    ".config/ncpamixer.conf".text = ''
-        "theme" = "c0r73x"
+            # maybe this uses keycode from here
+            # https://blogs.longwin.com.tw/lifetype/key_codes.html
+            # something releated to javascript? idk
+            # Keybinds {
+            "keycode.99"    = "switch"         # tab
+            "keycode.13"   = "select"          # enter
+            "keycode.27"   = "quit"            # escape
+            "keycode.9"   = "dropdown"         # c
+            "keycode.113"  = "quit"            # q
+            "keycode.109"  = "mute"            # m
+            "keycode.100"  = "set_default"     # d
+            "keycode.108"  = "volume_up"       # l
+            "keycode.104"  = "volume_down"     # h
+            "keycode.107"  = "move_up"         # k
+            "keycode.106"  = "move_down"       # j
+            "keycode.74"   = "tab_next"        # J
+            "keycode.75"   = "tab_prev"        # K
+            "keycode.265"  = "tab_playback"    # f1
+            "keycode.266"  = "tab_recording"   # f2
+            "keycode.267"  = "tab_output"      # f3
+            "keycode.268"  = "tab_input"       # f4
+            "keycode.269"  = "tab_config"      # f5
+            "keycode.f.80" = "tab_playback"    # f1 VT100
+            "keycode.f.81" = "tab_recording"   # f2 VT100
+            "keycode.f.82" = "tab_output"      # f3 VT100
+            "keycode.f.83" = "tab_input"       # f4 VT100
+            "keycode.f.84" = "tab_config"      # f5 VT100
+            "keycode.71"   = "move_last"       # G
+            "keycode.103"  = "move_first"      # g
+            "keycode.48"   = "set_volume_0"    # 0
+            "keycode.49"   = "set_volume_10"   # 1
+            "keycode.50"   = "set_volume_20"   # 2
+            "keycode.51"   = "set_volume_30"   # 3
+            "keycode.52"   = "set_volume_40"   # 4
+            "keycode.53"   = "set_volume_50"   # 5
+            "keycode.54"   = "set_volume_60"   # 6
+            "keycode.55"   = "set_volume_70"   # 7
+            "keycode.56"   = "set_volume_80"   # 8
+            "keycode.57"   = "set_volume_90"   # 9
+            # }
+        '';# }}}
 
-        # c0r73x theme {
-        "theme.c0r73x.static_bar"             = false
-        "theme.c0r73x.default_indicator"      = "■ "
-        "theme.c0r73x.bar_style.bg"           = "■"
-        "theme.c0r73x.bar_style.fg"           = "■"
-        "theme.c0r73x.bar_style.indicator"    = "■"
-        "theme.c0r73x.bar_style.top"          = "" 
-        "theme.c0r73x.bar_style.bottom"       = "" 
-        "theme.c0r73x.bar_low.front"          = 0
-        "theme.c0r73x.bar_low.back"           = -1
-        "theme.c0r73x.bar_mid.front"          = 0
-        "theme.c0r73x.bar_mid.back"           = -1
-        "theme.c0r73x.bar_high.front"         = 0
-        "theme.c0r73x.bar_high.back"          = -1
-        "theme.c0r73x.volume_low"             = 6
-        "theme.c0r73x.volume_mid"             = 6
-        "theme.c0r73x.volume_high"            = 6
-        "theme.c0r73x.volume_peak"            = 1
-        "theme.c0r73x.volume_indicator"       = 15
-        "theme.c0r73x.selected"               = 6
-        "theme.c0r73x.default"                = -1
-        "theme.c0r73x.border"                 = -1
-        "theme.c0r73x.dropdown.selected_text" = 0
-        "theme.c0r73x.dropdown.selected"      = 6
-        "theme.c0r73x.dropdown.unselected"    = -1
-        # }
-
-        # maybe this uses keycode from here
-        # https://blogs.longwin.com.tw/lifetype/key_codes.html
-        # something releated to javascript? idk
-        # Keybinds {
-        "keycode.99"    = "switch"         # tab
-        "keycode.13"   = "select"          # enter
-        "keycode.27"   = "quit"            # escape
-        "keycode.9"   = "dropdown"         # c
-        "keycode.113"  = "quit"            # q
-        "keycode.109"  = "mute"            # m
-        "keycode.100"  = "set_default"     # d
-        "keycode.108"  = "volume_up"       # l
-        "keycode.104"  = "volume_down"     # h
-        "keycode.107"  = "move_up"         # k
-        "keycode.106"  = "move_down"       # j
-        "keycode.74"   = "tab_next"        # J
-        "keycode.75"   = "tab_prev"        # K
-        "keycode.265"  = "tab_playback"    # f1
-        "keycode.266"  = "tab_recording"   # f2
-        "keycode.267"  = "tab_output"      # f3
-        "keycode.268"  = "tab_input"       # f4
-        "keycode.269"  = "tab_config"      # f5
-        "keycode.f.80" = "tab_playback"    # f1 VT100
-        "keycode.f.81" = "tab_recording"   # f2 VT100
-        "keycode.f.82" = "tab_output"      # f3 VT100
-        "keycode.f.83" = "tab_input"       # f4 VT100
-        "keycode.f.84" = "tab_config"      # f5 VT100
-        "keycode.71"   = "move_last"       # G
-        "keycode.103"  = "move_first"      # g
-        "keycode.48"   = "set_volume_0"    # 0
-        "keycode.49"   = "set_volume_10"   # 1
-        "keycode.50"   = "set_volume_20"   # 2
-        "keycode.51"   = "set_volume_30"   # 3
-        "keycode.52"   = "set_volume_40"   # 4
-        "keycode.53"   = "set_volume_50"   # 5
-        "keycode.54"   = "set_volume_60"   # 6
-        "keycode.55"   = "set_volume_70"   # 7
-        "keycode.56"   = "set_volume_80"   # 8
-        "keycode.57"   = "set_volume_90"   # 9
-        # }
-    '';# }}}
+        # keynav{{{
+        ".config/keynav/keynavrc".text = ''
+            super+semicolon start        
+        '';
+        # }}}
 
     };
     #}}}
@@ -1163,11 +1170,11 @@ in
         };
 # }}}
 
-    pointerCursor = {
-        package = pkgs.capitaine-cursors;
-        name = "capitaine-cursors";
-        size = 16;
-    };
+        pointerCursor = {
+            package = pkgs.capitaine-cursors;
+            name = "capitaine-cursors";
+            size = 16;
+        };
 
 
     };/*}}}*/
@@ -1175,7 +1182,7 @@ in
     # xresources config{{{
     xresources.properties = {
     };
-# }}}
+    # }}}
 
     #Home Manager config{{{
     # Home Manager needs a bit of information about you and the
