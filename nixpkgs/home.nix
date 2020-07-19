@@ -132,7 +132,6 @@ in
                 "top" = "htop";
                 "untar" = "tar -xvzf";
                 "ncpa" = "ncpamixer";
-                "tty-clock" = "tty-clock -C 1 -c";
                 #Git
                 "g" = "git";
                 "ga" = "git add";
@@ -167,6 +166,9 @@ in
                 # nixos
                 "homesw" = "home-manager switch";
                 "nore" = "sudo nixos-rebuild switch";
+                # misc
+                "tty-clock" = "tty-clock -C 1 -c";
+                "rickroll" = "curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash";
             };
 # }}}
 
