@@ -48,6 +48,7 @@ in
         tty-clock
         appimage-run
         lightlocker
+        circleci-cli
         # tui apps
         cava
         unstable.nnn
