@@ -137,6 +137,7 @@ in
                 "ga" = "git add";
                 "gall" = "git add --all";
                 "gc" = "git clone";
+                "gmc" = "gitmoji -c";
                 "gco" = "git commit";
                 "gp" = "git push";
                 "gb" = "git branch";

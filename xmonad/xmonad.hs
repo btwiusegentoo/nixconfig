@@ -13,7 +13,9 @@ import           XMonad.Layout.Spacing
 import           XMonad.Layout.Spiral
 import           XMonad.Prompt
 import           XMonad.Prompt.FuzzyMatch
+import           XMonad.Prompt.Man
 import           XMonad.Prompt.Shell
+import           XMonad.Util.NamedScratchpad
 import           XMonad.Util.Run
 import           XMonad.Util.SpawnOnce
 
@@ -39,38 +41,43 @@ myGaps = spacingRaw True (Border 10 10 10 10) True (Border 10 10 10 10) True
 -- keybindings{{{
 myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
 
-    [ ((modm,               xK_Return ), spawn $ XMonad.terminal conf)
-    , ((modm,               xK_d      ), shellPrompt myXPConfig)                  -- use xmonad prompt instead of dmenu.
-    , ((modm,               xK_b      ), spawn "qutebrowser")                     -- launch qutebrowser
-    , ((modm,               xK_p      ), spawn "touch ~/.cache/pomodoro_session") -- start pomodoro
-    , ((modm .|. shiftMask, xK_p      ), spawn "rm ~/.cache/pomodoro_session")    -- stop pomodoro
-    , ((0                 , 0x1008ff11), spawn "amixer -q sset Master 2%-")       -- decrease volume
-    , ((0                 , 0x1008ff13), spawn "amixer -q sset Master 2%+")       -- increase volume
-    , ((0                 , 0x1008FF12), spawn "amixer set Master toggle")        -- mute/unmute sound
-    , ((modm .|. shiftMask, xK_c      ), kill)
-    , ((modm,               xK_space  ), sendMessage NextLayout)
-    , ((modm,               xK_t      ), sendMessage $ JumpToLayout "Spacing Tall")
-    , ((modm,               xK_f      ), sendMessage $ JumpToLayout "Full")
-    , ((modm,               xK_m      ), sendMessage $ JumpToLayout "Mirror Spacing Tall")
-    , ((modm,               xK_n      ), sendMessage $ JumpToLayout "Spacing BSP")
-    , ((modm,               xK_s      ), sendMessage $ JumpToLayout "Spacing Spiral")
-    , ((modm .|. shiftMask, xK_space  ), setLayout $ XMonad.layoutHook conf)
-    , ((modm,               xK_r      ), refresh)
-    , ((modm,               xK_j      ), windows W.focusDown)
-    , ((modm,               xK_k      ), windows W.focusUp  )
-    , ((modm,               xK_g      ), windows W.focusMaster)
-    , ((modm .|. shiftMask, xK_g      ), windows W.swapMaster)
-    , ((modm .|. shiftMask, xK_j      ), windows W.swapDown  )
-    , ((modm .|. shiftMask, xK_k      ), windows W.swapUp    )
-    , ((modm,               xK_h      ), sendMessage Shrink)
-    , ((modm,               xK_l      ), sendMessage Expand)
-    , ((modm              , xK_comma  ), sendMessage (IncMasterN 1))
-    , ((modm              , xK_period ), sendMessage (IncMasterN (-1)))
-    , ((modm              , xK_comma  ), sendMessage Swap)
-    , ((modm              , xK_period ), sendMessage Rotate)
-    , ((modm              , xK_o      ), spawn "light-locker-command --lock")
-    , ((modm .|. shiftMask, xK_q      ), io exitSuccess)
-    , ((modm              , xK_q      ), spawn "xmonad --recompile; xmonad --restart")
+    [ ((modm,                 xK_Return ), spawn $ XMonad.terminal conf)
+    , ((modm,                 xK_d      ), shellPrompt myXPConfig)                  -- use xmonad prompt instead of dmenu.
+    , ((modm .|. controlMask, xK_t      ), namedScratchpadAction myScratchPads "terminal") -- terminal scratchpad
+    , ((modm .|. controlMask, xK_s      ), namedScratchpadAction myScratchPads "mixer") -- sound mixer scratchpad
+    , ((modm .|. controlMask, xK_h      ), namedScratchpadAction myScratchPads "htop")  -- htop scratchpad
+    , ((modm .|. controlMask, xK_n      ), namedScratchpadAction myScratchPads "nnn")   -- file manager scratchpad
+    , ((modm .|. controlMask, xK_m      ), manPrompt myXPConfig)
+    , ((modm,                 xK_b      ), spawn "qutebrowser")                     -- launch qutebrowser
+    , ((modm,                 xK_p      ), spawn "touch ~/.cache/pomodoro_session") -- start pomodoro
+    , ((modm .|. shiftMask,   xK_p      ), spawn "rm ~/.cache/pomodoro_session")    -- stop pomodoro
+    , ((0                 ,   0x1008ff11), spawn "amixer -q sset Master 2%-")       -- decrease volume
+    , ((0                 ,   0x1008ff13), spawn "amixer -q sset Master 2%+")       -- increase volume
+    , ((0                 ,   0x1008FF12), spawn "amixer set Master toggle")        -- mute/unmute sound
+    , ((modm .|. shiftMask,   xK_c      ), kill)
+    , ((modm,                 xK_space  ), sendMessage NextLayout)
+    , ((modm,                 xK_t      ), sendMessage $ JumpToLayout "Spacing Tall")
+    , ((modm,                 xK_f      ), sendMessage $ JumpToLayout "Full")
+    , ((modm,                 xK_m      ), sendMessage $ JumpToLayout "Mirror Spacing Tall")
+    , ((modm,                 xK_n      ), sendMessage $ JumpToLayout "Spacing BSP")
+    , ((modm,                 xK_s      ), sendMessage $ JumpToLayout "Spacing Spiral")
+    , ((modm .|. shiftMask,   xK_space  ), setLayout $ XMonad.layoutHook conf)
+    , ((modm,                 xK_r      ), refresh)
+    , ((modm,                 xK_j      ), windows W.focusDown)
+    , ((modm,                 xK_k      ), windows W.focusUp  )
+    , ((modm,                 xK_g      ), windows W.focusMaster)
+    , ((modm .|. shiftMask,   xK_g      ), windows W.swapMaster)
+    , ((modm .|. shiftMask,   xK_j      ), windows W.swapDown  )
+    , ((modm .|. shiftMask,   xK_k      ), windows W.swapUp    )
+    , ((modm,                 xK_h      ), sendMessage Shrink)
+    , ((modm,                 xK_l      ), sendMessage Expand)
+    , ((modm              ,   xK_comma  ), sendMessage (IncMasterN 1))
+    , ((modm              ,   xK_period ), sendMessage (IncMasterN (-1)))
+    , ((modm              ,   xK_comma  ), sendMessage Swap)
+    , ((modm              ,   xK_period ), sendMessage Rotate)
+    , ((modm              ,   xK_o      ), spawn "light-locker-command --lock")
+    , ((modm .|. shiftMask,   xK_q      ), io exitSuccess)
+    , ((modm              ,   xK_q      ), spawn "xmonad --recompile; xmonad --restart")
     ]
     ++
     [((m .|. modm, k), windows $ f i)
@@ -147,10 +154,51 @@ myLayout = avoidStruts $ smartBorders (tiledgaps ||| bspgaps ||| Mirror tiledgap
         spiralgaps = myGaps $ spiral (6/7)
 -- }}}
 
+-- scratchpads{{{
+myScratchPads = [ NS "terminal" spawnTerm  findTerm  manageTerm
+                , NS "mixer"    spawnMixer findMixer manageMixer
+                , NS "htop"     spawnhtop  findhtop  managehtop
+                , NS "nnn"      spawnnnn   findnnn   managennn
+                ]
+    where
+        spawnTerm   = myTerminal ++ " --name=terminalScratchpad"
+        findTerm    = resource   =? "terminalScratchpad"
+        manageTerm  = customFloating $ W.RationalRect l t w h
+            where
+                h   = 0.3
+                w   = 1
+                t   = 0
+                l   = (1-w)/2
+        spawnMixer  = myTerminal ++ " --name=mixerScratchpad" ++ " -e ncpamixer"
+        findMixer   = resource   =? "mixerScratchpad"
+        manageMixer = customFloating $ W.RationalRect l t w h
+            where
+                h   = 0.9
+                w   = 0.9
+                t   = 0.95 - h
+                l   = 0.95 - w
+        spawnhtop   = myTerminal ++ " --name=htopScratchpad"  ++ " -e htop"
+        findhtop    = resource   =? "htopScratchpad"
+        managehtop  = customFloating $ W.RationalRect l t w h
+            where
+                h   = 0.9
+                w   = 0.9
+                t   = 0.95 - h
+                l   = 0.95 - w
+        spawnnnn    = myTerminal ++ " --name=nnnScratchpad"   ++ " -e nnn -a"
+        findnnn     = resource   =? "nnnScratchpad"
+        managennn   = customFloating $ W.RationalRect l t w h
+            where
+                h   = 0.9
+                w   = 0.9
+                t   = 0.95 - h
+                l   = 0.95 - w
+-- }}}
+
 -- managehook{{{
 myManageHook = composeAll
     [ className =? "Gimp"           --> doFloat
-    , resource  =? "desktop_window" --> doIgnore]
+    , resource  =? "desktop_window" --> doIgnore] <+> namedScratchpadManageHook myScratchPads
 -- }}}
 
 myEventHook = mempty
