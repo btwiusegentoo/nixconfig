@@ -142,8 +142,6 @@ in
         EDITOR = "nvim";
         XMODIFIERS = "@im=fcitx";
         XMODIFIER = "@im=fcitx";
-        MANPAGER = "sh -c 'col -bx | bat -l man -p'";
-        NNN_PLUG = "p:preview-tui";
     };
 
     # }}}
@@ -229,6 +227,8 @@ in
     # }}}
 
     #etcfiles{{{
+
+    # change wacom tablet orientation.{{{
     environment.etc."X11/xorg.conf.d/50-wacomtweak.conf".text = ''
     Section "InputClass" 
         Identifier "Wacom"
@@ -253,9 +253,18 @@ in
         Option "Rotate" "Half"
     EndSection
     '';
+    # }}}
 
     environment.etc."wallpapers/default.png".source = ./wallpaper.png;
-# }}}
+
+    # I will not delete just to make a example.
+    # use pkgs.writeScript to make executable.
+    #environment.etc."lightdm/xrandr.sh".source = pkgs.writeScript "xrandr.sh" ''
+        ##!/bin/sh
+        #xrandr --output DVI-D-0 --scale 1.33333333333333x1.33333333333333 --panning 2560x1440
+    #'';
+
+    # }}}
 
     nixpkgs.config = {
         allowUnfree = true;
