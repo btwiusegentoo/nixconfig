@@ -90,7 +90,8 @@ in
         variant = "dvorak";
     };#}}}
 
-    services = { #{{{
+    # services #{{{
+    services = { 
         picom = {
             enable = true;
             fade = true;
@@ -131,6 +132,7 @@ in
                 "top" = "htop";
                 "untar" = "tar -xvzf";
                 "ncpa" = "ncpamixer";
+                "tty-clock" = "tty-clock -C 1 -c";
                 #Git
                 "g" = "git";
                 "ga" = "git add";
