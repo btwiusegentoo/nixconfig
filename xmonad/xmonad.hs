@@ -45,7 +45,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     , ((modm,                 xK_d      ), shellPrompt myXPConfig)                  -- use xmonad prompt instead of dmenu.
     , ((modm .|. controlMask, xK_t      ), namedScratchpadAction myScratchPads "terminal") -- terminal scratchpad
     , ((modm .|. controlMask, xK_s      ), namedScratchpadAction myScratchPads "mixer") -- sound mixer scratchpad
-    , ((modm .|. controlMask, xK_h      ), namedScratchpadAction myScratchPads "htop")  -- htop scratchpad
+    , ((modm .|. controlMask, xK_h      ), namedScratchpadAction myScratchPads "ytop")  -- ytop scratchpad
     , ((modm .|. controlMask, xK_n      ), namedScratchpadAction myScratchPads "nnn")   -- file manager scratchpad
     , ((modm .|. controlMask, xK_m      ), manPrompt myXPConfig)
     , ((modm,                 xK_b      ), spawn "qutebrowser")                     -- launch qutebrowser
@@ -157,7 +157,7 @@ myLayout = avoidStruts $ smartBorders (tiledgaps ||| bspgaps ||| Mirror tiledgap
 -- scratchpads{{{
 myScratchPads = [ NS "terminal" spawnTerm  findTerm  manageTerm
                 , NS "mixer"    spawnMixer findMixer manageMixer
-                , NS "htop"     spawnhtop  findhtop  managehtop
+                , NS "ytop"     spawnytop  findytop  manageytop
                 , NS "nnn"      spawnnnn   findnnn   managennn
                 ]
     where
@@ -179,9 +179,9 @@ myScratchPads = [ NS "terminal" spawnTerm  findTerm  manageTerm
         findMixer   = resource   =? "mixerScratchpad"
         manageMixer = customFloating $ W.RationalRect centrall centralt centralw centralh
 
-        spawnhtop   = myTerminal ++ " --name=htopScratchpad"  ++ " -e htop"
-        findhtop    = resource   =? "htopScratchpad"
-        managehtop  = customFloating $ W.RationalRect centrall centralt centralw centralh
+        spawnytop   = myTerminal ++ " --name=ytopScratchpad"  ++ " -e ytop"
+        findytop    = resource   =? "ytopScratchpad"
+        manageytop  = customFloating $ W.RationalRect centrall centralt centralw centralh
 
         spawnnnn    = myTerminal ++ " --name=nnnScratchpad"   ++ " -e nnn -a"
         findnnn     = resource   =? "nnnScratchpad"

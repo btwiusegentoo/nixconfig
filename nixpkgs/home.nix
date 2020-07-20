@@ -53,6 +53,7 @@ in
         cava
         unstable.nnn
         htop
+        unstable.ytop
         ncpamixer
         # gui apps
         gimp
@@ -134,7 +135,7 @@ in
                 "diff" = "diff-so-fancy";
                 "cat" = "bat";
                 "fd" = "find";
-                "top" = "htop";
+                "top" = "ytop";
                 "untar" = "tar -xvzf";
                 "ncpa" = "ncpamixer";
                 #Git
