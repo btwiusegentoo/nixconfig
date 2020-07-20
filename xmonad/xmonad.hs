@@ -226,12 +226,13 @@ main = do
             manageHook         = myManageHook,
             handleEventHook    = myEventHook,
             logHook            =  myLogHook <+> dynamicLogWithPP xmobarPP
-                                { ppOutput = hPutStrLn xmproc
-                                , ppCurrent = xmobarColor "#ab47bc" "" .wrap "[" "]" -- Current workspace
-                                , ppVisible = xmobarColor  "#414863" ""              -- workspace visible
-                                , ppLayout = xmobarColor "#82aaff" ""
-                                , ppSep = " \63192 "
-                                , ppTitle = mempty
+                                { ppOutput   = hPutStrLn xmproc
+                                , ppSort     = fmap (namedScratchpadFilterOutWorkspace.) (ppSort def) -- hide nsp
+                                , ppCurrent  = xmobarColor "#ab47bc" "" .wrap "[" "]" -- Current workspace
+                                , ppVisible  = xmobarColor  "#414863" ""              -- workspace visible
+                                , ppLayout   = xmobarColor "#82aaff" ""
+                                , ppSep      = " \63192 "
+                                , ppTitle    = mempty
                                 },
             startupHook        = myStartupHook
     };
