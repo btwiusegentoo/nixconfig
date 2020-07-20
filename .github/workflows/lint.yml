@@ -1,0 +1,24 @@
+name: Haskell Linter
+
+on:
+    push:
+        branches: '**'
+    pull_request:
+        branches: '**'
+
+jobs:
+    lint:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                ghc: ["8.8.3"]
+                cabal: ["3.0.0.0"]
+                stack: ["latest"]
+                os: [ubuntu-latest]
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v2
+            - name: hlint
+              uses: domdere/haskell-lint-action@master

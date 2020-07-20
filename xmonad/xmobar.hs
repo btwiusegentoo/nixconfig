@@ -38,5 +38,4 @@ config = defaultConfig {
 
 
 main :: IO()
-main = do
-    xmobar config
+main = xmobar config
