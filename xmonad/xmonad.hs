@@ -31,7 +31,7 @@ myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 myClickJustFocuses :: Bool
 myClickJustFocuses = False
-myBorderWidth   = 5
+myBorderWidth   = 6
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 myNormalBorderColor  = "#a6accd"
 myFocusedBorderColor = "#c792ea"

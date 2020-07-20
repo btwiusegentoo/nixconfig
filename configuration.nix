@@ -17,7 +17,9 @@ let
     python-with-my-packages = unstable.python3.withPackages my-python-packages;
     # }}}
 
-    # How to add custom python packages. 
+    # Custom python packages that I want globally{{{
+
+    # pymodoro{{{
     pymodoro = unstable.python3Packages.buildPythonPackage rec {
         pname = "pymodoro";
         version = "1.14";
@@ -27,6 +29,9 @@ let
             sha256 = "1gkq989cfq19cm4nxch6lf63sz9rmkkibaw7r0n2pcwdamjssgj1";
         };
     };
+    # }}}
+
+    # }}}
 
 in
 {
@@ -62,6 +67,9 @@ in
         unstable.sudo
         fish
         pypi2nix
+        # deps
+        libffi
+        xorg.libxcb
     ];
 # }}}
 

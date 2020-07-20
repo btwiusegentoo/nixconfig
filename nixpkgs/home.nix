@@ -93,8 +93,12 @@ in
         picom = {
             enable = true;
             fade = true;
-            fadeDelta = 5;
+            fadeDelta = 7;
             backend = "glx";
+            experimentalBackends = true;
+            extraOptions = ''
+                detect-client-opacity = true;
+            '';
         };
 
         keynav.enable = true;
