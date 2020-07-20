@@ -325,6 +325,10 @@ in
                 set expandtab
                 set smarttab
                 set shiftround
+                set breakindent
+                set breakindentopt=shift:1
+                set showbreak=↪
+                set linebreak
                 set cursorline
                 let g:nix_recommended_style=0
 
