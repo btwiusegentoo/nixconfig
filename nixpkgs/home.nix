@@ -629,7 +629,7 @@ in
                 j = "add volume -2";
                 k = "add volume 2";
                 l = "seek 10";
-                "Ctrl+l" = "ab-loob";
+                "Ctrl+l" = "ab-loop";
             };
         };
         # }}}
