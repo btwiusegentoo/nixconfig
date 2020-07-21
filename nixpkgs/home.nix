@@ -1,13 +1,18 @@
-# nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs-unstable
-# nix-channel --add https://github.com/rycee/home-manager/archive/release-20.03.tar.gz home-manager
-# nix-channel --update
 # It's better to setup swapfile and use cachix.
 
 { config, pkgs, lib, ... }:
 
 let
     plugins = pkgs.callPackage ./plugins.nix {};
-    unstable = import <nixpkgs-unstable> {};
+    # use unstable without addding channel manually.{{{
+    unstableTarball =
+        fetchTarball
+        https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz;
+
+    # make easier to use unstable below
+    unstable = pkgs.unstable;
+    # }}}
+
     # Haskell packages{{{
     haskell-env = unstable.haskellPackages.ghcWithHoogle ( hp: with hp; [
         xmonad
@@ -26,6 +31,7 @@ in
 {
     # Let Home Manager install and manage itself.
     programs.home-manager.enable = true;
+
 
     # Packages to install{{{
     home.packages = with pkgs; [
@@ -1231,8 +1237,19 @@ in
     # changes in each release.
     home.stateVersion = "20.03";
 
-    nixpkgs.config.allowUnfree = true;
     #}}}
+
+    # nixpkgs config{{{
+    nixpkgs.config = {
+        allowUnfree = true;
+        packageOverrides = pkgs: {
+            # use packages from nixos-unstable
+            unstable = import unstableTarball {
+                config = config.nixpkgs.config;
+            };
+        };
+    };
+    # }}}
 
     # local env variables{{{
     home.sessionVariables = {
@@ -1241,13 +1258,14 @@ in
         "NNN_PLUG" = "p:preview-tui";
     };# }}}
 
-    nixpkgs.overlays = [ (import ../overlays/packages.nix) ];
-
-    # override modules.{{{
-    nixpkgs.config.packageOverrides = pkgs: {
-        kitty = unstable.kitty;
-    };
-# }}}
+    # overlays{{{
+    nixpkgs.overlays = [ 
+        (import ../overlays/packages.nix)
+        (self: super: {
+            kitty = unstable.kitty;
+        })
+    ];
+    # }}}
 
 }
 # vim:ft=nix foldmethod=marker shiftwidth=4:

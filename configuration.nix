@@ -1,9 +1,16 @@
-# nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs-unstable
 
 { config, pkgs, fetchgit, ... }:
 
 let
-    unstable = import <nixpkgs-unstable> {};
+
+    # use unstable without addding channel manually.{{{
+    unstableTarball =
+        fetchTarball
+        https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz;
+
+    # make easier to use unstable below
+    unstable = pkgs.unstable;
+    # }}}
 
     # Python packages{{{
     my-python-packages = python-packages: with python-packages; [
@@ -36,13 +43,29 @@ let
 
 in
 {
+
+    # imports{{{
     imports =
         [ # Include the results of the hardware scan.
-        ./hardware-configuration.nix
+            ./hardware-configuration.nix
           # Includes private ssh config.
-        ./sshconfig.nix
+            ./sshconfig.nix
+          # import home-manager module
+            (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/release-20.03.tar.gz}/nixos")
         ];
+    # }}}
 
+    # nixpkgs config{{{
+    nixpkgs.config = {
+        allowUnfree = true;
+        packageOverrides = pkgs: {
+            # use packages from nixos-unstable
+            unstable = import unstableTarball {
+                config = config.nixpkgs.config;
+            };
+        };
+    };
+    # }}}
 
     # systemPackages{{{
     # packages that will be installed system-wide. to search, run
@@ -219,6 +242,10 @@ in
 
     location.provider = "geoclue2";
 
+    # specify home-manager file
+    home-manager.users.btw = import ./nixpkgs/home.nix;
+
+
     # Define a user account. Don't forget to set a password with ‘passwd’.{{{
     users.users.btw = {
         isNormalUser = true;
@@ -274,9 +301,6 @@ in
 
     # }}}
 
-    nixpkgs.config = {
-        allowUnfree = true;
-    };
 
     nixpkgs.overlays = [# {{{
 
