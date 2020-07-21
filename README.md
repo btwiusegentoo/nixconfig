@@ -30,9 +30,7 @@ If you are new to nixos, maybe you can get idea how to install neovim plugins an
 <h2>Installation</h2>
 <br>
 I don't recommend installing this config, but you can clone inside <code>$HOME/mygit/nixconfig</code> and symlink. Don't forget that nixpkgs directory go inside <code>$HOME/.config/</code><br>
-Maybe you have to install NixOS once and install home-manager before?
-idk because I never reinstalled now.
-I will test if works, and try to make easier to install someday.
+home-manager is configured as module so channel is not needed anymore.
 <br>
 <h2>Summary of Features</h2>
 <br>
@@ -48,7 +46,7 @@ I will test if works, and try to make easier to install someday.
     <li>qutebrowser</li>
     <li>NerdFont(Monoid)</li>
     <li>Apple emoji</li>
-    <li>Some packages from unstable while running stable branch</li>
+    <li>Some packages from unstable while running stable branch(without using channel)</li>
 
 </ul>
 
