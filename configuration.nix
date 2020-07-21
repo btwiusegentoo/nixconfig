@@ -4,6 +4,7 @@
 
 let
     unstable = import <nixpkgs-unstable> {};
+
     # Python packages{{{
     my-python-packages = python-packages: with python-packages; [
         jedi
@@ -56,7 +57,6 @@ in
         unstable.yarn
         unstable.openssh
         unzip
-        home-manager
         nix-prefetch-git
         gnumake
         gcc
