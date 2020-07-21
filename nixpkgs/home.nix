@@ -129,7 +129,7 @@ in
         fish = {
             enable = true;
 
-            #alias{{{
+            # Abbreviation. similar to alias{{{
             shellAbbrs = {
                 #Common commands
                 "c" = "clear";
@@ -177,8 +177,9 @@ in
                 "nh" = "nnn -a -H";
                 "nnnplugins" = "curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh";
                 # nixos
-                "homesw" = "home-manager switch";
-                "nore" = "sudo nixos-rebuild switch";
+                "nixre" = "sudo nixos-rebuild switch";
+                "snixtrash" = "sudo nix-collect-garbage -d";
+                "nixtrash" = "nix-collect-garbage -d";
                 # misc
                 "tty-clock" = "tty-clock -C 1 -c";
                 "rickroll" = "curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash";
