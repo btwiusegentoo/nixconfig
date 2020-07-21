@@ -243,8 +243,11 @@ in
     location.provider = "geoclue2";
 
     # specify home-manager file
-    home-manager.users.btw = import ./nixpkgs/home.nix;
-
+    home-manager = {
+        useUserPackages=true;
+        verbose = true;
+        users.btw = import ./nixpkgs/home.nix;
+    };
 
     # Define a user account. Don't forget to set a password with ‘passwd’.{{{
     users.users.btw = {
