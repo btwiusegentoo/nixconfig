@@ -194,8 +194,17 @@ myManageHook = composeAll
     , resource  =? "desktop_window" --> doIgnore] <+> namedScratchpadManageHook myScratchPads
 -- }}}
 
-myEventHook = mempty
-myLogHook =  return()
+-- loghook{{{
+myLogHook h = dynamicLogWithPP xmobarPP
+            { ppOutput   = hPutStrLn h
+            , ppSort     = fmap (namedScratchpadFilterOutWorkspace.) (ppSort def) -- hide nsp
+            , ppCurrent  = xmobarColor "#ab47bc" "" .wrap "[" "]" -- Current workspace
+            , ppVisible  = xmobarColor  "#414863" ""              -- workspace visible
+            , ppLayout   = xmobarColor "#82aaff" ""
+            , ppSep      = " \63192 "
+            , ppTitle    = mempty
+            }
+-- }}}
 
 -- startuphook{{{
 myStartupHook = do
@@ -204,9 +213,10 @@ myStartupHook = do
     spawnOnce "light-locker &"
 -- }}}
 
+myEventHook = mempty
 
 main = do
-    xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
+    h <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
 
     xmonad $ docks def {
         -- simple stuff
@@ -225,15 +235,7 @@ main = do
             layoutHook         = myLayout,
             manageHook         = myManageHook,
             handleEventHook    = myEventHook,
-            logHook            =  myLogHook <+> dynamicLogWithPP xmobarPP
-                                { ppOutput   = hPutStrLn xmproc
-                                , ppSort     = fmap (namedScratchpadFilterOutWorkspace.) (ppSort def) -- hide nsp
-                                , ppCurrent  = xmobarColor "#ab47bc" "" .wrap "[" "]" -- Current workspace
-                                , ppVisible  = xmobarColor  "#414863" ""              -- workspace visible
-                                , ppLayout   = xmobarColor "#82aaff" ""
-                                , ppSep      = " \63192 "
-                                , ppTitle    = mempty
-                                },
+            logHook            = myLogHook h,
             startupHook        = myStartupHook
     };
 
