@@ -6,16 +6,6 @@ in {
 
 # use nix-prefetch-git to get rev/sha256.
 
-    "material-vim" = buildVimPlugin {
-        name = "material-vim";
-        src = fetchgit {
-            "url" = "https://github.com/kaicataldo/material.vim";
-            "rev" = "ec9c95a4985da74930fafc2e52a758015e676e01";
-            "sha256" = "0y9mvdmcalprpqjvn0m0d9msnsrnzggg33n0p64pri0lgk94h87v";
-        };
-        dependencies = [];
-    };
-
     "nvim-colorizer-lua" = buildVimPlugin {
         name = "nvim-colorizer-lua";
         src = fetchgit {

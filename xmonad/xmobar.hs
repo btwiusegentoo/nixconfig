@@ -8,7 +8,7 @@ config = defaultConfig {
        , borderColor = "#2b2a3e"
        , border = BottomB
        , alpha = 255
-       , bgColor = "#202331"
+       , bgColor = "#303348"
        , fgColor = "#FFFFFF"
        , position = TopSize L 100 20
        , textOffset = -1
@@ -21,8 +21,8 @@ config = defaultConfig {
        , allDesktops = True
        , overrideRedirect = True
        , commands = [ Run $ Cpu ["-t","\57958 <total>%"] 10
-                    , Run $ Memory ["-t","\63578 <usedratio>%"] 10
-                    , Run $ Swap ["-t", "易 \63433 <usedratio>%"] 10
+                    , Run $ Memory ["-t","\63578 <used>MB"] 10
+                    , Run $ Swap ["-t", "易 \63433 <used>MB"] 10
                     , Run $ Date "%a %b %_d %H:%M:%S" "date" 10
                     , Run $ Com "uname" [ "-s" , "-r" ] "" 36000
                     , Run $ Com "qdbus" [ "org.fcitx.Fcitx" , "/inputmethod" , "GetCurrentIM" ] "kbd" 10

@@ -1,9 +1,10 @@
-# It's better to setup swapfile and use cachix.
+# It's better to setup swapfile and use cachix just in case something have to compile.
 
 { config, pkgs, lib, ... }:
 
 let
     plugins = pkgs.callPackage ./plugins.nix {};
+
     # use unstable without addding channel manually.{{{
     unstableTarball =
         fetchTarball
@@ -25,7 +26,7 @@ let
         hlint
         xmobar
     ]);
-# }}}
+    # }}}
 
 in
 {
@@ -85,7 +86,7 @@ in
         file
         catimg
         # joke command
-        cowsay cmatrix espeak figlet fortune
+        cowsay cmatrix espeak figlet fortune asciiquarium
     ];
     #}}}
 
@@ -105,6 +106,12 @@ in
             experimentalBackends = true;
             extraOptions = ''
                 detect-client-opacity = true;
+                blur:
+                {
+                    method = "box";
+                    size = 10;
+                    deviation = 5.0;
+                };
             '';
         };
 
@@ -180,6 +187,8 @@ in
                 "nixre" = "sudo nixos-rebuild switch";
                 "snixtrash" = "sudo nix-collect-garbage -d";
                 "nixtrash" = "nix-collect-garbage -d";
+                "nsh" = "nix-shell";
+                "nfish" = "nix-shell --run fish";
                 # misc
                 "tty-clock" = "tty-clock -C 1 -c";
                 "rickroll" = "curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash";
@@ -270,9 +279,7 @@ in
 
             configure.plug.plugins = with unstable.vimPlugins // plugins; [# {{{
                 coc-nvim
-                #onedark-vim
-                #lightline-onedark
-                material-vim #kaicataldo/material.vim
+                palenight-vim
                 nvim-colorizer-lua #norcalli/nvim-colorizer.lua
                 indentLine
                 ale
@@ -286,7 +293,6 @@ in
                 nerdtree
                 #vim-devicons
                 vim-deviconsfork
-                nerdtree-git-plugin
                 semshi
                 vim-python-pep8-indent
                 vim-fish
@@ -341,17 +347,13 @@ in
                 set breakindentopt=shift:1
                 set showbreak=↪
                 set linebreak
-                set cursorline
                 let g:nix_recommended_style=0
 
                 let g:auto_comma_or_semicolon = 1
-                let g:material_theme_style = 'palenight'
-                let g:material_terminal_italics = 1
-                let g:onedark_terminal_italics = 1
-                let g:onedark_termcolors = 256
                 set background=dark
-                colorscheme material
+                colorscheme palenight
                 set termguicolors
+                let g:palenight_terminal_italics = 1
                 lua require'colorizer'.setup()
                 "haskell
                 let g:stylishask_on_save = 1
@@ -372,7 +374,7 @@ in
 
                 "lightline
                 let g:lightline = {
-                \ 'colorscheme': 'material_vim',
+                \ 'colorscheme': 'palenight',
                 \ 'active': {
                 \   'left': [ [ 'mode', 'paste' ],
                 \             [ 'cocstatus', 'currentfunction', 'gitbranch', 'readonly', 'filename', 'modified' ] ]
@@ -522,6 +524,9 @@ in
                 window_padding_width = 4;
                 background_opacity = "0.9";
                 allow_remote_control = "yes";
+                cursor = "#89ddff";
+                cursor_shape = "beam";
+                cursor_stop_blinking_after = "0";
             };
 
             font.name = "Monoid Nerd Font Mono";
@@ -586,7 +591,6 @@ in
             ];
             keyMode = "vi";
             extraConfig = ''
-                set-option -g default-shell /home/btw/.nix-profile/bin/fish
                 set-option -g default-terminal "screen-256color"
                 set -ga terminal-overrides ",*256col*:Tc"
                 set-option -g prefix C-Space
@@ -629,7 +633,6 @@ in
             enable = true;
             config = {
                 volume = 50;
-                ytdl-format = "bestvideo+bestaudio";
             };
             bindings = {
                 h = "seek -10";
@@ -888,6 +891,33 @@ in
         };
         # }}}
 
+        # starship{{{
+        starship = {
+            enable = true;
+            enableFishIntegration = true;
+            package = unstable.starship;
+            settings = {
+                add_newline = true;
+
+                character = {
+                    style_success = "bold #c792ea";
+                    use_symbol_for_status = true;
+                };
+
+                directory = {
+                    style = "cyan";
+                };
+
+                nix_shell = {
+                    disabled = false;
+                    use_name = true;
+                    symbol = " ";
+                };
+
+            };
+        };
+        # }}}
+
     };
 
         #}}}
@@ -1022,7 +1052,6 @@ in
                 prin "$(color 4)────────────────────────────────────────────" 
                 info "OS" distro
                 info "Uptime" uptime
-                info "Packages" packages
                 info "Shell" shell
                 info "DE" de
                 info "Terminal" term
@@ -1243,12 +1272,6 @@ in
     # nixpkgs config{{{
     nixpkgs.config = {
         allowUnfree = true;
-        packageOverrides = pkgs: {
-            # use packages from nixos-unstable
-            unstable = import unstableTarball {
-                config = config.nixpkgs.config;
-            };
-        };
     };
     # }}}
 
@@ -1263,6 +1286,10 @@ in
     nixpkgs.overlays = [ 
         (import ../overlays/packages.nix)
         (self: super: {
+            # use packages from nixos-unstable
+            unstable = import unstableTarball {
+                config = config.nixpkgs.config;
+            };
             kitty = unstable.kitty;
         })
     ];

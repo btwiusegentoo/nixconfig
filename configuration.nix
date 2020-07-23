@@ -55,18 +55,6 @@ in
         ];
     # }}}
 
-    # nixpkgs config{{{
-    nixpkgs.config = {
-        allowUnfree = true;
-        packageOverrides = pkgs: {
-            # use packages from nixos-unstable
-            unstable = import unstableTarball {
-                config = config.nixpkgs.config;
-            };
-        };
-    };
-    # }}}
-
     # systemPackages{{{
     # packages that will be installed system-wide. to search, run
     # $ nix search wget
@@ -85,7 +73,7 @@ in
         gcc
         python-with-my-packages
         cachix
-        ipad_charge
+        unstable.ipad_charge
         mosh-master
         unstable.sudo
         fish
@@ -304,6 +292,11 @@ in
 
     # }}}
 
+    # nixpkgs config{{{
+    nixpkgs.config = {
+        allowUnfree = true;
+    };
+    # }}}
 
     nixpkgs.overlays = [# {{{
 
@@ -311,6 +304,10 @@ in
         neovim = super.neovim.override {
         viAlias = true;
         vimAlias = true;
+        };
+        # use packages from nixos-unstable
+        unstable = import unstableTarball {
+            config = config.nixpkgs.config;
         };
         })
 

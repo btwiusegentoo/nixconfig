@@ -31,11 +31,11 @@ myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 myClickJustFocuses :: Bool
 myClickJustFocuses = False
-myBorderWidth   = 6
+myBorderWidth   = 1
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
-myNormalBorderColor  = "#a6accd"
+myNormalBorderColor  = "#292D3E"
 myFocusedBorderColor = "#c792ea"
-myGaps = spacingRaw True (Border 10 10 10 10) True (Border 10 10 10 10) True
+myGaps = spacingRaw True (Border 2 2 2 2) True (Border 2 2 2 2) True
 -- }}}
 
 -- keybindings{{{
@@ -51,9 +51,12 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     , ((modm,                 xK_b      ), spawn "qutebrowser")                     -- launch qutebrowser
     , ((modm,                 xK_p      ), spawn "touch ~/.cache/pomodoro_session") -- start pomodoro
     , ((modm .|. shiftMask,   xK_p      ), spawn "rm ~/.cache/pomodoro_session")    -- stop pomodoro
-    , ((0                 ,   0x1008ff11), spawn "amixer -q sset Master 2%-")       -- decrease volume
-    , ((0                 ,   0x1008ff13), spawn "amixer -q sset Master 2%+")       -- increase volume
-    , ((0                 ,   0x1008FF12), spawn "amixer set Master toggle")        -- mute/unmute sound
+    , ((0                 ,   0x1008ff11), spawn "amixer -q sset Master 2%-")       -- decrease volume fn+a(HHKB Dvorak)
+    , ((0                 ,   0x1008ff13), spawn "amixer -q sset Master 2%+")       -- increase volume fn+o(HHKB Dvorak)
+    , ((0                 ,   0x1008FF12), spawn "amixer set Master toggle")        -- mute/unmute sound fn+e(HHKB Dvorak)
+    , ((0                 ,   xK_Print  ), spawn "scrot screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'") -- fn+c(HHKB Dvorak)
+    , ((0    .|. controlMask, xK_Print  ), spawn "scrot -s screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'") -- ctrl+fn+c(HHKB Dvorak)
+    , ((modm,                 xK_Print  ), spawn "scrot tmp.png -e 'xclip $f && rm $f'") -- mod+fn+c(HHKB Dvorak)
     , ((modm .|. shiftMask,   xK_c      ), kill)
     , ((modm,                 xK_space  ), sendMessage NextLayout)
     , ((modm,                 xK_t      ), sendMessage $ JumpToLayout "Spacing Tall")
@@ -61,6 +64,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     , ((modm,                 xK_m      ), sendMessage $ JumpToLayout "Mirror Spacing Tall")
     , ((modm,                 xK_n      ), sendMessage $ JumpToLayout "Spacing BSP")
     , ((modm,                 xK_s      ), sendMessage $ JumpToLayout "Spacing Spiral")
+    , ((modm .|. shiftMask,   xK_t      ), withFocused $ windows . W.sink) -- unfloat window
     , ((modm .|. shiftMask,   xK_space  ), setLayout $ XMonad.layoutHook conf)
     , ((modm,                 xK_r      ), refresh)
     , ((modm,                 xK_j      ), windows W.focusDown)
@@ -195,15 +199,15 @@ myManageHook = composeAll
 -- }}}
 
 -- loghook{{{
-myLogHook h = dynamicLogWithPP xmobarPP
-            { ppOutput   = hPutStrLn h
-            , ppSort     = fmap (namedScratchpadFilterOutWorkspace.) (ppSort def) -- hide nsp
-            , ppCurrent  = xmobarColor "#ab47bc" "" .wrap "[" "]" -- Current workspace
-            , ppVisible  = xmobarColor  "#414863" ""              -- workspace visible
-            , ppLayout   = xmobarColor "#82aaff" ""
-            , ppSep      = " \63192 "
-            , ppTitle    = mempty
-            }
+myLogHook h =   dynamicLogWithPP xmobarPP
+                { ppOutput   = hPutStrLn h
+                , ppSort     = fmap (namedScratchpadFilterOutWorkspace.) (ppSort def) -- hide nsp
+                , ppCurrent  = xmobarColor "#ab47bc" "" .wrap "[" "]" -- Current workspace
+                , ppVisible  = xmobarColor  "#414863" ""              -- workspace visible
+                , ppLayout   = xmobarColor "#82aaff" ""
+                , ppSep      = " \63192 "
+                , ppTitle    = mempty
+                }
 -- }}}
 
 -- startuphook{{{
