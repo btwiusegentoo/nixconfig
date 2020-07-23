@@ -1296,4 +1296,4 @@ in
     # }}}
 
 }
-# vim:ft=nix foldmethod=marker shiftwidth=4:
+# vim:ft=nix fdm=marker sw=4:

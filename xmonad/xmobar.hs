@@ -39,3 +39,5 @@ config = defaultConfig {
 
 main :: IO()
 main = xmobar config
+
+-- vim: ft=haskell sw=4 fdm=marker:

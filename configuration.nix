@@ -324,4 +324,4 @@ in
 
 }
 
-# vim:shiftwidth=4 ft=nix foldmethod=marker:
+# vim:ft=nix sw=4 fdm=marker:

@@ -244,4 +244,4 @@ main = do
     };
 
 
--- vim: foldmethod=marker:
+-- vim: ft=haskell sw=4 fdm=marker:
