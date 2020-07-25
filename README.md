@@ -52,5 +52,4 @@ home-manager is configured as module so channel is not needed anymore.
 </ul>
 
 <h2>Credits</h2>
-<a href="https://github.com/NixOS/nixos-artwork/tree/master/logo">NixOS/nixos-artwork</a> -> NixOS logo. used on wallpaper. Changed colors to match palenight color scheme. distributed under <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY license</a>
-This means that the wallpaper.png on this repo is also distributed under same license.
+<a href="https://github.com/NixOS/nixos-artwork/tree/master/logo">NixOS/nixos-artwork</a> -> NixOS logo. used on wallpaper. Just changed colors. used under <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY license</a>
