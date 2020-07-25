@@ -7,6 +7,7 @@
 
 ![screenshot1](/screenshot1.png)
 ![screenshot2](/screenshot2.png)
+![wallpaper](/wallpaper.png)
 <br>
 <br>
 <br>
@@ -46,6 +47,7 @@ home-manager is configured as module so channel is not needed anymore.
     <li>NerdFont(Monoid)</li>
     <li>Apple emoji</li>
     <li>Some packages from unstable while running stable branch(without using channel)</li>
+    <li>It assumes you are using 1080p and scales to WQHD. Maybe you will want to disable if you are using other resolution</li>
 
 </ul>
 

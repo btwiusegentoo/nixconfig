@@ -30,9 +30,6 @@ let
 
 in
 {
-    # Let Home Manager install and manage itself.
-    programs.home-manager.enable = true;
-
 
     # Packages to install{{{
     home.packages = with pkgs; [
@@ -40,12 +37,15 @@ in
         tree
         bc
         gitAndTools.diff-so-fancy
+        ripgrep
         binutils
         killall
         python
         neofetch
         pfetch
         nodePackages.node2nix
+        cabal2nix
+        nix-index
         binutils
         glibc
         haskell-env
@@ -75,6 +75,9 @@ in
         # dependencies
         ffmpeg-full
         frei0r
+        ctags
+        libnotify
+        xsel # used by xmonad emoji prompt
         # misc
         glxinfo
         xclip
@@ -96,14 +99,17 @@ in
         variant = "dvorak";
     };#}}}
 
-    # services #{{{
+    # services {{{
     services = { 
+
+        # picom{{{
         picom = {
             enable = true;
             fade = true;
-            fadeDelta = 7;
+            fadeDelta = 3;
             backend = "glx";
             experimentalBackends = true;
+            opacityRule = [ "90:class_g = 'Zathura'" ];
             extraOptions = ''
                 detect-client-opacity = true;
                 blur:
@@ -114,15 +120,46 @@ in
                 };
             '';
         };
+        # }}}
 
         keynav.enable = true;
+
+        # dunst{{{
+        dunst = {
+            enable = true;
+            settings = {
+                global = {
+                    frame_color = "#959DCB";
+                    separator_color = "#959DCB";
+                    transparency = 10;
+                    alignment = "left";
+                    geometry = "300x5-30+20";
+                };
+                urgency_low = {
+                    background = "#444267";
+                    foreground = "#676E95";
+                };
+                urgency_normal = {
+                    background = "#32374D";
+                    foreground = "#959DCB";
+                };
+                urgency_critical = {
+                    background = "#F07178";
+                    foreground = "#959DCB";
+                };
+            };
+        };
+        # }}}
 
     };
     #}}}
 
-    #programs {{{
+    # programs {{{
     programs = {
 
+        home-manager = {
+            enable = true;
+        };
 
         #git{{{
         git = {
@@ -184,8 +221,8 @@ in
                 "nh" = "nnn -a -H";
                 "nnnplugins" = "curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh";
                 # nixos
-                "nixre" = "sudo nixos-rebuild switch";
-                "snixtrash" = "sudo nix-collect-garbage -d";
+                "nixre" = "doas nixos-rebuild switch";
+                "dnixtrash" = "doas nix-collect-garbage -d";
                 "nixtrash" = "nix-collect-garbage -d";
                 "nsh" = "nix-shell";
                 "nfish" = "nix-shell --run fish";
@@ -279,13 +316,14 @@ in
 
             configure.plug.plugins = with unstable.vimPlugins // plugins; [# {{{
                 coc-nvim
-                palenight-vim
+                material-vim #kaicataldo/material.vim
                 nvim-colorizer-lua #norcalli/nvim-colorizer.lua
                 indentLine
                 ale
                 vista-vim
                 vim-easymotion
                 vim-fugitive
+                vim-gitgutter
                 nerdcommenter
                 lightline-vim
                 lightline-ale
@@ -306,6 +344,7 @@ in
                 coc-prettier
                 coc-html
                 coc-pairs
+                coc-tabnine
                 indenthaskell
                 vim-stylishask
                 haskell-vim
@@ -345,17 +384,23 @@ in
                 set shiftround
                 set breakindent
                 set breakindentopt=shift:1
-                set showbreak=↪
+                set showbreak=⤿
                 set linebreak
                 let g:nix_recommended_style=0
 
                 let g:auto_comma_or_semicolon = 1
-                set background=dark
-                colorscheme palenight
+                let g:material_theme_style = 'palenight'
+                let g:material_terminal_italics = 1
+                colorscheme material
                 set termguicolors
-                let g:palenight_terminal_italics = 1
+                hi! Normal guibg=NONE
+                hi! NonText guibg=NONE guifg=NONE
+                hi! Folded guibg=NONE guifg=#676e95
+                hi! LineNr guibg=NONE
+                hi! SignColumn guibg=NONE
                 lua require'colorizer'.setup()
-                "haskell
+
+                "haskell{{{
                 let g:stylishask_on_save = 1
                 let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
                 let g:haskell_enable_recursivedo = 1      " to enable highlighting of `mdo` and `rec`
@@ -364,6 +409,7 @@ in
                 let g:haskell_enable_typeroles = 1        " to enable highlighting of type roles
                 let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
                 let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
+                "}}}
 
                 " NERDTree
                 let NERDTreeShowHidden=1
@@ -372,9 +418,9 @@ in
                 let g:cosco_ignore_comment_lines = 1
                 let g:cosco_filetype_whitelist = ['php', 'javascript']
 
-                "lightline
+                "lightline{{{
                 let g:lightline = {
-                \ 'colorscheme': 'palenight',
+                \ 'colorscheme': 'material_vim',
                 \ 'active': {
                 \   'left': [ [ 'mode', 'paste' ],
                 \             [ 'cocstatus', 'currentfunction', 'gitbranch', 'readonly', 'filename', 'modified' ] ]
@@ -398,8 +444,10 @@ in
                 \ },
                 \ }
 
-                let g:lightline#bufferline#enable_devicons = 1
-                let g:lightline#bufferline#unicode_symbols = 1
+                let g:lightline#bufferline#enable_devicons   = 1
+                let g:lightline#bufferline#unicode_symbols   = 1
+                let g:lightline#bufferline#show_number       = 1
+                let g:lightline#bufferline#filename_modifier = ':t'
 
                 if !has('gui_running')
                     set t_Co=256
@@ -412,8 +460,9 @@ in
                 function! MyFileformat()
                     return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ""
                 endfunction
+                "}}}
 
-                "Keybinds
+                "Keybinds{{{
                 let mapleader = "\<Space>"
                 nnoremap <Leader>w :w<CR>
                 "move window with ctrlhjkl
@@ -457,8 +506,9 @@ in
                 nnoremap <leader>bq :bp <BAR> bd #<CR>
                 " Show all open buffers and their status
                 nnoremap <leader>bl :ls<CR>
+                "}}}
 
-                "Coc
+                "Coc{{{
                 set hidden
                 set nobackup
                 set nowritebackup
@@ -510,6 +560,14 @@ in
                     let col = col('.') - 1
                     return !col || getline('.')[col -1] =~# '\s'
                 endfunction
+                "}}}
+
+                " autocommands
+                augroup RestoreCursorShapeOnExit
+                    autocmd!
+                    autocmd VimLeave * set guicursor=a:ver25-blinkon0
+                augroup END
+
             '';# }}}
 
         };
@@ -529,7 +587,7 @@ in
                 cursor_stop_blinking_after = "0";
             };
 
-            font.name = "Monoid Nerd Font Mono";
+            font.name = "TamzenForPowerline";
 
             extraConfig = ''
             # Palenight Colorscheme{{{
@@ -581,6 +639,138 @@ in
             '';
         };
         # }}}
+
+        # alacritty{{{
+        alacritty = {
+            enable = true;
+            settings = {
+                env = {
+                    TERM = "xterm-256color";
+                };
+                window = {
+                    padding = {
+                        x = 5;
+                        y = 5;
+                    };
+                    dynamic_padding = false;
+                    decorations = "none";
+                    startup_mode = "Windowed";
+                };
+                scrolling = {
+                    history = 250;
+                    multiplier = 1;
+                };
+                font = {
+                    normal = {
+                        family = "TamzenForPowerline";
+                        style = "Regular";
+                    };
+                    bold = {
+                        family = "TamzenForPowerline";
+                        style = "Bold";
+                    };
+                    italic = {
+                        family = "TamzenForPowerline";
+                        style = "Regular";
+                    };
+                    size = 12;
+                };
+                draw_bold_text_with_bright_colors = false;
+                background_opacity = 0.9;
+                key_bindings = [
+                    {
+                        key = "V";
+                        mods = "Control|Shift";
+                        action = "Paste";
+                    }
+                    {
+                        key = "C";
+                        mods = "Control|Shift";
+                        action = "Copy";
+                    }
+                    {
+                        key = "Up";
+                        mods = "Control|Shift";
+                        action = "ScrollPageUp";
+                    }
+                    {
+                        key = "Down";
+                        mods = "Control|Shift";
+                        action = "ScrollPageDown";
+                    }
+                ];
+
+                custom_cursor_colors = true;
+
+                cursor = {
+                    style = "Beam";
+                };
+
+                # Base16 Material Palenight 256 - alacritty color config{{{
+                # Nate Peterson
+                colors = {
+                    # Default colors
+                    primary = {
+                        background = "0x292d3e";
+                        foreground = "0x959dcb";
+                    };
+                    # Colors the cursor will use if `custom_cursor_colors` is true
+                    cursor = {
+                        text = "0x292d3e";
+                        cursor = "0x89ddff";
+                    };
+                    # Normal colors
+                    normal = {
+                        black =   "0x292d3e";
+                        red =     "0xf07178";
+                        green =   "0xc3e88d";
+                        yellow =  "0xffcb6b";
+                        blue =    "0x82aaff";
+                        magenta = "0xc792ea";
+                        cyan =    "0x89ddff";
+                        white =   "0x959dcb";
+                    };
+                    # Bright colors
+                    bright = {
+                        black =   "0x676e95";
+                        red =     "0xf07178";
+                        green =   "0xc3e88d";
+                        yellow =  "0xffcb6b";
+                        blue =    "0x82aaff";
+                        magenta = "0xc792ea";
+                        cyan =    "0x89ddff";
+                        white =   "0xffffff";
+                    };
+                    indexed_colors = [
+                        { 
+                            index = 16;
+                            color = "0xf78c6c";
+                        }
+                        { 
+                            index = 17;
+                            color = "0xff5370"; 
+                        }
+                        { 
+                            index = 18;
+                            color = "0x444267"; 
+                        }
+                        { 
+                            index = 19;
+                            color = "0x32374d"; 
+                        }
+                        { 
+                            index = 20;
+                            color = "0x8796b0";
+                        }
+                        { 
+                            index = 21; 
+                            color = "0x959dcb";
+                        }
+                    ];
+                };# }}}
+
+            };
+        };# }}}
 
         # tmux{{{
         tmux = {
@@ -662,27 +852,27 @@ in
 
                 fonts = {
                     default_family = "SFNS Diplay";
-                    web.family.fixed = "Monoid Nerd Font Mono";
+                    web.family.fixed = "TamzenForPowerline";
                     completion = {
-                        category = "9pt Monoid Nerd Font";
-                        entry = "9pt Monoid Nerd Font";
+                        category = "13pt TamzenForPowerline";
+                        entry = "13pt TamzenForPowerline";
                     };
-                    contextmenu = "9pt Monoid Nerd Font";
-                    debug_console = "9pt Monoid Nerd Font";
+                    contextmenu = "13pt TamzenForPowerline";
+                    debug_console = "13pt TamzenForPowerline";
                     default_size = "9pt";
-                    downloads = "9pt Monoid Nerd Font";
-                    hints = "9pt Monoid Nerd Font";
-                    keyhint = "9pt Monoid Nerd Font";
+                    downloads = "13pt TamzenForPowerline";
+                    hints = "13pt TamzenForPowerline";
+                    keyhint = "13pt TamzenForPowerline";
                     messages = {
-                        error = "9pt Monoid Nerd Font";
-                        info = "9pt Monoid Nerd Font";
-                        warning = "9pt Monoid Nerd Font";
+                        error = "13pt TamzenForPowerline";
+                        info = "13pt TamzenForPowerline";
+                        warning = "13pt TamzenForPowerline";
                     };
-                    prompts = "9pt Monoid Nerd Font";
-                    statusbar = "9pt Monoid Nerd Font";
-                    #tabs.selected = "9pt Monoid Nerd Font";
-                    #tabs.unselected = "9pt Monoid Nerd Font";
-                    tabs = "9pt Monoid Nerd Font";
+                    prompts = "13pt TamzenForPowerline";
+                    statusbar = "13pt TamzenForPowerline";
+                    #tabs.selected = "13pt TamzenForPowerline";
+                    #tabs.unselected = "13pt TamzenForPowerline";
+                    tabs = "13pt TamzenForPowerline";
                 };
 
                 # colors{{{
@@ -900,8 +1090,11 @@ in
                 add_newline = true;
 
                 character = {
-                    style_success = "bold #c792ea";
+                    style_success = "#c792ea";
                     use_symbol_for_status = true;
+                    symbol = ">";
+                    vicmd_symbol = "<";
+                    error_symbol = "☓";
                 };
 
                 directory = {
@@ -947,7 +1140,10 @@ in
         #".scripts/pymodoro.py".source = pkgs.writeScript "pymodoro.py" (builtins.readFile ( pkgs.fetchurl {
             #url = "https://raw.githubusercontent.com/dattanchu/pymodoro/master/pymodoro/pymodoro.py";
             #sha256 = "076gd0kkc3mn1rkw1hmhxf9iiyl0qz4rs5mjlaqpby3ww14dp1mn";
+        # emojis
+        ".scripts/UnicodeData.txt".source = ../scripts/UnicodeData.txt;
         #} ) );
+
         # }}}
 
         #Coc{{{
@@ -1080,7 +1276,7 @@ in
             bold="on"
             underline_enabled="on"
             underline_char="-"
-            separator=" "
+            separator="\t ="
             block_range=(0 15)
             color_blocks="on"
             block_width=3
@@ -1089,7 +1285,7 @@ in
             image_backend="ascii"
             image_source="auto"
             ascii_distro="nixos"
-            ascii_colors=(4 6)
+            ascii_colors=(distro)
             ascii_bold="off"
             gap=3
             stdout="off"
@@ -1109,10 +1305,33 @@ in
             </fontconfig>
         '';
 
+        ".config/fontconfig/conf.d/10-symbols.conf".text = ''
+            <?xml version="1.0"?>
+            <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+            <fontconfig>
+                <alias>
+                    <family>TamzenForPowerline</family>
+                    <prefer>
+                        <family>GohuFont Nerd Font</family> 
+                        <family>Apple Color Emoji</family>
+                    </prefer>
+                </alias>
+            </fontconfig>
+        '';
+
         ".config/fontconfig/conf.d/65-nonlatin.conf".text = ''
             <?xml version="1.0"?>
             <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
             <fontconfig>
+                <!-- Default font for the ja_JP locale (no fc-match pattern) -->
+                <match>
+                    <test compare="contains" name="lang">
+                        <string>ja</string>
+                    </test>
+                    <edit mode="prepend" name="family">
+                        <string>Noto Sans CJK JP</string>
+                    </edit>
+                </match>
                 <alias>
                     <family>serif</family>
                     <prefer>
@@ -1248,6 +1467,7 @@ in
 
     # xresources config{{{
     xresources.properties = {
+        "Xft.dpi" = 96;
     };
     # }}}
 
@@ -1291,6 +1511,7 @@ in
                 config = config.nixpkgs.config;
             };
             kitty = unstable.kitty;
+            fish = unstable.fish;
         })
     ];
     # }}}

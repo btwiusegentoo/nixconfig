@@ -52,6 +52,8 @@ in
             ./sshconfig.nix
           # import home-manager module
             (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/release-20.03.tar.gz}/nixos")
+          # import unstable doas
+            (import "${builtins.fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz}/nixos/modules/security/doas.nix")
         ];
     # }}}
 
@@ -60,7 +62,6 @@ in
     # $ nix search wget
     environment.systemPackages = with pkgs; [
         wget
-        sudo
         git
         bat
         unstable.neovim
@@ -75,9 +76,9 @@ in
         cachix
         unstable.ipad_charge
         mosh-master
-        unstable.sudo
         fish
         pypi2nix
+        home-manager
         # deps
         libffi
         xorg.libxcb
@@ -113,6 +114,12 @@ in
     };
 # }}}
 
+    zramSwap = {
+        enable = true;
+        algorithm = "lzo";
+        memoryPercent = 60;
+    };
+
     #Networking{{{
     networking.hostName = "nixos"; # Define your hostname.
     # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -135,13 +142,14 @@ in
         enableGhostscriptFonts = true;
         fonts = with pkgs; [
             corefonts
-            nerdfonts
+            (nerdfonts.override { fonts = ["Gohu"]; })
+            unstable.tamzen
             san-francisco-font 
             apple-color-emoji
             noto-fonts-cjk
         ];
     };
-    /*}}}*/
+    #}}}
 
     # Select internationalisation properties.{{{
     i18n.defaultLocale = "en_US.UTF-8";
@@ -237,17 +245,21 @@ in
         users.btw = import ./nixpkgs/home.nix;
     };
 
+
     # Define a user account. Don't forget to set a password with ‘passwd’.{{{
     users.users.btw = {
         isNormalUser = true;
-        extraGroups = [ "wheel" "input" ]; # Enable ‘sudo’ for the user.
+        extraGroups = [ "wheel" "input" ];
         shell = pkgs.fish;
     };
-    security.sudo = {
+    # use doas instead of sudo
+    security.sudo.enable = false;
+    security.doas = {
         enable = true;
-        configFile = ''
-            %wheel  ALL=(ALL:ALL)   FOLLOW: ALL
-        '';
+        wheelNeedsPassword = true;
+        extraRules = [
+            { groups = [ "wheel" ]; noPass = false; keepEnv = true; persist = true;}
+        ];
     };
     nix.allowedUsers = [ "@wheel" ];
     # }}}
@@ -282,7 +294,6 @@ in
     # }}}
 
     environment.etc."wallpapers/default.png".source = ./wallpaper.png;
-
     # I will not delete just to make a example.
     # use pkgs.writeScript to make executable.
     #environment.etc."lightdm/xrandr.sh".source = pkgs.writeScript "xrandr.sh" ''
@@ -309,6 +320,8 @@ in
         unstable = import unstableTarball {
             config = config.nixpkgs.config;
         };
+        nerdfonts = unstable.nerdfonts;
+        doas = unstable.doas;
         })
 
         (import ./overlays/packages.nix)

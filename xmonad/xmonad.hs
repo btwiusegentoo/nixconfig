@@ -15,6 +15,7 @@ import           XMonad.Prompt
 import           XMonad.Prompt.FuzzyMatch
 import           XMonad.Prompt.Man
 import           XMonad.Prompt.Shell
+import           XMonad.Prompt.Unicode
 import           XMonad.Util.NamedScratchpad
 import           XMonad.Util.Run
 import           XMonad.Util.SpawnOnce
@@ -25,8 +26,10 @@ import qualified XMonad.StackSet                    as W
 
 -- variables{{{
 myModMask       = mod4Mask
-myTerminal      = "kitty --single-instance"
-myFont = "xft:Monoid Nerd Font Mono:pixelsize=14:antialias=true:hinting=false"
+myTerminal      = "alacritty"
+myFont = "xft:TamzenForPowerline:size=14:antialias=true:hinting=false"
+myEmojiFont = "xft:Apple Color Emoji:size=14"
+myPromptHeight = 30
 myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 myClickJustFocuses :: Bool
@@ -35,7 +38,7 @@ myBorderWidth   = 1
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 myNormalBorderColor  = "#292D3E"
 myFocusedBorderColor = "#c792ea"
-myGaps = spacingRaw True (Border 2 2 2 2) True (Border 2 2 2 2) True
+myGaps = spacingRaw True (Border 4 4 4 4) True (Border 4 4 4 4) True
 -- }}}
 
 -- keybindings{{{
@@ -47,7 +50,8 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     , ((modm .|. controlMask, xK_s      ), namedScratchpadAction myScratchPads "mixer") -- sound mixer scratchpad
     , ((modm .|. controlMask, xK_h      ), namedScratchpadAction myScratchPads "ytop")  -- ytop scratchpad
     , ((modm .|. controlMask, xK_n      ), namedScratchpadAction myScratchPads "nnn")   -- file manager scratchpad
-    , ((modm .|. controlMask, xK_m      ), manPrompt myXPConfig)
+    , ((modm .|. controlMask, xK_m      ), manPrompt myXPConfig) -- search manpage
+    , ((modm .|. controlMask, xK_e      ), mkUnicodePrompt "xsel" ["-b"] "/home/btw/.scripts/UnicodeData.txt" myEmojiXPConfig) -- emoji->clipboard
     , ((modm,                 xK_b      ), spawn "qutebrowser")                     -- launch qutebrowser
     , ((modm,                 xK_p      ), spawn "touch ~/.cache/pomodoro_session") -- start pomodoro
     , ((modm .|. shiftMask,   xK_p      ), spawn "rm ~/.cache/pomodoro_session")    -- stop pomodoro
@@ -125,15 +129,31 @@ myXPKeymap = M.fromList $
 -- prompt config{{{
 myXPConfig = def
         { font = myFont
-        , bgColor = "#202331"
-        , fgColor = "#676E95"
+        , bgColor = "#303348"
+        , fgColor = "#FFFFFF"
         , bgHLight = "#444267"
         , fgHLight = "#A6ACCD"
         , borderColor = "#2b2a3e"
         , promptKeymap = myXPKeymap
         , promptBorderWidth = 0
         , position = Top
-        , height = 22
+        , height = myPromptHeight
+        , autoComplete = Nothing
+        , searchPredicate = fuzzyMatch
+        , alwaysHighlight = True
+        }
+
+myEmojiXPConfig = def
+        { font = myEmojiFont
+        , bgColor = "#303348"
+        , fgColor = "#FFFFFF"
+        , bgHLight = "#444267"
+        , fgHLight = "#A6ACCD"
+        , borderColor = "#2b2a3e"
+        , promptKeymap = myXPKeymap
+        , promptBorderWidth = 0
+        , position = Top
+        , height = myPromptHeight
         , autoComplete = Nothing
         , searchPredicate = fuzzyMatch
         , alwaysHighlight = True
@@ -170,8 +190,8 @@ myScratchPads = [ NS "terminal" spawnTerm  findTerm  manageTerm
         centralt    = 0.95 - centralh
         centrall    = 0.95 - centralw
 
-        spawnTerm   = myTerminal ++ " --name=terminalScratchpad"
-        findTerm    = resource   =? "terminalScratchpad"
+        spawnTerm   = myTerminal ++ " --title=terminalScratchpad"
+        findTerm    = title   =? "terminalScratchpad"
         manageTerm  = customFloating $ W.RationalRect l t w h
             where
                 h   = 0.3
@@ -179,16 +199,16 @@ myScratchPads = [ NS "terminal" spawnTerm  findTerm  manageTerm
                 t   = 0
                 l   = (1-w)/2
 
-        spawnMixer  = myTerminal ++ " --name=mixerScratchpad" ++ " -e ncpamixer"
-        findMixer   = resource   =? "mixerScratchpad"
+        spawnMixer  = myTerminal ++ " --title=mixerScratchpad" ++ " -e ncpamixer"
+        findMixer   = title   =? "mixerScratchpad"
         manageMixer = customFloating $ W.RationalRect centrall centralt centralw centralh
 
-        spawnytop   = myTerminal ++ " --name=ytopScratchpad"  ++ " -e ytop"
-        findytop    = resource   =? "ytopScratchpad"
+        spawnytop   = myTerminal ++ " --title=ytopScratchpad"  ++ " -e ytop"
+        findytop    = title   =? "ytopScratchpad"
         manageytop  = customFloating $ W.RationalRect centrall centralt centralw centralh
 
-        spawnnnn    = myTerminal ++ " --name=nnnScratchpad"   ++ " -e nnn -a"
-        findnnn     = resource   =? "nnnScratchpad"
+        spawnnnn    = myTerminal ++ " --title=nnnScratchpad"   ++ " -e nnn -a"
+        findnnn     = title   =? "nnnScratchpad"
         managennn   = customFloating $ W.RationalRect centrall centralt centralw centralh
 -- }}}
 
@@ -200,13 +220,15 @@ myManageHook = composeAll
 
 -- loghook{{{
 myLogHook h =   dynamicLogWithPP xmobarPP
-                { ppOutput   = hPutStrLn h
-                , ppSort     = fmap (namedScratchpadFilterOutWorkspace.) (ppSort def) -- hide nsp
-                , ppCurrent  = xmobarColor "#ab47bc" "" .wrap "[" "]" -- Current workspace
-                , ppVisible  = xmobarColor  "#414863" ""              -- workspace visible
-                , ppLayout   = xmobarColor "#82aaff" ""
-                , ppSep      = " \63192 "
-                , ppTitle    = mempty
+                { ppOutput            = hPutStrLn h
+                , ppSort              = fmap (namedScratchpadFilterOutWorkspace.) (ppSort def) -- hide nsp
+                , ppCurrent           = xmobarColor "#c792ea" "" .wrap "[" "]" -- Current workspace
+                , ppVisible           = xmobarColor "#ab47bc" "" .wrap "|" "|" -- workspace visible
+                , ppHidden            = xmobarColor "#ab47bc" "" .wrap "|" "|"
+                , ppHiddenNoWindows   = xmobarColor "#FFFFFF" ""
+                , ppLayout            = xmobarColor "#82aaff" ""
+                , ppSep               = " | "
+                , ppTitle             = mempty
                 }
 -- }}}
 
