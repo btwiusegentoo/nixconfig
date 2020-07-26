@@ -3,7 +3,7 @@
 { config, pkgs, lib, ... }:
 
 let
-    plugins = pkgs.callPackage ./plugins.nix {};
+    plugins = pkgs.callPackage ./vimplugins.nix {};
 
     # use unstable without addding channel manually.{{{
     unstableTarball =
