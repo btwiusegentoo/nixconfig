@@ -4,6 +4,7 @@ import           Control.Arrow                      (first)
 import           Data.Monoid
 import           System.Exit
 import           XMonad                             hiding ((|||))
+import           XMonad.Actions.Navigation2D
 import           XMonad.Hooks.DynamicLog
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Layout.BinarySpacePartition
@@ -71,14 +72,16 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     , ((modm .|. shiftMask,   xK_t      ), withFocused $ windows . W.sink) -- unfloat window
     , ((modm .|. shiftMask,   xK_space  ), setLayout $ XMonad.layoutHook conf)
     , ((modm,                 xK_r      ), refresh)
+    , ((modm,                 xK_h      ), windowGo L False) -- Focus horizontally like i3wm. it's useful in some layouts
+    , ((modm,                 xK_l      ), windowGo R False) -- ⬆
     , ((modm,                 xK_j      ), windows W.focusDown)
-    , ((modm,                 xK_k      ), windows W.focusUp  )
+    , ((modm,                 xK_k      ), windows W.focusUp)
     , ((modm,                 xK_g      ), windows W.focusMaster)
     , ((modm .|. shiftMask,   xK_g      ), windows W.swapMaster)
     , ((modm .|. shiftMask,   xK_j      ), windows W.swapDown  )
     , ((modm .|. shiftMask,   xK_k      ), windows W.swapUp    )
-    , ((modm,                 xK_h      ), sendMessage Shrink)
-    , ((modm,                 xK_l      ), sendMessage Expand)
+    , ((modm .|. shiftMask,   xK_h      ), sendMessage Shrink)
+    , ((modm .|. shiftMask,   xK_l      ), sendMessage Expand)
     , ((modm              ,   xK_comma  ), sendMessage (IncMasterN 1))
     , ((modm              ,   xK_period ), sendMessage (IncMasterN (-1)))
     , ((modm              ,   xK_comma  ), sendMessage Swap)
@@ -244,7 +247,7 @@ myEventHook = mempty
 main = do
     h <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
 
-    xmonad $ docks def {
+    xmonad $ docks $ withNavigation2DConfig def $ def {
         -- simple stuff
             terminal           = myTerminal,
             focusFollowsMouse  = myFocusFollowsMouse,

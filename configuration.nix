@@ -178,6 +178,7 @@ in
     services = {
         fstrim.enable = true;
         blueman.enable = true;
+        gnome3.gnome-keyring.enable = true;
     };
 
     # Enable sound.
@@ -242,7 +243,7 @@ in
     home-manager = {
         useUserPackages=true;
         verbose = true;
-        users.btw = import ./nixpkgs/home.nix;
+        users.btw = import ./home/home.nix;
     };
 
 
