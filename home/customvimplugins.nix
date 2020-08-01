@@ -162,16 +162,6 @@ in {
             sha256 = "1qr8dvdpzlcva8nmk9ci4063y27gkakf7mldam4dl8m78xh7jdjz";
         };
     };
-
-    "material-vim" = buildVimPlugin {
-        name = "material-vim";
-        src = fetchFromGitHub {
-            owner = "kaicataldo";
-            repo = "material.vim";
-            rev = "66d7c70c4429d85da60fb7d9aad84fea94ae1842";
-            sha256 = "03qj8fbj9ir3z0bz5sb4c2ffb1sf775qpbd7m5zn23y8nnhhd2my";
-        };
-    };
     
 }
 

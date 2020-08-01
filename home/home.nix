@@ -333,7 +333,6 @@ in
             coc-pairs
             coc-tabnine
             palenight-vim
-            #material-vim
             nvim-colorizer-lua #norcalli/nvim-colorizer.lua
             indentLine
             vista-vim
@@ -341,7 +340,6 @@ in
             vim-fugitive
             vim-signify
             nerdcommenter
-            #airline
             lightline-vim
             lightline-ale
             lightline-bufferline
@@ -456,7 +454,7 @@ in
             # Colors the cursor will use if `custom_cursor_colors` is true
             cursor = {
                 text = "0x292d3e";
-                cursor = "0xab47bc";
+                cursor = "0xa6accd";
             };
             # Normal colors
             normal = {

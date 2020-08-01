@@ -8,7 +8,10 @@ filetype plugin indent on
 set nu rnu
 " use marker fold. still better to write modeline everytime.
 set foldmethod=marker
+" autocompletion opacity
 set pumblend=10
+" floating windows(like fzf) opacity
+set winblend=10
 set wildmenu
 set showtabline=2
 set noshowmode
@@ -40,21 +43,13 @@ let g:nix_recommended_style=0
 
 let g:auto_comma_or_semicolon = 1
 let g:palenight_terminal_italics = 1
-let g:material_terminal_italics = 1
-let g:material_theme_style = 'palenight'
 colorscheme palenight
 set termguicolors
 " custom colors
 hi! Normal guibg=NONE
-"hi! NonText guibg=NONE guifg=NONE
-"hi! Folded guibg=NONE guifg=#c792ea
 hi! SignColumn guibg=NONE
-"hi! LineNr guibg=NONE guifg=#c792ea
-"hi! CursorLineNr guifg=#ab47bc
-"hi! MatchParen guibg=#c792ea guifg=#202331
-"hi! TablineSel guibg=#ab47bc
-"hi! StatusLine guibg=#34324a guifg=#ab47bc
-"hi! Pmenu guibg=#34324a guifg=#82aaff
+hi! LineNr guibg=NONE guifg=#a6accd
+hi! CursorLineNr guifg=#82aaff
 " remove annoying tilde(EndOfBuffer)
 let &fcs='eob: '
 lua <<EOF
@@ -276,8 +271,7 @@ let s:palette = g:lightline#colorscheme#palenight#palette
 let s:palette.tabline.tabsel = [ [ '#292D3E', '#82b1ff', 'NONE', 'NONE' ] ]
 let s:palette.tabline.left  = [ [ '#bfc7d5', '#3E4452', 'NONE', 'NONE'] ]
 let s:palette.tabline.right  = [ [ '#292d3e', '#82b1ff', 'NONE', 'NONE' ] ]
-"let s:palette.tabline.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ]]
-"unlet s:palette
+unlet s:palette
 
 function! MyFiletype()
     return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ""
