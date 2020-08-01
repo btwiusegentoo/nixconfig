@@ -82,10 +82,18 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     , ((modm .|. shiftMask,   xK_k      ), windows W.swapUp    )
     , ((modm .|. shiftMask,   xK_h      ), sendMessage Shrink)
     , ((modm .|. shiftMask,   xK_l      ), sendMessage Expand)
-    , ((modm              ,   xK_comma  ), sendMessage (IncMasterN 1))
-    , ((modm              ,   xK_period ), sendMessage (IncMasterN (-1)))
-    , ((modm              ,   xK_comma  ), sendMessage Swap)
-    , ((modm              ,   xK_period ), sendMessage Rotate)
+    --, ((modm              ,   xK_comma  ), sendMessage (IncMasterN 1))
+    --, ((modm              ,   xK_period ), sendMessage (IncMasterN (-1)))
+    , ((modm              ,   xK_comma  ), do
+        layout <- getActiveLayoutDescription
+        case layout of
+             "Spacing BSP" -> sendMessage Swap
+             _             -> sendMessage (IncMasterN 1))
+    , ((modm              ,   xK_period ), do
+        layout <- getActiveLayoutDescription
+        case layout of
+             "Spacing BSP" -> sendMessage Rotate
+             _             -> sendMessage (IncMasterN (-1)))
     , ((modm              ,   xK_o      ), spawn "light-locker-command --lock")
     , ((modm .|. shiftMask,   xK_q      ), io exitSuccess)
     , ((modm              ,   xK_q      ), spawn "xmonad --recompile; xmonad --restart")
@@ -126,6 +134,10 @@ myXPKeymap = M.fromList $
         , (xK_Down, moveHistory W.focusUp')
         , (xK_Up, moveHistory W.focusDown')
         , (xK_Escape, quit)
+        ]
+        ++
+        map (first $ (,) controlMask)
+        [ (xK_v, pasteString)
         ]
 -- }}}
 
@@ -243,6 +255,15 @@ myStartupHook = do
 -- }}}
 
 myEventHook = mempty
+
+-- functions {{{
+
+getActiveLayoutDescription :: X String
+getActiveLayoutDescription = do
+    workspaces <- gets windowset
+    return $ description . W.layout . W.workspace . W.current $ workspaces
+
+-- }}}
 
 main = do
     h <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"

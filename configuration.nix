@@ -2,15 +2,7 @@
 { config, pkgs, fetchgit, ... }:
 
 let
-
-    # use unstable without addding channel manually.{{{
-    unstableTarball =
-        fetchTarball
-        https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz;
-
-    # make easier to use unstable below
     unstable = pkgs.unstable;
-    # }}}
 
     # Python packages{{{
     my-python-packages = python-packages: with python-packages; [
@@ -48,8 +40,8 @@ in
     imports =
         [ # Include the results of the hardware scan.
             ./hardware-configuration.nix
-          # Includes private ssh config.
-            ./sshconfig.nix
+          # Include secrets
+            ./secrets/sshconfig.nix
           # import home-manager module
             (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/release-20.03.tar.gz}/nixos")
           # import unstable doas
@@ -70,6 +62,7 @@ in
         unstable.openssh
         unzip
         nix-prefetch-git
+        nix-prefetch-github
         gnumake
         gcc
         python-with-my-packages
@@ -116,7 +109,7 @@ in
 
     zramSwap = {
         enable = true;
-        algorithm = "lzo";
+        algorithm = "zstd";
         memoryPercent = 60;
     };
 
@@ -141,9 +134,9 @@ in
         enableFontDir = true;
         enableGhostscriptFonts = true;
         fonts = with pkgs; [
-            corefonts
-            (nerdfonts.override { fonts = ["Gohu"]; })
+            (nerdfonts.override { fonts = ["IBMPlexMono"]; })
             unstable.tamzen
+            #(tamzen-nerdfont.override { size = "10x20";})
             san-francisco-font 
             apple-color-emoji
             noto-fonts-cjk
@@ -183,6 +176,7 @@ in
 
     # Enable sound.
     sound.enable = true;
+    #}}}
 
     #xserver{{{
     services.xserver = {
@@ -235,7 +229,6 @@ in
         autoRepeatDelay = 200;
         autoRepeatInterval = 25;
     };# }}}
-    #}}}
 
     location.provider = "geoclue2";
 
@@ -304,29 +297,9 @@ in
 
     # }}}
 
-    # nixpkgs config{{{
-    nixpkgs.config = {
-        allowUnfree = true;
-    };
-    # }}}
+    nixpkgs.config = import ./nixpkgs/config.nix;
 
-    nixpkgs.overlays = [# {{{
-
-        (self: super: {
-        neovim = super.neovim.override {
-        viAlias = true;
-        vimAlias = true;
-        };
-        # use packages from nixos-unstable
-        unstable = import unstableTarball {
-            config = config.nixpkgs.config;
-        };
-        nerdfonts = unstable.nerdfonts;
-        doas = unstable.doas;
-        })
-
-        (import ./overlays/packages.nix)
-    ];# }}}
+    nixpkgs.overlays = import ./overlays/all-overlays.nix { inherit pkgs; };
 
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions

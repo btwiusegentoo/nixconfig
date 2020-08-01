@@ -1,34 +1,29 @@
-{ stdenv, fetchurl }:
+{ stdenv, pkgs, ... }:
 
 stdenv.mkDerivation rec {
-    name = "apple-color-emoji-${version}";
-    version = "2020-06-30";
+    name = "apple-color-emoji";
+    version = "2020-04-13";
 
-    src = fetchurl {
-        url =  https://github.com/samuelngs/apple-emoji-linux/releases/download/latest/AppleColorEmoji.ttf;
-        sha256 = "0xaclj29b7xgqin8izkabrm2znp1m01894fngyxrhwbf9nbncp4g";
+    src = pkgs.fetchFromGitHub {
+        owner = "samuelngs";
+        repo = "apple-emoji-linux";
+        rev = "8c247a77eb0abe9fca1011a6ab75520dc761ff37";
+        sha256 = "1r0laf5g4gjrrv2xzr1l5bvkn7px9k02p6wknxaafm3mrmpxrk23";
     };
 
-    phases = [ "unpackPhase" "installPhase" ];
+    nativeBuildInputs = with pkgs; [ which imagemagick optipng zopfli pngquant ]
+                ++ (with python3Packages; [ python fonttools nototools ]);
 
-    sourceRoot = "./";
-
-    unpackCmd = ''
-        cp $curSrc ./AppleColorEmoji.ttf
-    '';
+    enableParallelBuilding = true;
 
     installPhase = ''
-        mkdir -p $out/share/fonts/apple-color-emoji
-        cp *.ttf $out/share/fonts/apple-color-emoji
+        install -m444 -Dt $out/share/fonts/apple-color-emoji AppleColorEmoji.ttf 
     '';
 
-    meta = {
-        description = "Apple Color Emoji is a color typeface used by iOS and macOS to display emoji";
-        homepage = https://github.com/samuelngs/apple-emoji-linux;
-        license = stdenv.lib.licenses.asl20;
-        platforms = stdenv.lib.platforms.all;
-        maintainers = [];
+    meta = with stdenv.lib; {
+        description = "Color typeface used by iOS and macOS to display emoji";
+        homepage = "https://github.com/samuelngs/apple-emoji-linux";
+        license = [ licenses.ofl licenses.asl20 ];
+        maintainers = with maintainers; [ btwiusegentoo ];
     };
-
 }
-# vim: foldmethod=marker shiftwidth=4 ft=nix:

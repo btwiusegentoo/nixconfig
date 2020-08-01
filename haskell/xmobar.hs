@@ -3,7 +3,7 @@ import           Xmobar
 
 config :: Config
 config = defaultConfig {
-        font = "xft:TamzenForPowerline-14:style=regular,GohuFont Nerd Font:size=9"
+        font = "xft:TamzenForPowerline-14:style=regular,GohuFont Nerd Font:size=12"
        , additionalFonts = []
        , borderColor = "#2b2a3e"
        , border = BottomB
@@ -26,13 +26,17 @@ config = defaultConfig {
                     , Run $ Date "%a %m/%_d %H:%M:%S" "date" 10
                     , Run $ Com "uname" [ "-r" ] "" 36000
                     , Run $ CommandReader "pymodoro" "pomodoro"
-                    , Run $ Volume "default" "Master" [] 5
+                    , Run $ Volume "default" "Master" ["-t", "<status> <volume>%", "--",
+                                                       "-O", "墳", -- on
+                                                       "-o", "\61478", -- off
+                                                       "-C", "#FFFFFF",
+                                                       "-c", "#f07178"] 5
                     , Run StdinReader
                     ]
        , sepChar = "%"
        , alignSep = "}{"
        , template = " %StdinReader% }\
-                    \{  <fc=#f07178>%cpu%</fc> | <fc=#80cbc4>%memory% %swap%</fc> | <fc=#f78c6c>\61555 %date%</fc> | <fc=#9cc4ff>%default:Master%</fc>|<fc=#f07178> \57345 %pomodoro%</fc> \
+                    \{  <fc=#f07178>%cpu%</fc> | <fc=#80cbc4>%memory% %swap%</fc> | <fc=#f78c6c>\61555 %date%</fc> | <fc=#9cc4ff>%default:Master%</fc> |<fc=#f07178> \57345 %pomodoro%</fc> \
                     \| <fc=#ffcb6b>\61820 %uname% </fc><fc=#82aaff>\62227 </fc> <fc=#c792ea>\58911 </fc> "
        }
 

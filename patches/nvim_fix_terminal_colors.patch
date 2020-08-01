@@ -1,0 +1,12 @@
+diff --git a/src/nvim/os/pty_process_unix.c b/src/nvim/os/pty_process_unix.c
+index f0bc13783..26569d6fc 100644
+--- a/src/nvim/os/pty_process_unix.c
++++ b/src/nvim/os/pty_process_unix.c
+@@ -160,7 +160,6 @@ static void init_child(PtyProcess *ptyproc)
+   os_unsetenv("COLUMNS");
+   os_unsetenv("LINES");
+   os_unsetenv("TERMCAP");
+-  os_unsetenv("COLORTERM");
+   os_unsetenv("COLORFGBG");
+
+   signal(SIGCHLD, SIG_DFL);
