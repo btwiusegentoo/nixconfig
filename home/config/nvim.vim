@@ -110,7 +110,7 @@ let g:dashboard_custom_header = [
 \"     ╙╬╢╢            ╙╫╫╫╫╫╫╨ ",
 \"       ╙╬              ╫╫╩ ",
 \"",
-\"                                                                                                                            version: ". g:neovim_version ."",
+\"                                                                                                                version: ". g:neovim_version ."",
 \"",
 \"",
 \ ]
