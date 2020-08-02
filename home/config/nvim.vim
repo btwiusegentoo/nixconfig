@@ -2,6 +2,9 @@
 " get neovim version
 let g:neovim_version = matchstr(execute('version'), 'NVIM v\zs[^\n]*')
 
+" set env variable to init.vim absolute path(with symlink resolved)
+let $NVIM_CONFIG_PATH = resolve(expand('<sfile>:p'))
+
 set modelines=5
 syntax on
 filetype plugin indent on
@@ -163,6 +166,7 @@ let g:which_key_map_space.P = 'Same as p but puts text before the cursor'
 let g:which_key_map_space.yy = 'Yank entire line'
 let g:which_key_map_space.Y = 'Same as yy'
 let g:which_key_map_space.t = 'Open terminal in new buffer'
+let g:which_key_map_space.r = 'Reload neovim config'
 let g:which_key_map_space.lg = 'LazyGit'
 
 let g:which_key_map_space.f = {
@@ -298,6 +302,8 @@ vnoremap <silent> <localleader> :<c-u>WhichKeyVisual ','<CR>
 
 " save(spc w)
 nnoremap <Leader>w :w<CR>
+" source init.vim without exiting neovim
+nmap <silent> <leader>r :so $NVIM_CONFIG_PATH<CR>
 "move window with ctrlhjkl
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
