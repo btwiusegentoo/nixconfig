@@ -67,6 +67,7 @@ in
     unstable.ytop
     ncpamixer
     unstable.mps-youtube
+    unstable.lazygit
     # gui apps
     gimp
     krita
@@ -86,6 +87,7 @@ in
     libnotify
     xsel # used by xmonad emoji prompt
     unstable.youtube-dl
+    unstable.neovim-remote
     # misc
     glxinfo
     xclip
@@ -310,6 +312,19 @@ in
             set -U fish_pager_color_prefix white --bold #--underline
             set -U fish_pager_color_progress brwhite --background=cyan
 
+            if [ -n "$NVIM_LISTEN_ADDRESS" ];
+                alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+            end
+
+            if [ -n "$NVIM_LISTEN_ADDRESS" ];
+                export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+                export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+            else
+                export VISUAL="nvim"
+                export EDITOR="nvim"
+            end
+
+
             ''; # }}}
 
         };
@@ -321,54 +336,60 @@ in
             viAlias = true;
             vimAlias = true;
             withPython3 = true;
-        # plugins {{{
-        configure.plug.plugins = with unstable.vimPlugins // plugins; [
-            coc-nvim
-            coc-json
-            coc-css
-            coc-snippets
-            coc-clangd
-            coc-prettier
-            coc-html
-            coc-pairs
-            coc-tabnine
-            palenight-vim
-            nvim-colorizer-lua #norcalli/nvim-colorizer.lua
-            indentLine
-            vista-vim
-            vim-sneak
-            vim-fugitive
-            vim-signify
-            nerdcommenter
-            lightline-vim
-            lightline-ale
-            lightline-bufferline
-            #vim-devicons
-            vim-deviconsfork
-            semshi
-            vim-python-pep8-indent
-            vim-fish
-            vim-nix
-            cosco-vim
-            vim-cpp-modern
-            indenthaskell
-            vim-stylishask
-            haskell-vim
-            vim-tmux-navigator
-            tmuxline
-            quick-scope
-            vim-highlightedyank
-            gv-vim
-            tabular
-            dashboard-nvim
-            fzf-vim
-            fzfWrapper
-            vim-which-key
-            indent-blankline
-            sexy-scroller
-        ]; #}}}
+        configure = {
+            # plugins {{{
+            plug.plugins = with unstable.vimPlugins // plugins; [
+                coc-nvim
+                coc-json
+                coc-css
+                coc-snippets
+                coc-clangd
+                coc-prettier
+                coc-html
+                coc-pairs
+                coc-tabnine
+                palenight-vim
+                nvim-colorizer-lua #norcalli/nvim-colorizer.lua
+                indentLine
+                vista-vim
+                vim-sneak
+                vim-fugitive
+                gv-vim
+                #vim-gitgutter
+                nerdcommenter
+                lightline-vim
+                lightline-ale
+                lightline-bufferline
+                #vim-devicons
+                vim-deviconsfork
+                semshi
+                vim-python-pep8-indent
+                vim-fish
+                vim-nix
+                cosco-vim
+                vim-cpp-modern
+                indenthaskell
+                vim-stylishask
+                haskell-vim
+                vim-tmux-navigator
+                tmuxline
+                quick-scope
+                gv-vim
+                tabular
+                dashboard-nvim
+                fzf-vim
+                fzfWrapper
+                vim-which-key
+                indent-blankline
+                sexy-scroller
+                vim-visual-multi
+                nvim-treesitter
+                lazygit-nvim
+            ]; #}}}
 
-            configure.customRC = import ./config/nvim.vim;
+            customRC = import ./config/nvim.vim;
+
+        };
 
         };
         #}}}

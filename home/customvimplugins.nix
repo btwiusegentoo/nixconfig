@@ -162,6 +162,16 @@ in {
             sha256 = "1qr8dvdpzlcva8nmk9ci4063y27gkakf7mldam4dl8m78xh7jdjz";
         };
     };
+
+    "lazygit-nvim" = buildVimPlugin {
+        name = "lazygit-nvim";
+        src = fetchFromGitHub {
+            owner = "kdheepak";
+            repo = "lazygit.nvim";
+            rev = "5b1e22d967ace8caa074c8edd6ce16b02d9bfb95";
+            sha256 = "1vjv8v3prmr59arms59md7i4yg8c0a0hwlknk61sml3925dqndar";
+        };
+    };
     
 }
 

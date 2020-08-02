@@ -40,7 +40,7 @@ set linebreak
 set hidden
 set nobackup
 set nowritebackup
-set updatetime=300
+set updatetime=100
 set shortmess+=c
 set signcolumn=yes
 " use 4 shiftwidth in nix file because I prefer
@@ -57,6 +57,7 @@ hi! LineNr guibg=NONE guifg=#a6accd
 hi! CursorLineNr guifg=#82aaff
 " remove annoying tilde(EndOfBuffer)
 let &fcs='eob: '
+
 lua <<EOF
 require'colorizer'.setup()
 EOF
@@ -155,13 +156,14 @@ let g:which_key_map_space = {} " Define dictionary.
 let g:which_key_map_space.F = 'Format file with coc'
 let g:which_key_map_space.w = 'Save current file'
 let g:which_key_map_space.T = 'Open new buffer'
-let g:which_key_map_space.n = 'Open Vista(tagbar)'
+let g:which_key_map_space.n = 'Open file tree(coc-explorer)'
 let g:which_key_map_space.y = 'Yank selection to clipboard'
 let g:which_key_map_space.p = 'Paste from clipboard'
 let g:which_key_map_space.P = 'Same as p but puts text before the cursor'
 let g:which_key_map_space.yy = 'Yank entire line'
 let g:which_key_map_space.Y = 'Same as yy'
 let g:which_key_map_space.t = 'Open terminal in new buffer'
+let g:which_key_map_space.lg = 'LazyGit'
 
 let g:which_key_map_space.f = {
         \ 'name' : '+FZF',
@@ -199,6 +201,13 @@ let g:which_key_map_space.c = {
         \ 'l': 'Same as c except that the delimiters are aligned down the left side',
         \ 'b': 'Same as c except that the delimiters are aligned down the both sides',
         \ }
+
+let g:which_key_map_space.g = {
+        \ 'name' : '+Git',
+        \ 'g' : 'Open lazygit',
+        \ 'l' : 'Open git log graph'
+        \ }
+
 "}}}
 
 " fzf {{{
@@ -277,10 +286,6 @@ function! MyFileformat()
 endfunction
 "}}}
 
-" airline
-let g:airline_theme = 'palenight'
-let g:airline#extensions#tabline#enabled = 1
-
 "Keybinds{{{
 " set leader and localleader
 let g:mapleader = "\<Space>"
@@ -298,10 +303,8 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
-" open vista(right sidebar)
-nmap <silent> <Leader>n :<C-u>Vista!!<CR>
 " coc-explorer
-map <C-n> :CocCommand explorer<CR>
+map <leader>n :CocCommand explorer<CR>
 "move lines
 nnoremap <A-j> :m .+1<CR>==
 nnoremap <A-k> :m .-2<CR>==
@@ -337,9 +340,6 @@ nnoremap <silent> <Leader>ff :Files<CR>
 nnoremap <silent> <Leader>fl :Lines<CR>
 nnoremap <silent> <Leader>fd :Rg<CR> 
 
-" close fzf with esc
-autocmd! FileType fzf tnoremap <buffer> <esc> <c-c>
-
 " dashboard-nvim
 nmap <Leader>ss :<C-u>SessionSave<CR>
 nmap <Leader>sl :<C-u>SessionLoad<CR>
@@ -349,11 +349,14 @@ inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 nnoremap <leader><S-f>  :call CocAction('format')<CR>
 nnoremap <C-K> :call <SID>show_documentation()<CR>
 
-" terminal
-tnoremap <Esc> <C-\><C-n>
-
 " open terminal
 nnoremap <leader>t :terminal<CR>
+
+" Git
+" open lazygit
+nnoremap <leader>gg :LazyGit<CR>
+" open git log graph
+nnoremap <leader>gl :GV<CR>
 
 "}}}
 
@@ -400,6 +403,27 @@ augroup END
 autocmd TermOpen * IndentLinesDisable
 " disable tabline inside dashboard
 autocmd FileType dashboard set showtabline=0 | autocmd WinLeave <buffer> set showtabline=2
+" highlight yanked text
+autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=1000, on_visual=true}
+
+" map esc to return to normal mode when using neovim terminal
+" If you don't use this if statement, esc key stop working inside plugins that uses floating terminal like fzf, lazygit
+function s:AddTerminalBinds()
+    echom &filetype
+    if &filetype ==# ""
+        tnoremap <Esc> <C-\><C-n>
+    endif
+endfunction
+augroup TerminalBinds
+    autocmd!
+    autocmd TermEnter * call s:AddTerminalBinds()
+augroup END
+
+" enable neovim-remote for lazygit
+" (use split when git commit in lazygit)
+if has('nvim') && executable('nvr')
+  let $GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+endif
 
 " vim: fdm=marker sw=4 ft=vim:
 ''
