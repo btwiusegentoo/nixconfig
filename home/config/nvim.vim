@@ -3,10 +3,13 @@
 let g:neovim_version = matchstr(execute('version'), 'NVIM v\zs[^\n]*')
 
 " functions to source config
-function! SourceConfigCall()
-    call GetConfig()
-    call SourceConfigCommand()
-endfunction
+"! = not
+if !exists("*SourceConfigCall")
+    function! SourceConfigCall()
+        call GetConfig()
+        call SourceConfigCommand()
+    endfunction
+endif
 
 function! GetConfig()
     " reset variable if variable exists
@@ -18,9 +21,11 @@ function! GetConfig()
     let g:nvim_config_path = system('awk "END{print \$(NF-1)}" (which nvim)')
 endfunction
 
-function! SourceConfigCommand()
-    exe "so " . g:nvim_config_path
-endfunction
+if !exists("*SourceConfigCommand")
+    function! SourceConfigCommand()
+        exe "so " . g:nvim_config_path
+    endfunction
+endif
 
 
 set modelines=5
@@ -331,7 +336,7 @@ endfunction
 
 function! MyFugitive()
     let _ = fugitive#head()
-    return strlen(_) ? " "._ : ""
+    return strlen(_) ? " "._ : ""
 endfunction
 
 function! MyFilename()
