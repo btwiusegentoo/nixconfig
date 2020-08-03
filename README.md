@@ -29,7 +29,7 @@ If you are new to nixos, maybe you can get idea how to install neovim plugins an
 <br>
 <h2>Installation</h2>
 <br>
-I don't recommend installing this config, but you can clone inside <code>$HOME/mygit/nixconfig</code> and symlink files and folders to <code>/etc/nixos/</code>. I don't tested but I think home-manager config doesn't have to be inside <code>~/.config/nixpkgs</code> anymore.
+I don't recommend installing this config, but you can clone inside <code>$HOME/.nixconfig</code> and symlink configuration.nix to <code>/etc/nixos/</code>.
 home-manager is configured as module so channel is not needed anymore.
 <br>
 <h2>Summary of Features</h2>
@@ -48,7 +48,7 @@ home-manager is configured as module so channel is not needed anymore.
     <li>NerdFont as fallback(GohuFont)</li>
     <li>Apple emoji</li>
     <li>Apple SF fonts installed</li>
-    <li>Some packages from unstable while running stable branch(without using channel)</li>
+    <li>Some packages from unstable while running stable branch</li>
     <li>It assumes you are using 1080p and scales to WQHD. You will want to disable if you are using other resolution. You can find in home.nix (xsession.profileExtra) If you will change resolution, I think you will also want to change font sizes.</li>
 
 </ul>

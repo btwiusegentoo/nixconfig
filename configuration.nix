@@ -134,7 +134,7 @@ in
         enableFontDir = true;
         enableGhostscriptFonts = true;
         fonts = with pkgs; [
-            (nerdfonts.override { fonts = ["IBMPlexMono"]; })
+            (nerdfonts.override { fonts = ["Gohu"]; })
             unstable.tamzen
             #(tamzen-nerdfont.override { size = "10x20";})
             san-francisco-font 

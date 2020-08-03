@@ -2,8 +2,26 @@
 " get neovim version
 let g:neovim_version = matchstr(execute('version'), 'NVIM v\zs[^\n]*')
 
-" set env variable to init.vim absolute path(with symlink resolved)
-let $NVIM_CONFIG_PATH = resolve(expand('<sfile>:p'))
+" functions to source config
+function! SourceConfigCall()
+    call GetConfig()
+    call SourceConfigCommand()
+endfunction
+
+function! GetConfig()
+    " reset variable if variable exists
+    if exists("g:nvim_config_path")
+        unlet g:nvim_config_path
+    endif
+    " get neovim path
+    " you need fish shell as system shell because of the syntax
+    let g:nvim_config_path = system('awk "END{print \$(NF-1)}" (which nvim)')
+endfunction
+
+function! SourceConfigCommand()
+    exe "so " . g:nvim_config_path
+endfunction
+
 
 set modelines=5
 syntax on
@@ -56,8 +74,11 @@ set termguicolors
 " custom colors
 hi! Normal guibg=NONE
 hi! SignColumn guibg=NONE
+hi! MatchParen guifg=#F07178 guibg=#202331
 hi! LineNr guibg=NONE guifg=#a6accd
 hi! CursorLineNr guifg=#82aaff
+hi! NormalFloat guifg=#A6ACCD guibg=#292D3E
+hi! VertSplit guifg=#4E5579
 " remove annoying tilde(EndOfBuffer)
 let &fcs='eob: '
 
@@ -87,7 +108,7 @@ let g:sneak#label = 1
 let g:indentLine_char = ''
 let g:indentLine_first_char = ''
 let g:indentLine_showFirstIndentLevel = 1
-let g:indentLine_setColors = 0
+let g:indentLine_color_gui = '#4E5579'
 let g:indentLine_fileTypeExclude = [ 'dashboard', 'fzf', 'coc-explorer' ]
 let g:indentLine_bufTypeExclude = [ 'help' ]
 
@@ -120,8 +141,8 @@ let g:dashboard_custom_header = [
 \ ]
 "headercolor
 hi! dashboardHeader guifg=#c3e88d
-hi! dashboardCenter guifg=#c792ea
-hi! dashboardShortcut guifg=#89ddff
+hi! dashboardCenter guifg=#89ddff
+hi! dashboardShortcut guifg=#c792ea
 hi! dashboardFooter guifg=#676E95
 "use fzf in dashboard
 let g:dashboard_default_executive = "fzf"
@@ -131,6 +152,7 @@ let g:dashboard_custom_section = {
 \ 'find_history'         :['  Recently opened files                 SPC f h'],
 \ 'find_word'            :['  Find  word                            SPC f d'],
 \ 'find_file'            :['  Find  File                            SPC f f'],
+\ 'private_config'       :['  Open private configuration            SPC r c']
 \ }
 "}}}
 
@@ -153,7 +175,14 @@ endfunction
 " }}}
 
 " whichkey{{{
-set timeoutlen=150 
+
+" set timeout before show which-key
+set timeoutlen=300
+" set which-key floating window color to same as normal floating window
+hi! WhichKeyFloating guifg=#A6ACCD guibg=#292D3E
+" use floating window for which-key
+let g:which_key_use_floating_win = 1
+
 call which_key#register('<Space>', "g:which_key_map_space")
 let g:which_key_map_space = {} " Define dictionary.
 let g:which_key_map_space.F = 'Format file with coc'
@@ -166,8 +195,6 @@ let g:which_key_map_space.P = 'Same as p but puts text before the cursor'
 let g:which_key_map_space.yy = 'Yank entire line'
 let g:which_key_map_space.Y = 'Same as yy'
 let g:which_key_map_space.t = 'Open terminal in new buffer'
-let g:which_key_map_space.r = 'Reload neovim config'
-let g:which_key_map_space.lg = 'LazyGit'
 
 let g:which_key_map_space.f = {
         \ 'name' : '+FZF',
@@ -191,9 +218,9 @@ let g:which_key_map_space.s = {
 
 let g:which_key_map_space.c = {
         \ 'name' : '+NERDCommenter',
+        \ 'SPC' : 'Toggles the comment state of the selected line(s)',
         \ 'c' : 'Comment out the current line or selected text',
         \ 'n' : 'Same as c but forces nesting',
-        \ 'SPC' : 'Toggles the comment state of the selected line(s)',
         \ 'm': 'Comments the given lines using only one set of multipart delimiters',
         \ 'i': 'Toggles the comment state of the selected line(s) individually',
         \ 's': 'Comments out the selected lines with a pretty block formatted layout',
@@ -209,7 +236,19 @@ let g:which_key_map_space.c = {
 let g:which_key_map_space.g = {
         \ 'name' : '+Git',
         \ 'g' : 'Open lazygit',
-        \ 'l' : 'Open git log graph'
+        \ 'l' : 'Open git log graph',
+        \ }
+
+let g:which_key_map_space.gd = {
+        \ 'name' : '+diff',
+        \ 's' : 'View the staged version of the file side by side with the working tree version',
+        \ 'f' : 'Open git diff of current repo',
+        \ }
+
+let g:which_key_map_space.r = {
+        \ 'name' : '+Configuration',
+        \ 'r' : 'Reload neovim config',
+        \ 'c' : 'Open private configuration',
         \ }
 
 "}}}
@@ -250,18 +289,21 @@ let g:lightline = {
 \ 'colorscheme': 'palenight',
 \ 'active': {
 \   'left': [ [ 'mode', 'paste' ],
-\             [ 'cocstatus', 'currentfunction', 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+\             [ 'cocstatus', 'currentfunction', 'gitbranch', 'readonly', 'filename' ] ],
+\   'right': [ [ 'percent', 'lineinfo' ],
+\              [ 'filetype', 'fileformat', 'fileencoding', 'sky_color_clock' ] ],
 \ },
 \ 'component_function': {
-\   'gitbranch': 'fugitive#head',
+\   'gitbranch': 'MyFugitive',
 \   'cocstatus': 'coc#status',
 \   'currentfunction': 'CocCurrentFunction',
+\   'filename': 'MyFilename',
 \   'filetype': 'MyFiletype',
 \   'fileformat': 'MyFileformat',
 \ },
 \ 'tabline': {
 \   'left': [ ['buffers'] ],
-\   'right': [ ['close'] ]
+\   'right' : [ [ ] ],
 \ },
 \ 'component_expand': {
 \   'buffers': 'lightline#bufferline#buffers'
@@ -269,18 +311,16 @@ let g:lightline = {
 \ 'component_type': {
 \   'buffers': 'tabsel'
 \ },
+\ 'component': {
+\   'sky_color_clock': "%#SkyColorClock#%{' ' . sky_color_clock#statusline() . ' '}%#SkyColorClockTemp# ",
+\ },
+\ 'component_raw': {
+\   'sky_color_clock': 1,
+\ },
+\ 'subseparator': { 'left': "", 'right': ""}
 \ }
 
-let g:lightline#bufferline#enable_devicons   = 1
-let g:lightline#bufferline#unicode_symbols   = 1
-let g:lightline#bufferline#show_number       = 1
-let g:lightline#bufferline#filename_modifier = ':t'
-let s:palette = g:lightline#colorscheme#palenight#palette
-let s:palette.tabline.tabsel = [ [ '#292D3E', '#82b1ff', 'NONE', 'NONE' ] ]
-let s:palette.tabline.left  = [ [ '#bfc7d5', '#3E4452', 'NONE', 'NONE'] ]
-let s:palette.tabline.right  = [ [ '#292d3e', '#82b1ff', 'NONE', 'NONE' ] ]
-unlet s:palette
-
+"functions
 function! MyFiletype()
     return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ""
 endfunction
@@ -288,6 +328,50 @@ endfunction
 function! MyFileformat()
     return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ""
 endfunction
+
+function! MyFugitive()
+    let _ = fugitive#head()
+    return strlen(_) ? " "._ : ""
+endfunction
+
+function! MyFilename()
+    let filename = expand('%:t') !=# "" ? expand('%:t') : '[No Name]'
+    let modified = &modified ? "  " : ""
+    return modified . filename
+
+endfunction
+
+" configs
+let g:lightline#bufferline#enable_devicons   = 1
+let g:lightline#bufferline#unicode_symbols   = 1
+let g:lightline#bufferline#show_number       = 1
+let g:lightline#bufferline#filename_modifier = ':t'
+let g:sky_color_clock#datetime_format = "%H:%M"
+let g:sky_color_clock#enable_emoji_icon = 1
+
+" color
+let s:palette = g:lightline#colorscheme#palenight#palette
+let s:palette.normal.left = [ [ "#292D3E", "#c792ea", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.normal.middle = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.normal.right = [ [ "#292D3E", "#c3e88d", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.insert.left = [ [ "#292D3E", "#82b1ff", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.insert.middle = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.insert.right = [ [ "#292D3E", "#c3e88d", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.visual.left = [ [ "#292D3E", "#89DDFF", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.visual.middle = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.visual.right = [ [ "#292D3E", "#c3e88d", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.replace.left = [ [ "#292D3E", "#C3E88D", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.replace.middle = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.replace.right = [ [ "#292D3E", "#c3e88d", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.tabline.tabsel = [ [ '#292D3E', '#c792ea', 'NONE', 'NONE' ] ]
+let s:palette.tabline.left  = [ [ '#bfc7d5', 'NONE', 'NONE', 'NONE'] ]
+let s:palette.tabline.middle = [ [ "NONE", "NONE", 'NONE', 'NONE' ] ]
+let s:palette.tabline.right  = [ [ '#292d3e', '#c792ea', 'NONE', 'NONE' ] ]
+let s:palette.inactive.left   = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.inactive.middle = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+let s:palette.inactive.right   = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
+unlet s:palette
+
 "}}}
 
 "Keybinds{{{
@@ -303,7 +387,9 @@ vnoremap <silent> <localleader> :<c-u>WhichKeyVisual ','<CR>
 " save(spc w)
 nnoremap <Leader>w :w<CR>
 " source init.vim without exiting neovim
-nmap <silent> <leader>r :so $NVIM_CONFIG_PATH<CR>
+nmap <silent> <leader>rr :<c-u>call SourceConfigCall()<CR>
+" Browse private configuration
+nmap <silent> <leader>rc :<c-u>FZF ~/.nixconfig<CR>
 "move window with ctrlhjkl
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
@@ -358,11 +444,18 @@ nnoremap <C-K> :call <SID>show_documentation()<CR>
 " open terminal
 nnoremap <leader>t :terminal<CR>
 
+" Bind double esc to exit insert mode in terminal
+tnoremap <silent> <Esc><Esc> <C-\><C-n>
+
 " Git
 " open lazygit
-nnoremap <leader>gg :LazyGit<CR>
+nnoremap <leader>gg :<c-u>LazyGit<CR>
 " open git log graph
-nnoremap <leader>gl :GV<CR>
+nnoremap <leader>gl :<c-u>GV<CR>
+" open diff of staged file side by side with working tree version
+nnoremap <leader>gds :<c-u>Gdiffsplit<CR>
+" Open git diff of current repo
+nnoremap <leader>gdf :<c-u>Git diff<CR>
 
 "}}}
 
@@ -411,19 +504,6 @@ autocmd TermOpen * IndentLinesDisable
 autocmd FileType dashboard set showtabline=0 | autocmd WinLeave <buffer> set showtabline=2
 " highlight yanked text
 autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=1000, on_visual=true}
-
-" map esc to return to normal mode when using neovim terminal
-" If you don't use this if statement, esc key stop working inside plugins that uses floating terminal like fzf, lazygit
-function s:AddTerminalBinds()
-    echom &filetype
-    if &filetype ==# ""
-        tnoremap <Esc> <C-\><C-n>
-    endif
-endfunction
-augroup TerminalBinds
-    autocmd!
-    autocmd TermEnter * call s:AddTerminalBinds()
-augroup END
 
 " enable neovim-remote for lazygit
 " (use split when git commit in lazygit)

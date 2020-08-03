@@ -216,11 +216,11 @@ in
             "gl" = "git log --graph --color=always";
             "glo" = "git log --graph --color=always --oneline";
             #config files alias
-            "chome" = "nvim ~/mygit/nixconfig/home/home.nix";
-            "cnix" = "nvim ~/mygit/nixconfig/configuration.nix";
-            "cmonad" = "nvim ~/mygit/nixconfig/haskell/xmonad.hs";
-            "cmobar" = "nvim ~/mygit/nixconfig/haskell/xmobar.hs";
-            "cvim" = "nvim ~/mygit/nixconfig/home/config/nvim.vim";
+            "chome" = "nvim ~/.nixconfig/home/home.nix";
+            "cnix" = "nvim ~/.nixconfig/configuration.nix";
+            "cmonad" = "nvim ~/.nixconfig/haskell/xmonad.hs";
+            "cmobar" = "nvim ~/.nixconfig/haskell/xmobar.hs";
+            "cvim" = "nvim ~/.nixconfig/home/config/nvim.vim";
             #screenshot
             "scrotclipsel" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
             "scrotclip" = "scrot ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
@@ -360,6 +360,7 @@ in
                 lightline-vim
                 lightline-ale
                 lightline-bufferline
+                sky-color-clock-vim
                 #vim-devicons
                 vim-deviconsfork
                 semshi
@@ -381,9 +382,7 @@ in
                 fzfWrapper
                 vim-which-key
                 indent-blankline
-                sexy-scroller
                 vim-visual-multi
-                nvim-treesitter
                 lazygit-nvim
             ]; #}}}
 
@@ -430,7 +429,11 @@ in
             size = 12;
             offset = {
                 x = 0;
-                y = 4;
+                y = 6;
+            };
+            glyph_offset = {
+                x = 0;
+                y = 3;
             };
             };
             draw_bold_text_with_bright_colors = false;
@@ -474,8 +477,8 @@ in
             };
             # Colors the cursor will use if `custom_cursor_colors` is true
             cursor = {
-                text = "0x292d3e";
-                cursor = "0xa6accd";
+                text = "0x202331";
+                cursor = "0xc792ea";
             };
             # Normal colors
             normal = {
@@ -631,9 +634,9 @@ in
             };
             prompts = "13pt Tamzen";
             statusbar = "13pt Tamzen";
-            #tabs.selected = "13pt Tamzen";
-            #tabs.unselected = "13pt Tamzen";
-            tabs = "13pt Tamzen";
+            tabs.selected = "13pt Tamzen";
+            tabs.unselected = "13pt Tamzen";
+            #tabs = "13pt Tamzen";
             };
 
             # colors{{{
@@ -916,6 +919,9 @@ in
     # emojis
     ".scripts/UnicodeData.txt".source = ../textfiles/UnicodeData.txt;
 
+    # neofetch ascii
+    ".scripts/neofetchascii.txt".source = ../textfiles/neofetchascii.txt;
+
   };
   #}}}
 
@@ -1027,13 +1033,10 @@ in
         print_info() {
 
             prin "$(color 4)────────────────────────────────────────────" 
-            info "OS" distro
+            info "Distro"     distro
             info "Uptime" uptime
-            info "Shell" shell
-            info "DE" de
-            info "Terminal" term
-            info "CPU" cpu
-            info "Memory" memory
+            info "Shell"  shell
+            info "Session"     de
             prin "$(color 4)────────────────────────────────────────────"
             info cols
         }
@@ -1057,18 +1060,18 @@ in
         bold="on"
         underline_enabled="on"
         underline_char="-"
-        separator="\t ="
+        separator="\t"
         block_range=(0 15)
         color_blocks="on"
         block_width=3
         block_height=1
         col_offset="auto"
         image_backend="ascii"
-        image_source="auto"
+        image_source="$HOME/.scripts/neofetchascii.txt"
         ascii_distro="nixos"
-        ascii_colors=(distro)
+        ascii_colors=(5)
         ascii_bold="off"
-        gap=3
+        gap=5
         stdout="off"
         '';
         # }}}
@@ -1093,7 +1096,7 @@ in
             <alias>
                 <family>Tamzen</family>
                 <prefer>
-                    <family>BlexMono Nerd Font</family> 
+                    <family>GohuFont Nerd Font</family> 
                     <family>Apple Color Emoji</family>
                 </prefer>
             </alias>
