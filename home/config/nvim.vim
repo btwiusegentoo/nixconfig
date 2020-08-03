@@ -336,8 +336,27 @@ endfunction
 
 function! MyFugitive()
     let _ = fugitive#head()
-    return strlen(_) ? "   "._ : ""
+    if exists("g:gitstatus")
+        if g:gitstatus == "true"
+            return strlen(_) ? "   "._ : ""
+        else
+            return strlen(_) ? "   "._ : ""
+        endif
+    else
+        return ""
+    endif
 endfunction
+
+function! GetGitStatus()
+    let gitoutput = systemlist('cd '.expand('%:p:h:S').' && git status --porcelain -b 2>/dev/null | grep M')
+    if len(gitoutput) > 0
+        let g:gitstatus = "true"
+    else
+        let g:gitstatus = "false"
+    endif
+endfunc
+
+autocmd BufEnter,BufWritePost * call GetGitStatus()
 
 function! MyFilename()
     let filename = expand('%:t') !=# "" ? expand('%:t') : '[No Name]'
