@@ -336,7 +336,7 @@ endfunction
 
 function! MyFugitive()
     let _ = fugitive#head()
-    return strlen(_) ? " "._ : ""
+    return strlen(_) ? "   "._ : ""
 endfunction
 
 function! MyFilename()
