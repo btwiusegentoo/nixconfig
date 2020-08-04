@@ -13,6 +13,7 @@ import           XMonad.Layout.NoBorders            (noBorders, smartBorders)
 import           XMonad.Layout.Spacing
 import           XMonad.Layout.Spiral
 import           XMonad.Prompt
+import           XMonad.Prompt.ConfirmPrompt
 import           XMonad.Prompt.FuzzyMatch
 import           XMonad.Prompt.Man
 import           XMonad.Prompt.Shell
@@ -52,7 +53,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     , ((modm .|. controlMask, xK_h      ), namedScratchpadAction myScratchPads "ytop")  -- ytop scratchpad
     , ((modm .|. controlMask, xK_n      ), namedScratchpadAction myScratchPads "nnn")   -- file manager scratchpad
     , ((modm .|. controlMask, xK_m      ), manPrompt myXPConfig) -- search manpage
-    , ((modm .|. controlMask, xK_e      ), mkUnicodePrompt "xsel" ["-b"] "/home/btw/.scripts/UnicodeData.txt" myEmojiXPConfig) -- emoji->clipboard
+    , ((modm .|. controlMask, xK_e      ), mkUnicodePrompt "xsel" ["-b"] "/home/btw/textfiles/UnicodeData.txt" myEmojiXPConfig) -- emoji->clipboard
     , ((modm,                 xK_b      ), spawn "qutebrowser")                     -- launch qutebrowser
     , ((modm,                 xK_p      ), spawn "touch ~/.cache/pomodoro_session") -- start pomodoro
     , ((modm .|. shiftMask,   xK_p      ), spawn "rm ~/.cache/pomodoro_session")    -- stop pomodoro
@@ -95,7 +96,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
              "Spacing BSP" -> sendMessage Rotate
              _             -> sendMessage (IncMasterN (-1)))
     , ((modm              ,   xK_o      ), spawn "light-locker-command --lock")
-    , ((modm .|. shiftMask,   xK_q      ), io exitSuccess)
+    , ((modm .|. shiftMask,   xK_q      ), confirmPrompt myXPConfig "exit" $ io (exitSuccess))
     , ((modm              ,   xK_q      ), spawn "xmonad --recompile; xmonad --restart")
     ]
     ++
