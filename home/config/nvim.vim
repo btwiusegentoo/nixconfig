@@ -340,7 +340,7 @@ function! MyFugitive()
         if g:gitstatus == "true"
             return strlen(_) ? "   "._ : ""
         else
-            return strlen(_) ? "   "._ : ""
+            return strlen(_) ? "  "._ : ""
         endif
     else
         return ""
