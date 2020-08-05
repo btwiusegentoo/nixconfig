@@ -129,6 +129,7 @@ in
         opacityRule = [ "90:class_g = 'Zathura'" ];
         extraOptions = ''
             detect-client-opacity = true;
+            detect-rounded-corners = true;
             blur:
             {
                 method = "kawase";
@@ -137,7 +138,12 @@ in
                 background-frame = false;
                 background-fixed = false;
             };
-            corner-radius = 8;
+            corner-radius = 12;
+            rounded-corners-exclude = [
+                "window_type = 'dock'",
+                "_NET_WM_STATE@:32a *= '_NET_WM_STATE_FULLSCREEN'"
+            ];
+            round-borders = 1;
         '';
         };
         # }}}
@@ -393,6 +399,8 @@ in
                 vim-visual-multi
                 lazygit-nvim
                 vim-orgmode
+                rust-vim
+                coc-rust-analyzer
             ]; #}}}
 
             customRC = import ./config/nvim.vim;

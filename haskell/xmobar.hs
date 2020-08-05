@@ -5,11 +5,13 @@ config :: Config
 config = defaultConfig {
         font = "xft:TamzenForPowerline-14:style=regular,GohuFont Nerd Font:size=12"
        , additionalFonts = []
-       , borderColor = "#2b2a3e"
+       , borderColor = "#232635"
        , border = BottomB
        , alpha = 255
-       , bgColor = "#303348"
-       , fgColor = "#FFFFFF"
+       , bgColor = "#232635"
+       --, alpha = 240
+       --, bgColor = "#233526" -- Somehow color get messed up when using alpha issue#246 this is the workaround. invert 3rd4th <--> 5th6th like this.
+       , fgColor = "#A6ACCD"
        , position = TopSize L 100 30
        , textOffset = -1
        , iconOffset = -1
@@ -27,7 +29,7 @@ config = defaultConfig {
                     , Run $ Com "uname" [ "-r" ] "" 36000
                     , Run $ CommandReader "pymodoro" "pomodoro"
                     , Run $ Volume "default" "Master" ["-t", "<status> <volume>%", "--",
-                                                       "-O", "墳", -- on
+                                                       "-O", "\61480", -- on
                                                        "-o", "\61478", -- off
                                                        "-C", "#FFFFFF",
                                                        "-c", "#f07178"] 5

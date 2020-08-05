@@ -9,7 +9,6 @@ import           XMonad.Hooks.DynamicLog
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Layout.BinarySpacePartition
 import           XMonad.Layout.LayoutCombinators
-import           XMonad.Layout.NoBorders            (noBorders, smartBorders)
 import           XMonad.Layout.Spacing
 import           XMonad.Layout.Spiral
 import           XMonad.Prompt
@@ -40,7 +39,7 @@ myBorderWidth   = 2
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 myNormalBorderColor  = "#292D3E"
 myFocusedBorderColor = "#c792ea"
-myGaps = spacingRaw True (Border 4 4 4 4) True (Border 4 4 4 4) True
+myGaps = spacingRaw False (Border 4 4 4 4) True (Border 4 4 4 4) True
 -- }}}
 
 -- keybindings{{{
@@ -96,7 +95,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
              "Spacing BSP" -> sendMessage Rotate
              _             -> sendMessage (IncMasterN (-1)))
     , ((modm              ,   xK_o      ), spawn "light-locker-command --lock")
-    , ((modm .|. shiftMask,   xK_q      ), confirmPrompt myXPConfig "exit" $ io (exitSuccess))
+    , ((modm .|. shiftMask,   xK_q      ), confirmPrompt myXPConfig "exit" $ io exitSuccess)
     , ((modm              ,   xK_q      ), spawn "xmonad --recompile; xmonad --restart")
     ]
     ++
@@ -145,8 +144,8 @@ myXPKeymap = M.fromList $
 -- prompt config{{{
 myXPConfig = def
         { font = myFont
-        , bgColor = "#303348"
-        , fgColor = "#676E95"
+        , bgColor = "#232635"
+        , fgColor = "#A6ACCD"
         , bgHLight = "#444267"
         , fgHLight = "#A6ACCD"
         , borderColor = "#2b2a3e"
@@ -161,8 +160,8 @@ myXPConfig = def
 
 myEmojiXPConfig = def
         { font = myEmojiFont
-        , bgColor = "#303348"
-        , fgColor = "#676E95"
+        , bgColor = "#232635"
+        , fgColor = "#A6ACCD"
         , bgHLight = "#444267"
         , fgHLight = "#A6ACCD"
         , borderColor = "#2b2a3e"
@@ -177,7 +176,7 @@ myEmojiXPConfig = def
 -- }}}
 
 -- layout{{{
-myLayout = avoidStruts $ smartBorders (tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| noBorders Full)
+myLayout = avoidStruts (tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| Full)
     where
         tiledgaps = myGaps $ Tall nmaster delta ratio
 
