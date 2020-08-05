@@ -1009,6 +1009,13 @@ in
                 }
             },
 
+            "coc.source.emoji.filetypes": [
+                "markdown",
+                "html",
+                "css",
+                "gitcommit",
+                "org"
+            ]
 
         }
         '';

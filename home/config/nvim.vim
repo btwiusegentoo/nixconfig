@@ -27,7 +27,6 @@ if !exists("*SourceConfigCommand")
     endfunction
 endif
 
-
 set modelines=5
 syntax on
 filetype plugin indent on
