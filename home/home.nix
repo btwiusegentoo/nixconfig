@@ -126,7 +126,12 @@ in
         fadeDelta = 3;
         backend = "glx";
         experimentalBackends = true;
-        opacityRule = [ "90:class_g = 'Zathura'" ];
+        opacityRule = [
+            "90:class_g  = 'Zathura'"
+            "90:class_g  = 'TelegramDesktop'"
+            "90:class_g  = 'Discord'"
+            "100:class_g = 'keynav'"
+        ];
         extraOptions = ''
             detect-client-opacity = true;
             detect-rounded-corners = true;
@@ -141,9 +146,13 @@ in
             corner-radius = 12;
             rounded-corners-exclude = [
                 "window_type = 'dock'",
-                "_NET_WM_STATE@:32a *= '_NET_WM_STATE_FULLSCREEN'"
+                "_NET_WM_STATE@:32a *= '_NET_WM_STATE_FULLSCREEN'",
+                "class_g = 'keynav'",
             ];
             round-borders = 1;
+            round-borders-exclude = [
+                "class_g = 'keynav'"
+            ];
         '';
         };
         # }}}
