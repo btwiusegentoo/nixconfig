@@ -36,7 +36,7 @@ myFocusFollowsMouse :: Bool
 myFocusFollowsMouse = True
 myClickJustFocuses :: Bool
 myClickJustFocuses = False
-myBorderWidth   = 1
+myBorderWidth   = 2
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 myNormalBorderColor  = "#292D3E"
 myFocusedBorderColor = "#c792ea"
@@ -250,7 +250,7 @@ myLogHook h =   dynamicLogWithPP xmobarPP
 
 -- startuphook{{{
 myStartupHook = do
-    spawnOnce "feh --bg-fill /etc/wallpapers/default.png &"
+    spawnOnce "feh --bg-fill /etc/wallpapers/wallpaper2.png &"
     spawnOnce "fcitx &"
     spawnOnce "light-locker &"
 -- }}}

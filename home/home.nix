@@ -132,7 +132,7 @@ in
             blur:
             {
                 method = "kawase";
-                strength = 8;
+                strength = 10;
                 background = false;
                 background-frame = false;
                 background-fixed = false;
@@ -446,7 +446,7 @@ in
             };
             };
             draw_bold_text_with_bright_colors = false;
-            background_opacity = 0.96;
+            background_opacity = 0.9;
             key_bindings = [
             {
                 key = "V";

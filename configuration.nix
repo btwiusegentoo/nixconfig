@@ -288,6 +288,7 @@ in
     # }}}
 
     environment.etc."wallpapers/default.png".source = ./wallpaper.png;
+    environment.etc."wallpapers/wallpaper2.png".source = ./wallpaper2.png;
     # I will not delete just to make a example.
     # use pkgs.writeScript to make executable.
     #environment.etc."lightdm/xrandr.sh".source = pkgs.writeScript "xrandr.sh" ''
