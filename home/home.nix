@@ -132,6 +132,9 @@ in
             "90:class_g  = 'Discord'"
             "100:class_g = 'keynav'"
         ];
+        fadeExclude = [
+            "class_g = 'keynav'"
+        ];
         extraOptions = ''
             detect-client-opacity = true;
             detect-rounded-corners = true;
@@ -143,6 +146,9 @@ in
                 background-frame = false;
                 background-fixed = false;
             };
+            blur-background-exclude = [
+                "class_g = 'keynav'"
+            ];
             corner-radius = 12;
             rounded-corners-exclude = [
                 "window_type = 'dock'",
