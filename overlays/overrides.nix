@@ -40,6 +40,15 @@ self: super: with pkgs; {
         };
         patches = oldattrs.patches ++ [ ../patches/nvim_fix_terminal_colors.patch ];
     });
+    picom = unstable.picom.overrideAttrs (oldattrs: {
+        version = "unstable-2020-08-04";
+        src = fetchFromGitHub {
+            owner = "ibhagwan";
+            repo = "picom";
+            rev = "44b4970f70d6b23759a61a2b94d9bfb4351b41b1";
+            sha256 = "0iff4bwpc00xbjad0m000midslgx12aihs33mdvfckr75r114ylh";
+        };
+    });
     nerdfonts = unstable.nerdfonts;
     doas = unstable.doas;
     # home.nix
@@ -48,5 +57,6 @@ self: super: with pkgs; {
     youtube-dl = unstable.youtube-dl;
     mpv = unstable.mpv;
     fzf = unstable.fzf;
+    lorri = unstable.lorri;
     qutebrowser = qtbpkgs.qutebrowser;
 }

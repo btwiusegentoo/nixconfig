@@ -44,6 +44,7 @@ in
     nodePackages.node2nix
     cabal2nix
     nix-index
+    niv
     binutils
     glibc
     haskell-env
@@ -88,6 +89,7 @@ in
     xsel # used by xmonad emoji prompt
     unstable.youtube-dl
     unstable.neovim-remote
+    unstable.direnv
     # misc
     glxinfo
     xclip
@@ -129,9 +131,13 @@ in
             detect-client-opacity = true;
             blur:
             {
-                method = "kernel";
-                kernel = "7x7box";
+                method = "kawase";
+                strength = 8;
+                background = false;
+                background-frame = false;
+                background-fixed = false;
             };
+            corner-radius = 8;
         '';
         };
         # }}}
@@ -164,6 +170,8 @@ in
         # }}}
 
         keynav.enable = true;
+
+        lorri.enable = true;
 
     };
     #}}}
@@ -324,7 +332,7 @@ in
                 export EDITOR="nvim"
             end
 
-
+            eval (direnv hook fish)
             ''; # }}}
 
         };
@@ -384,6 +392,7 @@ in
                 indent-blankline
                 vim-visual-multi
                 lazygit-nvim
+                vim-orgmode
             ]; #}}}
 
             customRC = import ./config/nvim.vim;
@@ -917,10 +926,10 @@ in
     # }}}
 
     # emojis
-    ".scripts/UnicodeData.txt".source = ../textfiles/UnicodeData.txt;
+    "textfiles/UnicodeData.txt".source = ../textfiles/UnicodeData.txt;
 
     # neofetch ascii
-    ".scripts/neofetchascii.txt".source = ../textfiles/neofetchascii.txt;
+    "textfiles/neofetchascii.txt".source = ../textfiles/neofetchascii.txt;
 
   };
   #}}}
@@ -1067,7 +1076,7 @@ in
         block_height=1
         col_offset="auto"
         image_backend="ascii"
-        image_source="$HOME/.scripts/neofetchascii.txt"
+        image_source="$HOME/textfiles/neofetchascii.txt"
         ascii_distro="nixos"
         ascii_colors=(5)
         ascii_bold="off"
