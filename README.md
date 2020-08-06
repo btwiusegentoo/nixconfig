@@ -1,19 +1,24 @@
 \
-<p align="center">
+<code><p align="center">
 home-manager + xmonad + neovim💛
-</p>
+</p></code>
 \
 \
 \
-![screenshot1](screenshot1.png)
+
+![screenshot1](/screenshot1.png)
 ![screenshot2](/screenshot2.png)
 ![wallpaper](/wallpaper2.png)
+
 \
 \
+
 [![nixos](https://img.shields.io/static/v1?style=for-the-badge&logo=nixos&label=%E2%A0%80&message=nixos&labelColor=azure&color=cornflowerblue)](https://nixos.org/)
 [![neovim](https://img.shields.io/static/v1?style=for-the-badge&logo=neovim&label=%E2%A0%80&message=neovim&labelColor=blue&color=green)](https://neovim.io/)
 [![xmonad](https://img.shields.io/static/v1?style=for-the-badge&logo=haskell&label=%E2%A0%80&message=xmonad&labelColor=blueviolet&color=black)](https://xmonad.org/)
+
 \
+
 ![Haskell Linter](https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg)
 
 <h1 align="center">
