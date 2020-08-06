@@ -2,22 +2,22 @@
 <code><p align="center">
 home-manager + xmonad + neovim💛
 </p></code>
-\
-\
-\
+
+
+
 
 ![screenshot1](/screenshot1.png)
 ![screenshot2](/screenshot2.png)
 ![wallpaper](/wallpaper2.png)
 
-\
-\
+
+
 
 [![nixos](https://img.shields.io/static/v1?style=for-the-badge&logo=nixos&label=%E2%A0%80&message=nixos&labelColor=azure&color=cornflowerblue)](https://nixos.org/)
 [![neovim](https://img.shields.io/static/v1?style=for-the-badge&logo=neovim&label=%E2%A0%80&message=neovim&labelColor=blue&color=green)](https://neovim.io/)
 [![xmonad](https://img.shields.io/static/v1?style=for-the-badge&logo=haskell&label=%E2%A0%80&message=xmonad&labelColor=blueviolet&color=black)](https://xmonad.org/)
 
-\
+
 
 ![Haskell Linter](https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg)
 
@@ -33,7 +33,7 @@ I try to install packages/manage config files declarative using
 I personally use vim\'s folding(marker) to make config files readable.\
 If you are new to nixos, maybe you can get idea how to install neovim
 plugins and fish plugins,haskell packages,python packages from this
-config.\
+config.
 
 Installation
 ------------
@@ -48,12 +48,12 @@ hardware configurations.
 git clone https://github.com/btwiusegentoo/nixconfig
 /home/btw/.nixconfig ln -s /home/btw/.nixconfig/configuration.nix /etc/nixos/configuration.nix
 ```
-home-manager is configured as module so channel is not needed anymore.\
+home-manager is configured as module so channel is not needed anymore.
 
 Summary of Features
 -------------------
 
-\
+
 
 -   home-manager
 -   xmonad+xmobar
@@ -73,6 +73,8 @@ Summary of Features
     disable if you are using other resolution. You can find in home.nix
     (xsession.profileExtra) If you will change resolution, I think you
     will also want to change font sizes.
+
+
 
 Credits
 -------
