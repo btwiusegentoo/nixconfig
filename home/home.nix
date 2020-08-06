@@ -57,6 +57,7 @@ in
     circleci-cli
     fontforge
     unstable.ueberzug
+    unstable.pandoc
     # nixpkgs
     nixpkgs-fmt
     nixpkgs-review
