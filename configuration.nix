@@ -12,7 +12,6 @@ let
         pip
         pylint
         pymodoro
-        pyqtwebengine
     ];
     python-with-my-packages = unstable.python3.withPackages my-python-packages;
     # }}}
@@ -63,13 +62,13 @@ in
         unzip
         nix-prefetch-git
         nix-prefetch-github
-        gnumake
-        gcc
+        unstable.gnumake
+        unstable.gcc
         python-with-my-packages
         cachix
         unstable.ipad_charge
         mosh-master
-        fish
+        unstable.fish
         pypi2nix
         home-manager
         # deps

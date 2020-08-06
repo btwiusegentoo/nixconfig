@@ -9,7 +9,7 @@ let
     plugins = pkgs.callPackage ./customvimplugins.nix {};
 
     # Haskell packages{{{
-    haskell-env = unstable.haskell.packages.ghc884.ghcWithPackages (
+    haskell-env = unstable.haskellPackages.ghcWithPackages (
         hp: with hp; [
         xmonad
         xmonad-contrib
@@ -38,15 +38,12 @@ in
     fzf
     binutils
     killall
-    python
     neofetch
     pfetch
     nodePackages.node2nix
     cabal2nix
     nix-index
     niv
-    binutils
-    glibc
     haskell-env
     rnix-lsp
     scrot
@@ -77,8 +74,8 @@ in
     kdenlive
     olive-editor
     blender
-    discord
-    unstable.tdesktop
+    unstable.discord
+    tdesktop
     pavucontrol
     spotify
     sxiv
@@ -1291,13 +1288,6 @@ in
         enable = true;
         enableContribAndExtras = true;
         config = ../haskell/xmonad.hs;
-        haskellPackages =
-            unstable.haskell.packages.ghc882;
-        extraPackages = haskellPackages: [
-            haskellPackages.xmonad-contrib
-            haskellPackages.xmonad-extras
-            haskellPackages.xmonad
-        ];
         };
         # }}}
 

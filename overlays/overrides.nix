@@ -5,11 +5,11 @@ let
         pkgs.fetchFromGitHub {
             owner = "NixOS";
             repo = "nixpkgs";
-            rev = "3541e8b4fbf01731580b2f26a3de41200213e6f1";
-            sha256 = "19l6w4nlczydy50fnfcsd7s86j0z1andi9x0xw7fihjjzs9l9pna";
+            rev = "8e2b14aceb1d40c7e8b84c03a7c78955359872bb";
+            sha256 = "0zzjpd9smr7rxzrdf6raw9kbj42fbvafxb5bz36lcxgv290pgsm8";
         };
 
-    qutebrowserworkingrev =
+    qtpkgsrev =
         pkgs.fetchFromGitHub {
             owner = "NixOS";
             repo = "nixpkgs";
@@ -23,7 +23,7 @@ self: super: with pkgs; {
     unstable = import nixpkgs-unstable {
         config = import ../nixpkgs/config.nix;
     };
-    qtbpkgs = import qutebrowserworkingrev {
+    qtpkgs = import qtpkgsrev {
         config = import ../nixpkgs/config.nix;
     };
     # configuration.nix
@@ -57,6 +57,5 @@ self: super: with pkgs; {
     youtube-dl = unstable.youtube-dl;
     mpv = unstable.mpv;
     fzf = unstable.fzf;
-    lorri = unstable.lorri;
-    qutebrowser = qtbpkgs.qutebrowser;
+    qutebrowser = unstable.qutebrowser;
 }
