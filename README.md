@@ -1,12 +1,13 @@
 \
 <p align="center">
-`home-manager + xmonad + neovim💛`
+home-manager + xmonad + neovim💛
 </p>
 \
 \
 \
-!\[screenshot1\](/screenshot1.png) !\[screenshot2\](/screenshot2.png)
-!\[wallpaper\](/wallpaper2.png)\
+![screenshot1](screenshot1.png)
+![screenshot2](/screenshot2.png)
+![wallpaper](/wallpaper2.png)
 \
 \
 [![nixos](https://img.shields.io/static/v1?style=for-the-badge&logo=nixos&label=%E2%A0%80&message=nixos&labelColor=azure&color=cornflowerblue)](https://nixos.org/)
