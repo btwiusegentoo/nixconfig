@@ -56,6 +56,7 @@ in
     lightlocker
     circleci-cli
     fontforge
+    unstable.ueberzug
     # nixpkgs
     nixpkgs-fmt
     nixpkgs-review
@@ -79,6 +80,7 @@ in
     unstable.tdesktop
     pavucontrol
     spotify
+    sxiv
     # node packages
     nodePackages.gitmoji-cli
     # dependencies
@@ -354,6 +356,7 @@ in
             end
 
             eval (direnv hook fish)
+
             ''; # }}}
 
         };
@@ -461,11 +464,11 @@ in
             size = 12;
             offset = {
                 x = 0;
-                y = 6;
+                y = 11;
             };
             glyph_offset = {
                 x = 0;
-                y = 3;
+                y = 5;
             };
             };
             draw_bold_text_with_bright_colors = false;
@@ -888,9 +891,9 @@ in
             character = {
             style_success = "#c792ea";
             use_symbol_for_status = true;
-            symbol = ">";
-            vicmd_symbol = "<";
-            error_symbol = "☓";
+            symbol = "λ";
+            vicmd_symbol = " ";
+            error_symbol = "☓ ";
             };
 
             directory = {
@@ -953,6 +956,10 @@ in
 
     # neofetch ascii
     "textfiles/neofetchascii.txt".source = ../textfiles/neofetchascii.txt;
+
+    ".ghc/ghci.conf".text = ''
+        :set prompt "%s λ: "
+    '';
 
   };
   #}}}
@@ -1072,9 +1079,9 @@ in
         print_info() {
 
             prin "$(color 4)────────────────────────────────────────────" 
-            info "Distro"     distro
-            info "Uptime" uptime
-            info "Shell"  shell
+            info "Distro"      distro
+            info "Uptime"      uptime
+            info "Shell"       shell
             info "Session"     de
             prin "$(color 4)────────────────────────────────────────────"
             info cols
