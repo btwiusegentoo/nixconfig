@@ -7,7 +7,7 @@
 
 ![screenshot1](/screenshot1.png)
 ![screenshot2](/screenshot2.png)
-![wallpaper](/wallpaper.png)
+![wallpaper](/wallpaper2.png)
 <br>
 <br>
 <br>
@@ -37,10 +37,10 @@ home-manager is configured as module so channel is not needed anymore.
 <ul type="square">
     <li>home-manager</li>
     <li>xmonad+xmobar</li>
-    <li>neovim + plugins(includes coc)</li>
+    <li>neovim nightly + plugins(includes coc)</li>
     <li>haskell environment</li>
     <li>Japanese IME(mozc+fcitx)</li>
-    <li>Optimized for Dvorak layout and HHKB</li>
+    <li>Keybinds optimized for Dvorak layout and HHKB</li>
     <li>Alacritty</li>
     <li>qutebrowser</li>
     <li>fish shell + plugins</li>
