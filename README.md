@@ -1,8 +1,7 @@
 \
-\
-
+<p align="center">
 `home-manager + xmonad + neovim💛`
-
+</p>
 \
 \
 \
@@ -10,14 +9,15 @@
 !\[wallpaper\](/wallpaper2.png)\
 \
 \
-\[!\[nixos\](https://img.shields.io/static/v1?style=for-the-badge&logo=nixos&label=%E2%A0%80&message=nixos&labelColor=azure&color=cornflowerblue)\](https://nixos.org/)
-\[!\[neovim\](https://img.shields.io/static/v1?style=for-the-badge&logo=neovim&label=%E2%A0%80&message=neovim&labelColor=blue&color=green)\](https://neovim.io/)
-\[!\[xmonad\](https://img.shields.io/static/v1?style=for-the-badge&logo=haskell&label=%E2%A0%80&message=xmonad&labelColor=blueviolet&color=black)\](https://xmonad.org/)\
+[![nixos](https://img.shields.io/static/v1?style=for-the-badge&logo=nixos&label=%E2%A0%80&message=nixos&labelColor=azure&color=cornflowerblue)](https://nixos.org/)
+[![neovim](https://img.shields.io/static/v1?style=for-the-badge&logo=neovim&label=%E2%A0%80&message=neovim&labelColor=blue&color=green)](https://neovim.io/)
+[![xmonad](https://img.shields.io/static/v1?style=for-the-badge&logo=haskell&label=%E2%A0%80&message=xmonad&labelColor=blueviolet&color=black)](https://xmonad.org/)
 \
-!\[Haskell Linter\](https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg)\
+![Haskell Linter](https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg)
 
-NixOS configuration {#nixos-configuration align="center"}
-===================
+<h1 align="center">
+NixOS configuration
+</h1>
 
 \
 note: this repo is a personally backup. and my system is still work in
@@ -38,7 +38,10 @@ It\'s hardcoded now in several places to use `/home/btw/.nixconfig.` so
 you have to use as it is or change username. You need to have `git`
 installed and you have to be on nixos-stable. You have to change
 hardware configurations.
-` git clone https://github.com/btwiusegentoo/nixconfig /home/btw/.nixconfig ln -s /home/btw/.nixconfig/configuration.nix /etc/nixos/configuration.nix`
+```bash
+git clone https://github.com/btwiusegentoo/nixconfig
+/home/btw/.nixconfig ln -s /home/btw/.nixconfig/configuration.nix /etc/nixos/configuration.nix
+```
 home-manager is configured as module so channel is not needed anymore.\
 
 Summary of Features
