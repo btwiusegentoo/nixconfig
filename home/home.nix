@@ -856,6 +856,8 @@ in
             config.bind('yd', 'spawn mpv {url}')
             config.bind('yf', 'hint links spawn mpv --force-window yes {hint-url}')
             c.url.searchengines = {'DEFAULT': 'https://google.com/search?q={}'}
+            c.content.user_stylesheets = ['~/.config/qutebrowser/css/palenight-all-sites.css']
+            #c.content.user_stylesheets = ['~/mygit/palenight-everything-css/palenight-all-sites.css']
         '';
 
         };
@@ -1081,8 +1083,9 @@ in
             prin "$(color 4)────────────────────────────────────────────" 
             info "Distro"      distro
             info "Uptime"      uptime
-            info "Shell"       shell
             info "Session"     de
+            info "Shell"       shell
+            info "CPU"         cpu
             prin "$(color 4)────────────────────────────────────────────"
             info cols
         }
@@ -1095,9 +1098,9 @@ in
         shell_path="off"
         shell_version="on"
         speed_type="bios_limit"
-        speed_shorthand="off"
-        cpu_brand="on"
-        cpu_speed="on"
+        speed_shorthand="on"
+        cpu_brand="off"
+        cpu_speed="off"
         cpu_cores="logical"
         cpu_temp="off"
         refresh_rate="off"
@@ -1106,7 +1109,7 @@ in
         bold="on"
         underline_enabled="on"
         underline_char="-"
-        separator="\t"
+        separator="    \t"
         block_range=(0 15)
         color_blocks="on"
         block_width=3
@@ -1267,6 +1270,11 @@ in
             { allowUnfree = true; } 
         '';
         # }}}
+
+        "qutebrowser/css/palenight-all-sites.css".source = pkgs.fetchurl {
+            url = "https://raw.githubusercontent.com/btwiusegentoo/palenight-everything-css/master/palenight-all-sites.css";
+            sha256 = "01ms52icxv1spli3hic4z4swzw61nfgrr246f4i4ab4akaaaj8ny";
+        };
 
     };
     # }}}
