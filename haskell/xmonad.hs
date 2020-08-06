@@ -46,6 +46,7 @@ myGaps = spacingRaw False (Border 4 4 4 4) True (Border 4 4 4 4) True
 myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
 
     [ ((modm,                 xK_Return ), spawn $ XMonad.terminal conf)
+    , ((modm,                 xK_v      ), spawn $ myTerminal ++ " -e nvim")
     , ((modm,                 xK_d      ), shellPrompt myXPConfig)                  -- use xmonad prompt instead of dmenu.
     , ((modm .|. controlMask, xK_t      ), namedScratchpadAction myScratchPads "terminal") -- terminal scratchpad
     , ((modm .|. controlMask, xK_s      ), namedScratchpadAction myScratchPads "mixer") -- sound mixer scratchpad
