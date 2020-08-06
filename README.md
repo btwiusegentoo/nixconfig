@@ -20,7 +20,7 @@
 ![Haskell Linter](https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg)
 
 <br>
-<h1 align="center">NixOS config files</h1>
+<h1 align="center">NixOS configuration</h1>
 <br>
 note: this repo is a personally backup. and my system is still work in progress.<br>
 I try to install packages/manage config files declarative using <code>configuration.nix</code> and <code>home.nix</code> as much as possible.<br>
@@ -29,8 +29,17 @@ If you are new to nixos, maybe you can get idea how to install neovim plugins an
 <br>
 <h2>Installation</h2>
 <br>
-I don't recommend installing this config, but you can clone inside <code>$HOME/.nixconfig</code> and symlink configuration.nix to <code>/etc/nixos/</code>.
+I don't recommend installing this config.
+but you can try if you want.
+It's hardcoded now in several places to use `/home/btw/.nixconfig.` so you have to use as it is or change username.
+You need to have `git` installed and you have to be on nixos-stable.
+You have to change hardware configurations.
+```sh
+git clone https://github.com/btwiusegentoo/nixconfig /home/btw/.nixconfig
+ln -s /home/btw/.nixconfig/configuration.nix /etc/nixos/configuration.nix
+```
 home-manager is configured as module so channel is not needed anymore.
+
 <br>
 <h2>Summary of Features</h2>
 <br>
