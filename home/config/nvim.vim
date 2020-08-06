@@ -525,6 +525,9 @@ augroup END
 autocmd TermOpen * IndentLinesDisable
 " disable tabline inside dashboard
 autocmd FileType dashboard set showtabline=0 | autocmd WinLeave <buffer> set showtabline=2
+" show which-key instantly inside dashboard(prevents loading buffers
+" specifically terminal without statusline and tabline.)
+autocmd Filetype dashboard set timeoutlen=0 | autocmd WinLeave <buffer> set timeoutlen=300
 " highlight yanked text
 autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=1000, on_visual=true}
 
