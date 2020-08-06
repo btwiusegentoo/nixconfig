@@ -34,7 +34,7 @@ but you can try if you want.
 It's hardcoded now in several places to use `/home/btw/.nixconfig.` so you have to use as it is or change username.
 You need to have `git` installed and you have to be on nixos-stable.
 You have to change hardware configurations.
-```sh
+```bash
 git clone https://github.com/btwiusegentoo/nixconfig /home/btw/.nixconfig
 ln -s /home/btw/.nixconfig/configuration.nix /etc/nixos/configuration.nix
 ```
