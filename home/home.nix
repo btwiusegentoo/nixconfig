@@ -228,6 +228,7 @@ in
             "top" = "ytop";
             "untar" = "tar -xvzf";
             #Git
+            "lg" = "lazygit";
             "g" = "git";
             "ga" = "git add";
             "gall" = "git add --all";
