@@ -172,6 +172,7 @@ in {
             sha256 = "1vjv8v3prmr59arms59md7i4yg8c0a0hwlknk61sml3925dqndar";
         };
     };
+
 }
 
 # vim: foldmethod=marker shiftwidth=4:
