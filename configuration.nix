@@ -207,7 +207,7 @@ in
                     [greeter]
                     show-password-label = false
                     [greeter-theme]
-                    background-image = "/etc/wallpapers/default.png"
+                    background-image = "/etc/wallpapers/wallpaper2.png"
                 '';
             };
         };

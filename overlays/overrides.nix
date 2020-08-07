@@ -57,5 +57,6 @@ self: super: with pkgs; {
     youtube-dl = unstable.youtube-dl;
     mpv = unstable.mpv;
     fzf = unstable.fzf;
-    qutebrowser = unstable.qutebrowser;
+    qutebrowser = qtpkgs.qutebrowser;
+    qtwebengine = qtpkgs.qtwebengine;
 }
