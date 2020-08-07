@@ -8,7 +8,7 @@ home-manager + xmonad + neovim💛
 
 ![screenshot1](/screenshot1.png)
 ![screenshot2](/screenshot2.png)
-![wallpaper](/wallpaper2.png)
+![wallpaper](/wallpaper1.png)
 
 
 
