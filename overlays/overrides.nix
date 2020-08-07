@@ -9,6 +9,14 @@ let
             sha256 = "0zzjpd9smr7rxzrdf6raw9kbj42fbvafxb5bz36lcxgv290pgsm8";
         };
 
+    nixpkgsmaster =
+        pkgs.fetchFromGitHub {
+            owner = "nixos";
+            repo = "nixpkgs";
+            rev = "776476c4a3441db864103230f396bb90be9dc057";
+            sha256 = "1vr0zivph849g8xwcc71fda815shv37a12qdc0ywlm56jrl3b6fq";
+        };
+
     qtpkgsrev =
         pkgs.fetchFromGitHub {
             owner = "NixOS";
@@ -21,6 +29,9 @@ in
 self: super: with pkgs; {
     # required globally
     unstable = import nixpkgs-unstable {
+        config = import ../nixpkgs/config.nix;
+    };
+    master = import nixpkgsmaster {
         config = import ../nixpkgs/config.nix;
     };
     qtpkgs = import qtpkgsrev {

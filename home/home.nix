@@ -5,6 +5,7 @@
 
 let
     unstable = pkgs.unstable;
+    master = pkgs.master;
 
     plugins = pkgs.callPackage ./customvimplugins.nix {};
 
@@ -74,7 +75,7 @@ in
     kdenlive
     olive-editor
     blender
-    unstable.discord
+    master.discord
     tdesktop
     pavucontrol
     spotify
