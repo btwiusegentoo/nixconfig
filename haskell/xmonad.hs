@@ -250,7 +250,7 @@ myLogHook h =   dynamicLogWithPP xmobarPP
 
 -- startuphook{{{
 myStartupHook = do
-    spawnOnce "feh --bg-fill /etc/wallpapers/wallpaper2.png &"
+    spawnOnce "nitrogen --restore"
     spawnOnce "fcitx &"
     spawnOnce "light-locker &"
 -- }}}

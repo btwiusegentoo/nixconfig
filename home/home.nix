@@ -56,6 +56,7 @@ in
     fontforge
     unstable.ueberzug
     unstable.pandoc
+    unstable.nitrogen
     # nixpkgs
     nixpkgs-fmt
     nixpkgs-review
@@ -437,8 +438,8 @@ in
             };
             window = {
             padding = {
-                x = 5;
-                y = 5;
+                x = 12;
+                y = 12;
             };
             dynamic_padding = false;
             decorations = "none";
@@ -461,18 +462,18 @@ in
                 family = "Tamzen";
                 style = "Regular";
             };
-            size = 12;
+            size = 11;
             offset = {
                 x = 0;
-                y = 11;
+                y = 10;
             };
             glyph_offset = {
                 x = 0;
-                y = 5;
+                y = 6;
             };
             };
             draw_bold_text_with_bright_colors = false;
-            background_opacity = 0.9;
+            background_opacity = 0.95;
             key_bindings = [
             {
                 key = "V";
