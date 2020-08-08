@@ -44,10 +44,11 @@ self: super: with pkgs; {
     vimAlias = true;
     };
     neovim-unwrapped = unstable.neovim-unwrapped.overrideAttrs (oldattrs: {
+        ## use neovim nightly
         version = "master";
         src = builtins.fetchGit {
-            url = "https://github.com/neovim/neovim.git";
-            rev = "54ff1cdd76518d88d5e530afc56a9b8c2b7633be";
+            url = "https://github.com/neovim/neovim";
+            rev = "f26df8bb66158baacb79c79822babaf137607cd6";
         };
         patches = oldattrs.patches ++ [ ../patches/nvim_fix_terminal_colors.patch ];
     });
