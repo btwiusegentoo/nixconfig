@@ -177,7 +177,9 @@ endfunction
 " whichkey{{{
 
 " set timeout before show which-key
-set timeoutlen=500
+set timeoutlen=1000
+set ttimeout
+set ttimeoutlen=30
 " set which-key floating window color to same as normal floating window
 hi! WhichKeyFloating guifg=#A6ACCD guibg=#292D3E
 " use floating window for which-key
@@ -476,7 +478,8 @@ nnoremap <C-K> :call <SID>show_documentation()<CR>
 nnoremap <silent> <leader>t :terminal<CR>
 
 " Bind double esc to exit insert mode in terminal
-tnoremap <silent> <Esc><Esc> <C-\><C-n>
+au TermOpen * tnoremap <buffer> <Esc><Esc> <C-\><C-n>
+au FileType fzf tunmap <buffer> <Esc><Esc>
 
 " Git
 " open lazygit

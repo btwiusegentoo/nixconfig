@@ -317,6 +317,8 @@ in
             fish_vi_key_bindings
             set fish_greeting
 
+            set -U fish_escape_delay_ms 10
+
             set -U fish_color_autosuggestion 676e95
             set -U fish_color_cancel -r
             set -U fish_color_command green #white
