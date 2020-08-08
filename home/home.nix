@@ -36,7 +36,7 @@ in
     gitAndTools.diff-so-fancy
     ripgrep
     fd
-    fzf
+    unstable.fzf
     binutils
     killall
     neofetch
@@ -368,10 +368,9 @@ in
             enable = true;
             viAlias = true;
             vimAlias = true;
-            withPython3 = true;
         configure = {
             # plugins {{{
-            plug.plugins = with unstable.vimPlugins // plugins; [
+            plug.plugins = with master.vimPlugins // plugins; [
                 coc-nvim
                 coc-json
                 coc-css
@@ -412,6 +411,7 @@ in
                 tabular
                 dashboard-nvim
                 fzf-vim
+                fzf-proj
                 fzfWrapper
                 vim-which-key
                 indent-blankline
@@ -420,6 +420,7 @@ in
                 vim-orgmode
                 rust-vim
                 coc-rust-analyzer
+                vim-rooter
             ]; #}}}
 
             customRC = import ./config/nvim.vim;
@@ -462,10 +463,10 @@ in
                 family = "Tamzen";
                 style = "Regular";
             };
-            size = 11;
+            size = 11.25;
             offset = {
-                x = 0;
-                y = 10;
+                x = 1;
+                y = 12;
             };
             glyph_offset = {
                 x = 0;
@@ -473,7 +474,7 @@ in
             };
             };
             draw_bold_text_with_bright_colors = false;
-            background_opacity = 0.95;
+            background_opacity = 0.9;
             key_bindings = [
             {
                 key = "V";

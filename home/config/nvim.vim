@@ -145,6 +145,7 @@ let g:dashboard_default_executive = "fzf"
 let g:dashboard_custom_section = {
 \ 'last_session'         :['  Reload last session                   SPC s l'],
 \ 'find_history'         :['  Recently opened files                 SPC f h'],
+\ 'open_project'         :['  Open project                          SPC f p'],
 \ 'find_word'            :['  Find  word                            SPC f d'],
 \ 'find_file'            :['  Find  File                            SPC f f'],
 \ 'private_config'       :['  Open private configuration            SPC r c']
@@ -164,6 +165,10 @@ function! FIND_WORD()
     Rg
 endfunction
 
+function! OPEN_PROJECT()
+    Projects
+endfunction
+
 function! LAST_SESSION()
     SessionLoad
 endfunction
@@ -172,7 +177,7 @@ endfunction
 " whichkey{{{
 
 " set timeout before show which-key
-set timeoutlen=300
+set timeoutlen=500
 " set which-key floating window color to same as normal floating window
 hi! WhichKeyFloating guifg=#A6ACCD guibg=#292D3E
 " use floating window for which-key
@@ -197,6 +202,7 @@ let g:which_key_map_space.f = {
         \ 'h' : 'History',
         \ 'l' : 'Lines',
         \ 'd' : 'Word',
+        \ 'p' : 'Projects',
         \ }
 
 let g:which_key_map_space.b = {
@@ -277,7 +283,17 @@ function! FZF_float_window()
     call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
     au BufWipeout <buffer> exe 'bw '.s:buf
 endfunction
+
+let g:fzf#proj#project_dir = '~/projects/'
+let g:fzf#proj#max_proj_depth = 2
+let g:fzf#proj#project#open_new_tab = 0
 " }}}
+
+" vim-rooter{{{
+let g:rooter_cd_cmd = 'lcd'
+let g:rooter_silent_chdir = 1
+let g:rooter_patterns = ['.git', 'Makefile', '*.sln', 'build/env.sh']
+"}}}
 
 "lightline{{{
 let g:lightline = {
@@ -410,7 +426,7 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 " coc-explorer
-map <leader>n :CocCommand explorer<CR>
+map <silent> <leader>n :CocCommand explorer<CR>
 "move lines
 nnoremap <A-j> :m .+1<CR>==
 nnoremap <A-k> :m .-2<CR>==
@@ -434,9 +450,9 @@ nnoremap <S-k> :bprevious<CR>
 
 " buffers
 " new buffer
-nnoremap <leader>T :enew<cr>
+nnoremap <silent> <leader>T :enew<cr>
 " Close the current buffer and move to the previous one
-nnoremap <leader>bq :bp <BAR> bd #<CR>
+nnoremap <silent> <leader>bq :bp <BAR> bd #<CR>
 " search buffers
 nnoremap <silent> <leader>bb :Buffers<CR>
 
@@ -445,6 +461,7 @@ nnoremap <silent> <Leader>fh :History<CR>
 nnoremap <silent> <Leader>ff :Files<CR>
 nnoremap <silent> <Leader>fl :Lines<CR>
 nnoremap <silent> <Leader>fd :Rg<CR> 
+nnoremap <silent> <Leader>fp :Projects<CR>
 
 " dashboard-nvim
 nmap <Leader>ss :<C-u>SessionSave<CR>
@@ -456,20 +473,20 @@ nnoremap <leader><S-f>  :call CocAction('format')<CR>
 nnoremap <C-K> :call <SID>show_documentation()<CR>
 
 " open terminal
-nnoremap <leader>t :terminal<CR>
+nnoremap <silent> <leader>t :terminal<CR>
 
 " Bind double esc to exit insert mode in terminal
 tnoremap <silent> <Esc><Esc> <C-\><C-n>
 
 " Git
 " open lazygit
-nnoremap <leader>gg :<c-u>LazyGit<CR>
+nnoremap <silent> <leader>gg :<c-u>LazyGit<CR>
 " open git log graph
-nnoremap <leader>gl :<c-u>GV<CR>
+nnoremap <silent> <leader>gl :<c-u>GV<CR>
 " open diff of staged file side by side with working tree version
-nnoremap <leader>gds :<c-u>Gdiffsplit<CR>
+nnoremap <silent> <leader>gds :<c-u>Gdiffsplit<CR>
 " Open git diff of current repo
-nnoremap <leader>gdf :<c-u>Git diff<CR>
+nnoremap <silent> <leader>gdf :<c-u>Git diff<CR>
 
 "}}}
 
@@ -518,7 +535,7 @@ autocmd TermOpen * IndentLinesDisable
 autocmd FileType dashboard set showtabline=0 | autocmd WinLeave <buffer> set showtabline=2
 " show which-key instantly inside dashboard(prevents loading buffers
 " specifically terminal without statusline and tabline.)
-autocmd Filetype dashboard set timeoutlen=0 | autocmd WinLeave <buffer> set timeoutlen=300
+autocmd Filetype dashboard set timeoutlen=0 | autocmd WinLeave <buffer> set timeoutlen=500
 " highlight yanked text
 autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=1000, on_visual=true}
 

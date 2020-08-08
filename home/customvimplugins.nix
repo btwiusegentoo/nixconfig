@@ -173,6 +173,16 @@ in {
         };
     };
 
+    "fzf-proj" = buildVimPlugin {
+        name = "fzf-proj";
+        src = fetchFromGitHub {
+            owner = "hkupty";
+            repo = "fzf-proj.vim";
+            rev = "ba37ccbf02b4eecb97e455cf6b5246e95ece409e";
+            sha256 = "0m30vajzavbjc1qacih8g6dwpxa4nmqcr9bc58ms6bphb5p4gd3d";
+        };
+    };
+
 }
 
 # vim: foldmethod=marker shiftwidth=4:
