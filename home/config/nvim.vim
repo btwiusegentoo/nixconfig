@@ -541,6 +541,8 @@ autocmd FileType dashboard set showtabline=0 | autocmd WinLeave <buffer> set sho
 autocmd Filetype dashboard set timeoutlen=0 | autocmd WinLeave <buffer> set timeoutlen=500
 " highlight yanked text
 autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=1000, on_visual=true}
+" Disable terminal numbers(non relative)
+autocmd TermOpen * setlocal nonu
 
 " enable neovim-remote for lazygit
 " (use split when git commit in lazygit)
