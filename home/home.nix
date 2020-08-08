@@ -861,7 +861,7 @@ in
             config.bind('yf', 'hint links spawn mpv --force-window yes {hint-url}')
             c.url.searchengines = {'DEFAULT': 'https://google.com/search?q={}'}
             c.content.user_stylesheets = ['~/.config/qutebrowser/css/palenight-all-sites.css']
-            #c.content.user_stylesheets = ['~/mygit/palenight-everything-css/palenight-all-sites.css']
+            #c.content.user_stylesheets = ['~/projects/palenight-everything-css/palenight-all-sites.css']
         '';
 
         };
@@ -1277,7 +1277,7 @@ in
 
         "qutebrowser/css/palenight-all-sites.css".source = pkgs.fetchurl {
             url = "https://raw.githubusercontent.com/btwiusegentoo/palenight-everything-css/master/palenight-all-sites.css";
-            sha256 = "01ms52icxv1spli3hic4z4swzw61nfgrr246f4i4ab4akaaaj8ny";
+            sha256 = "051aqyvh6glbd4f5yivynj7zq75dncfl16n2r011z5qvy543zi4p";
         };
 
     };
