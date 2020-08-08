@@ -442,7 +442,7 @@ in
             window = {
             padding = {
                 x = 12;
-                y = 12;
+                y = 0;
             };
             dynamic_padding = false;
             decorations = "none";
