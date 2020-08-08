@@ -41,7 +41,7 @@ Installation
 \
 I don\'t recommend installing this config. but you can try if you want.
 It\'s hardcoded now in several places to use `/home/btw/.nixconfig.` so
-you have to use as it is or change username. You need to have `git`
+you have to use as it is or change username, change paths, what you want. You need to have `git`
 installed and you have to be on nixos-stable. You have to change
 hardware configurations.
 ```bash
