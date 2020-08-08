@@ -1,0 +1,16 @@
+#+TITLE: TODO
+#+STARTUP: nofold
+
+* NixOS config
+** TODO Pin nixos-stable rev to make more reproducible
+** TODO Use nix flakes instead of importing tarball
+** TODO Use flake for home-manager instead of using as module
+* neovim
+** DONE Implement config sourcing without exiting neovim
+** DONE Implement projectile like function
+** TODO Integrate nix package manager with neovim (Maybe look at emacs)
+** TODO Integrate lorri/nix-shell with neovim
+** TODO Find a better way to play music inside neovim with mpsyt
+** TODO Maybe try tree-sitter. Curretly I can't fix lua.callback error
+* xmonad
+* xmobar
