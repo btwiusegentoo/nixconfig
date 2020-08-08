@@ -1,5 +1,9 @@
 #+TITLE: TODO
 #+STARTUP: nofold
+#+begin_quote:
+My NixOS config todos. It's designed to be viewed within vim
+with org mode plugin or emacs.
+#+end_quote
 
 * NixOS config
 ** TODO Pin nixos-stable rev to make more reproducible
