@@ -37,7 +37,7 @@ myClickJustFocuses :: Bool
 myClickJustFocuses = False
 myBorderWidth   = 2
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
-myNormalBorderColor  = "#292D3E"
+myNormalBorderColor  = "#2b2a3e"
 myFocusedBorderColor = "#c792ea"
 myGaps = spacingRaw False (Border 4 4 4 4) True (Border 4 4 4 4) True
 -- }}}
