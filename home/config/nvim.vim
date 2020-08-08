@@ -27,7 +27,7 @@ if !exists("*SourceConfigCommand")
     endfunction
 endif
 
-set modelines=5
+set modelines=2
 syntax on
 filetype plugin indent on
 " hybrid number
@@ -44,7 +44,7 @@ set wildmenu
 set showtabline=2
 "Don't show mode below statusbar because lightline already shows.
 set noshowmode
-set cmdheight=2
+"set cmdheight=2
 set ignorecase
 set smartcase
 set wrapscan
@@ -419,16 +419,16 @@ vnoremap <silent> <localleader> :<c-u>WhichKeyVisual ','<CR>
 " save(spc w)
 nnoremap <Leader>w :w<CR>
 " source init.vim without exiting neovim
-nmap <silent> <leader>rr :<c-u>call SourceConfigCall()<CR>
+nnoremap <silent> <leader>rr :<c-u>call SourceConfigCall()<CR>
 " Browse private configuration
-nmap <silent> <leader>rc :<c-u>FZF ~/.nixconfig<CR>
+nnoremap <silent> <leader>rc :<c-u>FZF ~/.nixconfig<CR>
 "move window with ctrlhjkl
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 " coc-explorer
-map <silent> <leader>n :CocCommand explorer<CR>
+nnoremap <silent> <leader>n :CocCommand explorer<CR>
 "move lines
 nnoremap <A-j> :m .+1<CR>==
 nnoremap <A-k> :m .-2<CR>==
@@ -466,8 +466,8 @@ nnoremap <silent> <Leader>fd :Rg<CR>
 nnoremap <silent> <Leader>fp :Projects<CR>
 
 " dashboard-nvim
-nmap <Leader>ss :<C-u>SessionSave<CR>
-nmap <Leader>sl :<C-u>SessionLoad<CR>
+nnoremap <Leader>ss :<C-u>SessionSave<CR>
+nnoremap <Leader>sl :<C-u>SessionLoad<CR>
 
 " coc
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
