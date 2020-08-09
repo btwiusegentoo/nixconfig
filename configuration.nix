@@ -108,8 +108,8 @@ in
 
     zramSwap = {
         enable = true;
-        algorithm = "zstd";
-        memoryPercent = 60;
+        algorithm = "lz4";
+        memoryPercent = 100;
     };
 
     #Networking{{{
