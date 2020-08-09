@@ -16,7 +16,7 @@ let
         xmonad-contrib
         xmonad-extras
         apply-refact
-        ghcide
+        haskell-language-server
         stylish-haskell
         cabal-install
         hlint
@@ -1013,29 +1013,23 @@ in
 
             "languageserver": {
                 "haskell": {
-                "command": "ghcide",
-                "args": [
-                    "--lsp"
-                ],
-                "rootPatterns": [
-                    ".stack.yaml",
-                    ".hie-bios",
-                    "BUILD.bazel",
-                    "cabal.config",
-                    "package.yaml"
-                ],
-                "filetypes": [
-                    "hs",
-                    "lhs",
-                    "haskell"
-                ],
-                "settings": {
-                    "languageServerHaskell": {
-                        "hlintOn": true,
-                        "maxNumberOfProblems": 10,
-                        "completionSnippetsOn": true
+                    "command": "haskell-language-server-wrapper",
+                    "args": ["--lsp"],
+                    "rootPatterns": [
+                        "*.cabal",
+                        "stack.yaml",
+                        "cabal.project",
+                        "package.yaml"
+                    ],
+                    "filetypes": [
+                        "hs",
+                        "lhs",
+                        "haskell"
+                    ],
+                    "initializationOptions": {
+                        "haskell": {
                         }
-                }
+                    }
                 },
                 "nix": {
                     "command": "rnix-lsp",
@@ -1055,28 +1049,6 @@ in
 
         }
         '';
-        ##haskell-language-server
-        #"languageserver": {
-        #"haskell": {
-        #"command": "haskell-language-server-wrapper",
-        #"args": ["--lsp"],
-        #"rootPatterns": [
-        #"*.cabal",
-        #"stack.yaml",
-        #"cabal.project",
-        #"package.yaml"
-        #],
-        #"filetypes": [
-        #"hs",
-        #"lhs",
-        #"haskell"
-        #],
-        #"initializationOptions": {
-        #"languageServerHaskell": {
-        #}
-        #}
-        #}
-        #}
 
         # }}}
 
