@@ -69,10 +69,7 @@ Summary of Features
 -   Apple emoji
 -   Apple SF fonts installed
 -   Some packages from unstable while running stable branch
--   It assumes you are using 1080p and scales to WQHD. You will want to
-    disable if you are using other resolution. You can find in home.nix
-    (xsession.profileExtra) If you will change resolution, I think you
-    will also want to change font sizes.
+-   It assumes you are using 1080p and scales DVI-D-0 to WQHD. You will want to disable if you are using other resolution. You can find in home.nix(xsession.profileExtra) If you will change resolution, I think you will also want to change font sizes.
 
 
 
