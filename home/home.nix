@@ -208,6 +208,12 @@ in
         #git{{{
         git = {
         enable = true;
+        package = unstable.git;
+        extraConfig = {
+            init = {
+                defaultBranch = "main";
+            };
+        };
         userName = "btwiusegentoo";
         userEmail = "66811008+btwiusegentoo@users.noreply.github.com";
         };
