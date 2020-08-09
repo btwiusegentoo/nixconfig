@@ -17,4 +17,5 @@ with org mode plugin or emacs.
 ** TODO Find a better way to play music inside neovim with mpsyt
 ** TODO Maybe try tree-sitter. Curretly I can't fix lua.callback error
 * xmonad
+** TODO Fix light-locker dual lock problem.
 * xmobar
