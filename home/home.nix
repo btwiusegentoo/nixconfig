@@ -468,12 +468,12 @@ in
             };
             size = 11.25;
             offset = {
-                x = 1;
-                y = 12;
+                x = 0;
+                y = 10;
             };
             glyph_offset = {
                 x = 0;
-                y = 6;
+                y = 5;
             };
             };
             draw_bold_text_with_bright_colors = false;
