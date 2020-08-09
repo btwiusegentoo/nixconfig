@@ -19,3 +19,4 @@ with org mode plugin or emacs.
 * xmonad
 ** TODO Fix light-locker dual lock problem.
 * xmobar
+** TODO Use other iconfont.
