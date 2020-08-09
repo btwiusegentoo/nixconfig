@@ -99,6 +99,7 @@ in
     xkb-switch
     unstable.libinput-gestures
     unstable.xdotool
+    unstable.xfontsel
     xorg.xev
     file
     catimg
