@@ -1247,10 +1247,13 @@ in
         '';
         # }}}
 
-        #"qutebrowser/css/palenight-all-sites.css".source = pkgs.fetchurl {
-            #url = "https://raw.githubusercontent.com/btwiusegentoo/palenight-everything-css/master/palenight-all-sites.css";
-            #sha256 = "1j1gmih5c1g91n7ml09ygz6c6zdc8pzdv3dwfa7r4rhfp4m3bz1k";
-        #};
+        "qutebrowser/css/palenight-all-sites.css".source = pkgs.fetchurl {
+            url = "https://raw.githubusercontent.com/btwiusegentoo/palenight-everything-css/master/palenight-all-sites.css";
+            sha256 = "1j1gmih5c1g91n7ml09ygz6c6zdc8pzdv3dwfa7r4rhfp4m3bz1k";
+        };
+
+        ## for local testing purposes
+        #"qutebrowser/css/palenight-all-sites.css".source = ../../projects/palenight-everything-css/palenight-all-sites.css;
 
     };
     # }}}
