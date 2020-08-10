@@ -250,8 +250,13 @@ myLogHook h =   dynamicLogWithPP xmobarPP
 
 -- startuphook{{{
 myStartupHook = do
+    -- set default wallpaper
+    spawnOnce "feh --bg-fill /etc/wallpapers/wallpaper1.png"
+    -- now set custom wallpaper if config exists
     spawnOnce "nitrogen --restore"
+    -- spawn Japanese IME
     spawnOnce "fcitx &"
+    -- screen locker( <MOD>o )
     spawnOnce "light-locker &"
 -- }}}
 
