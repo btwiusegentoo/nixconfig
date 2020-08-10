@@ -23,3 +23,6 @@ it's not meant to read from GitHub.
 ** TODO Fix light-locker dual lock problem.
 * xmobar
 ** TODO Use other iconfont.
+* qutebrowser
+** TODO Fix widevine
+** TODO Upgrade chromium version(if I can)
