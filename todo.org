@@ -2,13 +2,15 @@
 #+STARTUP: nofold
 #+begin_quote:
 My NixOS config todos. It's designed to be viewed within vim
-with org mode plugin or emacs.
+with org mode plugin or emacs. I don't care how it looks on GitHub because
+it's not meant to read from GitHub.
 #+end_quote
 
 * NixOS config
 ** TODO Pin nixos-stable rev to make more reproducible
 ** TODO Use nix flakes instead of importing tarball
 ** TODO Use flake for home-manager instead of using as module
+** TODO Try nix-darwin for hackintosh
 * neovim
 ** DONE Implement config sourcing without exiting neovim
 ** DONE Implement projectile like function
