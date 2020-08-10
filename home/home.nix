@@ -489,11 +489,11 @@ in
             size = 11.25;
             offset = {
                 x = 0;
-                y = 10;
+                y = 14;
             };
             glyph_offset = {
                 x = 0;
-                y = 5;
+                y = 7;
             };
             };
             draw_bold_text_with_bright_colors = false;
