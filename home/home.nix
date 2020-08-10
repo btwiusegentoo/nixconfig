@@ -918,7 +918,7 @@ in
             character = {
             style_success = "#c792ea";
             use_symbol_for_status = true;
-            symbol = "λ";
+            symbol = "ﬦ";
             vicmd_symbol = " ";
             error_symbol = "☓ ";
             };
@@ -985,7 +985,7 @@ in
     "textfiles/neofetchascii.txt".source = ../textfiles/neofetchascii.txt;
 
     ".ghc/ghci.conf".text = ''
-        :set prompt "%s λ: "
+        :set prompt "%s ﬦ: "
     '';
 
   };
