@@ -26,7 +26,7 @@ let
     # }}}
 
     # import variables
-    username = (import ./uservars.nix).username;
+    username = (import ../uservars.nix).username;
 
 in
 {
