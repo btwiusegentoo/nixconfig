@@ -32,6 +32,9 @@ let
 
     # }}}
 
+    # import variables
+    username = (import ./uservars.nix).username;
+
 in
 {
 
@@ -43,6 +46,8 @@ in
             (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/master.tar.gz}/nixos")
           # import unstable doas
             (import "${builtins.fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz}/nixos/modules/security/doas.nix")
+          # import user settings
+            ./usersettings.nix
         ];
     # }}}
 
@@ -151,8 +156,7 @@ in
     i18n.inputMethod.enabled = "fcitx";
     i18n.inputMethod.fcitx.engines = with pkgs.fcitx-engines; [ mozc ];
 
-    # Set your time zone.
-    time.timeZone = "Asia/Tokyo";# }}}
+    # }}}
 
     # set global environment variables {{{
     environment.variables = {
@@ -169,6 +173,15 @@ in
         fstrim.enable = true;
         blueman.enable = true;
         gnome3.gnome-keyring.enable = true;
+        openssh = {
+            enable = true;
+            challengeResponseAuthentication = false;
+            forwardX11 = false;
+            openFirewall = true;
+            passwordAuthentication = false;
+            permitRootLogin = "no";
+            useDns = false;
+        };
     };
 
     # Enable sound.
@@ -197,10 +210,10 @@ in
         displayManager.lightdm = {
             enable = true;
             autoLogin.enable = true;
-            autoLogin.user = "btw";
+            autoLogin.user = "${username}";
             greeters.mini = {
                 enable = true;
-                user = "btw";
+                user = "${username}";
                 extraConfig = ''
                     [greeter]
                     show-password-label = false
@@ -233,12 +246,12 @@ in
     home-manager = {
         useUserPackages=true;
         verbose = true;
-        users.btw = import ./home/home.nix;
+        users.${username} = import ./home/home.nix;
     };
 
 
     # Define a user account. Don't forget to set a password with ‘passwd’.{{{
-    users.users.btw = {
+    users.users.${username} = {
         isNormalUser = true;
         extraGroups = [ "wheel" "input" ];
         shell = pkgs.fish;

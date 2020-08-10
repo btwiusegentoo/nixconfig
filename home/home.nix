@@ -25,6 +25,9 @@ let
     );
     # }}}
 
+    # import variables
+    username = (import ./uservars.nix).username;
+
 in
 {
 
@@ -112,12 +115,6 @@ in
     asciiquarium
   ];
   #}}}
-
-  # keyboard layout{{{
-  home.keyboard = {
-    layout = "us";
-    variant = "dvorak";
-  }; #}}}
 
   # services {{{
     services = {
@@ -1283,7 +1280,6 @@ in
     xsession = {
         enable = true;
         scriptPath = ".hm-xsession";
-        profileExtra = "xrandr --output DVI-D-0 --scale 1.33333333333333x1.33333333333333 --panning 2560x1440 ";
 
         #xmonad{{{
         windowManager.xmonad = {
@@ -1310,8 +1306,8 @@ in
     # Home Manager config{{{
     # Home Manager needs a bit of information about you and the
     # paths it should manage.
-    home.username = "btw";
-    home.homeDirectory = "/home/btw";
+    home.username = "${username}";
+    home.homeDirectory = "/home/${username}";
 
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
