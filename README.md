@@ -45,10 +45,14 @@ you have to use as it is or change username, change paths, what you want. You ne
 installed and you have to be on nixos-stable. You have to change
 hardware configurations.
 ```bash
-git clone https://github.com/btwiusegentoo/nixconfig
-/home/btw/.nixconfig ln -s /home/btw/.nixconfig/configuration.nix /etc/nixos/configuration.nix
+git clone https://github.com/btwiusegentoo/nixconfig /home/btw/.nixconfig
+ln -s /home/btw/.nixconfig/configuration.nix /etc/nixos/configuration.nix
 ```
 home-manager is configured as module so channel is not needed anymore.
+
+After installation,(If you clean installed) don't forget to set user password.
+Also, you will have to run `doas chown -R btw ~/.nixconfig` after logged in to edit configs.
+And maybe you will have to remove symlink and update to new symlink.
 
 Summary of Features
 -------------------
