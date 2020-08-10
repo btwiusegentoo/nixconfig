@@ -6,9 +6,9 @@ home-manager + xmonad + neovim💛
 
 
 
-![screenshot1](/screenshot1.png)
-![screenshot2](/screenshot2.png)
-![wallpaper](/wallpaper1.png)
+![screenshot1](/pictures/screenshot1.png)
+![screenshot2](/pictures/screenshot2.png)
+![wallpaper](/pictures/wallpaper1.png)
 
 
 

@@ -297,8 +297,8 @@ in
     '';
     # }}}
 
-    environment.etc."wallpapers/wallpaper1.png".source = ./wallpaper1.png;
-    environment.etc."wallpapers/wallpaper2.png".source = ./wallpaper2.png;
+    environment.etc."wallpapers/wallpaper1.png".source = ./pictures/wallpaper1.png;
+    environment.etc."wallpapers/wallpaper2.png".source = ./pictures/wallpaper2.png;
     # I will not delete just to make a example.
     # use pkgs.writeScript to make executable.
     #environment.etc."lightdm/xrandr.sh".source = pkgs.writeScript "xrandr.sh" ''
