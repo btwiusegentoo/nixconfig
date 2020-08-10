@@ -255,9 +255,9 @@ myStartupHook = do
     -- now set custom wallpaper if config exists
     spawnOnce "nitrogen --restore"
     -- spawn Japanese IME
-    spawnOnce "fcitx &"
     -- screen locker( <MOD>o )
     spawnOnce "light-locker &"
+    spawnOnce "fcitx -d"
 -- }}}
 
 myEventHook = mempty
