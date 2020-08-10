@@ -243,6 +243,7 @@ in
             "cat" = "bat";
             "top" = "ytop";
             "untar" = "tar -xvzf";
+            "uefi" = "systemctl restart --firmware-setup";
             #Git
             "lg" = "lazygit";
             "g" = "git";
