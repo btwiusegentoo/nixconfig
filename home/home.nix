@@ -197,6 +197,13 @@ in
 
         lorri.enable = true;
 
+        screen-locker = {
+            enable = true;
+            enableDetectSleep = true;
+            inactiveInterval = 10;
+            lockCmd = "\${pkgs.lightlocker}/bin/light-locker-command -l";
+        };
+
     };
     #}}}
 

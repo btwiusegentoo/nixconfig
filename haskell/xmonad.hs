@@ -95,7 +95,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
         case layout of
              "Spacing BSP" -> sendMessage Rotate
              _             -> sendMessage (IncMasterN (-1)))
-    , ((modm              ,   xK_o      ), spawn "light-locker-command --lock")
+    , ((modm              ,   xK_o      ), spawn "light-locker-command -l")
     , ((modm .|. shiftMask,   xK_q      ), confirmPrompt myXPConfig "exit" $ io exitSuccess)
     , ((modm              ,   xK_q      ), spawn "xmonad --recompile; xmonad --restart")
     ]
@@ -255,9 +255,9 @@ myStartupHook = do
     -- now set custom wallpaper if config exists
     spawnOnce "nitrogen --restore"
     -- spawn Japanese IME
-    -- screen locker( <MOD>o )
-    spawnOnce "light-locker &"
     spawnOnce "fcitx -d"
+    -- start screen locker
+    spawnOnce "light-locker --lock-on-suspend"
 -- }}}
 
 myEventHook = mempty
