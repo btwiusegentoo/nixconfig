@@ -81,7 +81,7 @@ nixos-install
 
 I think will make a script or TUI or something to make installation easier in the future. it's a bit complicated now.
 
-##Summary of Features
+## Summary of Features
 
 
 
@@ -101,7 +101,7 @@ I think will make a script or TUI or something to make installation easier in th
 -   Some packages from unstable while running stable branch
 
 
-##Credits
+## Credits
 
 [NixOS/nixos-artwork](https://github.com/NixOS/nixos-artwork/tree/master/logo)
 -\> NixOS logo. used on wallpaper. Just changed colors. used under
