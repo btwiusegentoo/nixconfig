@@ -420,6 +420,7 @@ in
                 vim-cpp-modern
                 indenthaskell
                 vim-stylishask
+                hlint-refactor-vim
                 haskell-vim
                 vim-tmux-navigator
                 tmuxline
