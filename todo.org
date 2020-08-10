@@ -11,6 +11,8 @@ it's not meant to read from GitHub.
 ** TODO Use nix flakes instead of importing tarball
 ** TODO Use flake for home-manager instead of using as module
 ** TODO Try nix-darwin for hackintosh
+** TODO Fix lambda prompt after clean installation
+** TODO Find a way to store secrets
 * neovim
 ** DONE Implement config sourcing without exiting neovim
 ** DONE Implement projectile like function
