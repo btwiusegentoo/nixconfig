@@ -18,6 +18,7 @@ it's not meant to read from GitHub.
 ** TODO Integrate lorri/nix-shell with neovim
 ** TODO Find a better way to play music inside neovim with mpsyt
 ** TODO Maybe try tree-sitter. Curretly I can't fix lua.callback error
+** TODO Use neovim as manpager
 * xmonad
 ** TODO Fix light-locker dual lock problem.
 * xmobar
