@@ -36,7 +36,8 @@ If you are new to nixos, maybe you can get idea how to install neovim plugins an
 I still have many room of improvement and I don't recommend installing this config.
 Maybe I will force push or make breaking changes without notice. but you can try if you want.
 Make sure you already have formatted partition and mounted to /mnt. I recommend to encrypt with luks.
-If no, follow nixos manual [here](https://nixos.org/nixos/manual/)
+If you don't know how to format partition, follow nixos manual [here](https://nixos.org/nixos/manual/)
+or, search google.
 
 ### Clone repo and symlink
 Choose your username here.
