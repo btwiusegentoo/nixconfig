@@ -31,7 +31,7 @@ I try to install packages/manage config files declarative using `configuration.n
 I personally use vim folds(marker) to make config files readable.
 If you are new to nixos, maybe you can get idea how to install neovim plugins and fish plugins,haskell packages,python packages from this config.
 
-##Installation
+## Installation
 
 I still have many room of improvement and I don't recommend installing this config.
 Maybe I will force push or make breaking changes without notice. but you can try if you want.
