@@ -220,6 +220,11 @@ in
             init = {
                 defaultBranch = "main";
             };
+            url = {
+                "git@github.com:" = {
+                    insteadOf = "https://github.com/";
+                };
+            };
         };
         userName = "btwiusegentoo";
         userEmail = "66811008+btwiusegentoo@users.noreply.github.com";
