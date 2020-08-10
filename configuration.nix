@@ -39,8 +39,6 @@ in
     imports =
         [ # Include the results of the hardware scan.
             ./hardware-configuration.nix
-          # Include secrets
-            ./secrets/sshconfig.nix
           # import home-manager module
             (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/master.tar.gz}/nixos")
           # import unstable doas
