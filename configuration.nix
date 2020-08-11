@@ -231,8 +231,6 @@ in
                 '';
             }
         ];
-        #desktopManager.xterm.enable = false;
-        #displayManager.defaultSession = "none+xmonad";
         displayManager.lightdm = {
             enable = true;
             autoLogin.enable = true;
@@ -248,19 +246,6 @@ in
                 '';
             };
         };
-        #windowManager.i3.enable = true;
-        #windowManager.i3.package = pkgs.i3-gaps;
-        #windowManager.xmonad = {
-            #enable = true;
-            #enableContribAndExtras = true;
-            #haskellPackages = 
-                #unstable.haskell.packages.ghc882;
-            #extraPackages = haskellPackages: [
-                #haskellPackages.xmonad-contrib
-                #haskellPackages.xmonad-extras
-                #haskellPackages.xmonad
-            #];
-        #};
         wacom.enable = true;
         autoRepeatDelay = 200;
         autoRepeatInterval = 25;
