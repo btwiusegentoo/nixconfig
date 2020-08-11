@@ -32,7 +32,7 @@ config = defaultConfig {
                                                        "-O", "\61480", -- on
                                                        "-o", "\61478", -- off
                                                        "-C", "#FFFFFF",
-                                                       "-c", "#f07178"] 5
+                                                       "-c", "#f07178"] 3
                     , Run StdinReader
                     ]
        , sepChar = "%"
