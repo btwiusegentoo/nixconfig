@@ -80,7 +80,7 @@ nixos-install
 - You have to run `doas chown -R <username> ~/.nixconfig` after logged in to make configs editable.
 - You will have to update configuration.nix symlink after installation.
 
-I think will make a script or TUI or something to make installation easier in the future. it's a bit complicated now.
+I think I will make a script or TUI or something to make installation easier in the future. it's a bit complicated now.
 
 ## Summary of Features
 
