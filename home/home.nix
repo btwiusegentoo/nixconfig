@@ -1100,7 +1100,7 @@ in
         refresh_rate="off"
         de_version="off"
         colors=(distro)
-        bold="on"
+        bold="off"
         underline_enabled="on"
         underline_char="-"
         separator="    \t"
