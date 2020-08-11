@@ -113,13 +113,13 @@ in {
         };
     };
 
-    "vim-deviconsfork" = buildVimPlugin {
-        name = "vim-deviconsfork";
+    "vim-devicons" = buildVimPlugin {
+        name = "vim-devicons";
         src = fetchFromGitHub {
-            owner = "btwiusegentoo";
+            owner = "ryanoasis";
             repo = "vim-devicons";
-            rev = "4b41518c3481f0354d4bb44a1df90ef35e39e2f0";
-            sha256 = "0v6dzhw92hmb5bpvyqj0zbsnljrf1qvf442g3adxk37n40dg8rl5";
+            rev = "a5750c6507602a7238e1c87669c64a6d820a319d";
+            sha256 = "16jd40lgcks63lxdqj7glp7qgmw1g7fwk336c5vd418qaj42br7l";
         };
     };
 

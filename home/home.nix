@@ -412,8 +412,7 @@ in
                 lightline-ale
                 lightline-bufferline
                 sky-color-clock-vim
-                #vim-devicons
-                vim-deviconsfork
+                vim-devicons
                 semshi
                 vim-python-pep8-indent
                 vim-fish
