@@ -16,7 +16,7 @@
         fsType = "xfs";
     };
 
-    # point this to where is encrypetd with luks
+    # point this to where is encrypted with luks
     boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/02d555e3-f8d2-4617-860e-06c08bec521b";
 
     fileSystems."/boot" =
