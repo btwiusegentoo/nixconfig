@@ -189,7 +189,6 @@ call which_key#register('<Space>', "g:which_key_map_space")
 let g:which_key_map_space = {} " Define dictionary.
 let g:which_key_map_space.F = 'Format file with coc'
 let g:which_key_map_space.w = 'Save current file'
-let g:which_key_map_space.T = 'Open new buffer'
 let g:which_key_map_space.n = 'Open file tree(coc-explorer)'
 let g:which_key_map_space.y = 'Yank selection to clipboard'
 let g:which_key_map_space.p = 'Paste from clipboard'
@@ -211,6 +210,7 @@ let g:which_key_map_space.b = {
         \ 'name' : '+Buffers',
         \ 'q' : 'Close current buffer',
         \ 'b' : 'FZF Buffers',
+        \ 'n' : 'Open new buffer',
         \ }
 
 let g:which_key_map_space.s = {
@@ -240,18 +240,31 @@ let g:which_key_map_space.g = {
         \ 'name' : '+Git',
         \ 'g' : 'Open lazygit',
         \ 'l' : 'Open git log graph',
-        \ }
-
-let g:which_key_map_space.gd = {
-        \ 'name' : '+diff',
-        \ 's' : 'View the staged version of the file side by side with the working tree version',
-        \ 'f' : 'Open git diff of current repo',
+        \ 'd' : {
+            \ 'name' : '+diff',
+            \ 's' : 'View the staged version of the file side by side with the working tree version',
+            \ 'f' : 'Open git diff of current repo',
+            \ },
         \ }
 
 let g:which_key_map_space.r = {
         \ 'name' : '+Configuration',
         \ 'r' : 'Reload neovim config',
         \ 'c' : 'Open private configuration',
+        \ }
+
+let g:which_key_map_space.T = {
+        \ 'name' : '+Open programs',
+        \ 'y' : 'Youtube',
+        \ 'n' : {
+            \ 'name' : '+Nix',
+            \ 'r' : {
+                \ 'name' : '+Rebuild',
+                \ 's' : 'Switch',
+                \ 't' : 'Test',
+                \ 'b' : 'Boot',
+                \ },
+            \ },
         \ }
 
 "}}}
@@ -452,7 +465,7 @@ nnoremap <S-k> :bprevious<CR>
 
 " buffers
 " new buffer
-nnoremap <silent> <leader>T :enew<cr>
+nnoremap <silent> <leader>bn :enew<cr>
 " Close the current buffer and move to the previous one
 nnoremap <silent> <leader>bq :bp <BAR> bd #<CR>
 " search buffers
@@ -476,6 +489,16 @@ nnoremap <C-K> :call <SID>show_documentation()<CR>
 
 " open terminal
 nnoremap <silent> <leader>t :terminal<CR>
+
+" open programs in new term buffer
+" mps-youtube
+nnoremap <silent> <leader>Ty :term mpsyt<CR>
+" nixos-rebuild switch
+nnoremap <silent> <leader>Tnrs :term doas nixos-rebuild switch<CR>
+" nixos-rebuild test
+nnoremap <silent> <leader>Tnrt :term doas nixos-rebuild test<CR>
+" nixos-rebuild boot
+nnoremap <silent> <leader>Tnrb :term doas nixos-rebuild boot<CR>
 
 " Bind double esc to exit insert mode in terminal
 au TermOpen * tnoremap <buffer> <Esc><Esc> <C-\><C-n>
