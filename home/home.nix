@@ -1140,7 +1140,6 @@ in
                 <family>Tamzen</family>
                 <prefer>
                     <family>GohuFont Nerd Font</family> 
-                    <family>Apple Color Emoji</family>
                 </prefer>
             </alias>
         </fontconfig>
