@@ -11,19 +11,19 @@ config = defaultConfig {
        , bgColor = "#232635"
        --, alpha = 240
        --, bgColor = "#233526" -- Somehow color get messed up when using alpha issue#246 this is the workaround. invert 3rd4th <--> 5th6th like this.
-       , fgColor = "#A6ACCD"
+       , fgColor = "#676E95"
        , position = TopSize L 100 30
        , textOffset = -1
-       , iconOffset = -1
+       , iconOffset = 13
        , lowerOnStart = True
        , pickBroadest = False
        , persistent = False
        , hideOnStart = False
-       , iconRoot = "."
+       , iconRoot = "/etc/icons"
        , allDesktops = True
        , overrideRedirect = True
-       , commands = [ Run $ Cpu ["-t","\57958 <total>%"] 10
-                    , Run $ Memory ["-t","\63578 <used>MB"] 10
+       , commands = [ Run $ Cpu ["-t","<icon=cpu.xpm/> <total>%"] 10
+                    , Run $ Memory ["-t","<icon=activity.xpm/> <used>MB"] 10
                     , Run $ Swap ["-t", "易 \63433 <used>MB"] 10
                     , Run $ Date "%a %m/%_d %H:%M:%S" "date" 10
                     , Run $ Com "uname" [ "-r" ] "" 36000
