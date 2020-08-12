@@ -60,6 +60,7 @@ in
     unstable.ueberzug
     unstable.pandoc
     unstable.nitrogen
+    unstable.chafa
     # nixpkgs
     nixpkgs-fmt
     nixpkgs-review
@@ -95,6 +96,7 @@ in
     unstable.youtube-dl
     unstable.neovim-remote
     unstable.direnv
+    unstable.imagemagick
     # misc
     glxinfo
     xclip
@@ -102,6 +104,7 @@ in
     xkb-switch
     unstable.libinput-gestures
     unstable.xdotool
+    unstable.xorg.xwininfo
     unstable.xfontsel
     xorg.xev
     file
