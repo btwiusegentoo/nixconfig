@@ -67,7 +67,7 @@ self: super: with pkgs; {
     nerdfonts = unstable.nerdfonts;
     doas = unstable.doas;
     # home.nix
-    kitty = unstable.kitty;
+    alacritty = unstable.alacritty;
     fish = unstable.fish;
     youtube-dl = unstable.youtube-dl;
     mpv = unstable.mpv;
