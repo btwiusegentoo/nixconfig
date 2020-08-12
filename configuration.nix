@@ -204,13 +204,6 @@ in
     # sound config
     sound = {
         enable = true;
-        extraConfig = ''
-            pcm.!default {
-                type plug
-                hint.description "Default Audio Device (via PulseAudio)"
-                slave.pcm hw
-            }
-        '';
     };
     #}}}
 
