@@ -104,6 +104,6 @@ I think I will make a script or TUI or something to make installation easier in 
 
 ## Credits
 
-[NixOS/nixos-artwork](https://github.com/NixOS/nixos-artwork/tree/master/logo)
--\> NixOS logo. used on wallpaper. Just changed colors. used under
-[CC-BY license](https://creativecommons.org/licenses/by/4.0/)
+- [NixOS/nixos-artwork](https://github.com/NixOS/nixos-artwork/tree/master/logo) -> NixOS logo. Changed colors and used in wallpaper. Also converted to xpm(without modifications. only cropped) and used in xmobar. used under [CC-BY license](https://creativecommons.org/licenses/by/4.0/)
+- [Tux Logo](https://commons.wikimedia.org/wiki/File:NewTux.svg) used in xmobar
+- [Feather Icons](https://github.com/feathericons/feather) used in xmobar
