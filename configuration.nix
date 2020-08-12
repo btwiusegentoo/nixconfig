@@ -281,35 +281,39 @@ in
 
     #etcfiles{{{
 
-    # change wacom tablet orientation.{{{
-    environment.etc."X11/xorg.conf.d/50-wacomtweak.conf".text = ''
-    Section "InputClass" 
-        Identifier "Wacom"
-        MatchProduct "Wacom Bamboo 16FG 4x5 Finger"
-        Driver "wacom"
-        Option "Rotate" "Half"
-        Option "AccelerationProfile" "-1"
-        Option "AccelerationThreshold" "0.1"
-    EndSection
 
-    Section "InputClass" 
-        Identifier "Wacom"
-        MatchProduct "Wacom Bamboo 16FG 4x5 Pen"
-        Driver "wacom"
-        Option "Rotate" "Half"
-    EndSection
+    environment.etc = {
+        # wallpapers
+        "wallpapers/wallpaper1.png".source = ./pictures/wallpaper1.png;
+        "wallpapers/wallpaper2.png".source = ./pictures/wallpaper2.png;
 
-    Section "InputClass" 
-        Identifier "Wacom"
-        MatchProduct "Wacom Bamboo 16FG 4x5 Pad"
-        Driver "wacom"
-        Option "Rotate" "Half"
-    EndSection
-    '';
-    # }}}
+        # change wacom tablet orientation.{{{
+        "X11/xorg.conf.d/50-wacomtweak.conf".text = ''
+        Section "InputClass" 
+            Identifier "Wacom"
+            MatchProduct "Wacom Bamboo 16FG 4x5 Finger"
+            Driver "wacom"
+            Option "Rotate" "Half"
+            Option "AccelerationProfile" "-1"
+            Option "AccelerationThreshold" "0.1"
+        EndSection
 
-    environment.etc."wallpapers/wallpaper1.png".source = ./pictures/wallpaper1.png;
-    environment.etc."wallpapers/wallpaper2.png".source = ./pictures/wallpaper2.png;
+        Section "InputClass" 
+            Identifier "Wacom"
+            MatchProduct "Wacom Bamboo 16FG 4x5 Pen"
+            Driver "wacom"
+            Option "Rotate" "Half"
+        EndSection
+
+        Section "InputClass" 
+            Identifier "Wacom"
+            MatchProduct "Wacom Bamboo 16FG 4x5 Pad"
+            Driver "wacom"
+            Option "Rotate" "Half"
+        EndSection
+        '';
+        # }}}
+    };
     # I will not delete just to make a example.
     # use pkgs.writeScript to make executable.
     #environment.etc."lightdm/xrandr.sh".source = pkgs.writeScript "xrandr.sh" ''
