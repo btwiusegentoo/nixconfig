@@ -29,8 +29,8 @@ config = defaultConfig {
                     , Run $ Com "uname" [ "-r" ] "" 36000
                     , Run $ CommandReader "pymodoro" "pomodoro"
                     , Run $ Volume "default" "Master" ["-t", "<status> <volume>%", "--",
-                                                       "-O", "\61480", -- on
-                                                       "-o", "\61478", -- off
+                                                       "-O", "<icon=volume-2.xpm/>", -- on
+                                                       "-o", "<icon=volume-x.xpm/>", -- off
                                                        "-C", "#FFFFFF",
                                                        "-c", "#f07178"] 3
                     , Run StdinReader

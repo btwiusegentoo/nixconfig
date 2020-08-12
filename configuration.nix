@@ -292,6 +292,8 @@ in
         "icons/arrow-right.xpm".source = ./icons/arrow-right.xpm;
         "icons/hard-drive.xpm".source = ./icons/hard-drive.xpm;
         "icons/calendar.xpm".source = ./icons/calendar.xpm;
+        "icons/volume-2.xpm".source = ./icons/volume-2.xpm;
+        "icons/volume-x.xpm".source = ./icons/volume-x.xpm;
 
         # change wacom tablet orientation.{{{
         "X11/xorg.conf.d/50-wacomtweak.conf".text = ''
