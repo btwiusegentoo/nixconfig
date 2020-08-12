@@ -1110,8 +1110,6 @@ in
         col_offset="auto"
         image_backend="ascii"
         image_source="$HOME/textfiles/neofetchascii.txt"
-        ascii_distro="nixos"
-        ascii_colors=(5)
         ascii_bold="off"
         gap=5
         stdout="off"

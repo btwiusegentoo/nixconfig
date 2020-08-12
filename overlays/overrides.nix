@@ -61,6 +61,9 @@ self: super: with pkgs; {
             sha256 = "0iff4bwpc00xbjad0m000midslgx12aihs33mdvfckr75r114ylh";
         };
     });
+    neofetch = unstable.neofetch.overrideAttrs (oldattrs: {
+        patches = [ ../patches/escapesequence.patch ];
+    });
     nerdfonts = unstable.nerdfonts;
     doas = unstable.doas;
     # home.nix
