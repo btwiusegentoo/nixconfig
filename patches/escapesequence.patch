@@ -1,5 +1,5 @@
 diff --git a/neofetch b/neofetch
-index 129fc19..2567c0b 100755
+index 129fc19..2731bd5 100755
 --- a/neofetch
 +++ b/neofetch
 @@ -3861,6 +3861,25 @@ image_backend() {
@@ -28,12 +28,12 @@ index 129fc19..2567c0b 100755
  print_ascii() {
      if [[ -f "$image_source" && ! "$image_source" =~ (png|jpg|jpeg|jpe|svg|gif) ]]; then
          ascii_data="$(< "$image_source")"
-@@ -3875,8 +3894,8 @@ print_ascii() {
+@@ -3875,8 +3894,7 @@ print_ascii() {
  
      # Calculate size of ascii file in line length / line count.
      while IFS=$'\n' read -r line; do
 -        line=${line//\\\\/\\}
-         line=${line//█/ }
+-        line=${line//█/ }
 +        strip_escape_codes "${line}" line
          ((++lines,${#line}>ascii_len)) && ascii_len="${#line}"
      done <<< "${ascii_data//\$\{??\}}"
