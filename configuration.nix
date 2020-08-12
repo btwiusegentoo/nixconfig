@@ -294,6 +294,9 @@ in
         "icons/calendar.xpm".source = ./icons/calendar.xpm;
         "icons/volume-2.xpm".source = ./icons/volume-2.xpm;
         "icons/volume-x.xpm".source = ./icons/volume-x.xpm;
+        "icons/nix-snowflake.xpm".source = ./icons/nix-snowflake.xpm;
+        "icons/haskell-logo.xpm".source = ./icons/haskell-logo.xpm;
+        "icons/NewTux.xpm".source = ./icons/NewTux.xpm;
 
         # change wacom tablet orientation.{{{
         "X11/xorg.conf.d/50-wacomtweak.conf".text = ''

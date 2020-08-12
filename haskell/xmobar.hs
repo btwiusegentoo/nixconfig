@@ -38,8 +38,8 @@ config = defaultConfig {
        , sepChar = "%"
        , alignSep = "}{"
        , template = " %StdinReader% }\
-                    \{  <fc=#f07178>%cpu%</fc> | <fc=#80cbc4>%memory% %swap%</fc> | <fc=#f78c6c><icon=calendar.xpm/> %date%</fc> | <fc=#9cc4ff>%default:Master%</fc> |<fc=#f07178> \57345 %pomodoro%</fc> \
-                    \| <fc=#ffcb6b>\61820 %uname% </fc><fc=#82aaff>\62227 </fc> <fc=#c792ea>\58911 </fc> "
+                    \{  <fc=#f07178>%cpu%</fc> | <fc=#80cbc4>%memory% %swap%</fc> | <fc=#f78c6c><icon=calendar.xpm/> %date%</fc> | <fc=#9cc4ff>%default:Master%</fc> | <fc=#f07178>\57345 %pomodoro%</fc> \
+                    \| <fc=#ffcb6b><icon=NewTux.xpm/> %uname% </fc> <icon=nix-snowflake.xpm/> <icon=haskell-logo.xpm/> "
        }
 
 
