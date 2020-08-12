@@ -24,7 +24,7 @@ config = defaultConfig {
        , overrideRedirect = True
        , commands = [ Run $ Cpu ["-t","<icon=cpu.xpm/> <total>%"] 10
                     , Run $ Memory ["-t","<icon=activity.xpm/> <used>MB"] 10
-                    , Run $ Swap ["-t", "易 \63433 <used>MB"] 10
+                    , Run $ Swap ["-t", "<icon=arrow-right.xpm/> <icon=hard-drive.xpm/> <used>MB"] 10
                     , Run $ Date "%a %m/%_d %H:%M:%S" "date" 10
                     , Run $ Com "uname" [ "-r" ] "" 36000
                     , Run $ CommandReader "pymodoro" "pomodoro"

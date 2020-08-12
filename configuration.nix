@@ -289,6 +289,8 @@ in
         # icons
         "icons/cpu.xpm".source = ./icons/cpu.xpm;
         "icons/activity.xpm".source = ./icons/activity.xpm;
+        "icons/arrow-right.xpm".source = ./icons/arrow-right.xpm;
+        "icons/hard-drive.xpm".source = ./icons/hard-drive.xpm;
 
         # change wacom tablet orientation.{{{
         "X11/xorg.conf.d/50-wacomtweak.conf".text = ''
