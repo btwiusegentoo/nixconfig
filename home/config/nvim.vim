@@ -118,21 +118,47 @@ let g:indentLine_bufTypeExclude = [ 'help' ]
 
 " dashboard{{{
 "custom header
+"let g:dashboard_custom_header = [
+"\"",
+"\"       ▄▄        ▄▄ ",
+"\"     ▄████       ███▄                                            ▄▄ ",
+"\"   ▄ ▀█████▄     █████                                           ▀▀ ",
+"\"   ▌ ▀▄██████    █████     ▌ ▄▀▀▄▄   ▄▄▀▀ ▄    ▄ ▀▀▄▄ ▓█▄    ▄█▌▐██ ▐██▄███▄▄▓███▄ ",
+"\"   ▌    ▀█████▄  █████     ▌     ▐  ▓      █ ▄▀     ▐▌ ██▄  ▄█▌ ▐██ ▐██   ▐██   ▓██ ",
+"\"   ▌   ▐  ██████ █████     ▌     ▐▌ █▀▀▀▀▀▀▀ █       █  ██ ▐██  ▐██ ▐██   ▐██   ▐██ ",
+"\"   ▌   ▐   ▀█████▄████     ▌     ▐▌ █        ▀▄      █   ████   ▐██ ▐██   ▐██   ▐██ ",
+"\"   ▌   ▐    ▀█████▄▀██     ▌     ▐   ▀▀▄▄▄▀▀   ▀▄▄▄▀▀    ▐▀▀    ▐▀▀ ▐▀▀   ▐▀▀   ▐▀▀ ",
+"\"   ▀   ▐      ▀█████ █ ",
+"\"     ▀▄▐       ▀████ ",
+"\"       ▀         ▀ ",
+"\"",
+"\"                                                             version: ". g:neovim_version ."",
+"\"",
+"\"",
+"\"",
+"\"",
+"\"",
+"\ ]
 let g:dashboard_custom_header = [
 \"",
-\"       ▄▄        ▄▄ ",
-\"     ▄████       ███▄                                            ▄▄ ",
-\"   ▄ ▀█████▄     █████                                           ▀▀ ",
-\"   ▌ ▀▄██████    █████     ▌ ▄▀▀▄▄   ▄▄▀▀ ▄    ▄ ▀▀▄▄ ▓█▄    ▄█▌▐██ ▐██▄███▄▄▓███▄ ",
-\"   ▌    ▀█████▄  █████     ▌     ▐  ▓      █ ▄▀     ▐▌ ██▄  ▄█▌ ▐██ ▐██   ▐██   ▓██ ",
-\"   ▌   ▐  ██████ █████     ▌     ▐▌ █▀▀▀▀▀▀▀ █       █  ██ ▐██  ▐██ ▐██   ▐██   ▐██ ",
-\"   ▌   ▐   ▀█████▄████     ▌     ▐▌ █        ▀▄      █   ████   ▐██ ▐██   ▐██   ▐██ ",
-\"   ▌   ▐    ▀█████▄▀██     ▌     ▐   ▀▀▄▄▄▀▀   ▀▄▄▄▀▀    ▐▀▀    ▐▀▀ ▐▀▀   ▐▀▀   ▐▀▀ ",
-\"   ▀   ▐      ▀█████ █ ",
-\"     ▀▄▐       ▀████ ",
-\"       ▀         ▀ ",
 \"",
-\"                                                             version: ". g:neovim_version ."",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
+\"",
 \ ]
 "headercolor
 hi! dashboardHeader guifg=#c3e88d
@@ -284,7 +310,14 @@ function! FZF_float_window()
     let height = min([&lines - 10, max([20, &lines - 20])])
     let row = (&lines - height) / 2
     let col = (&columns - width) / 2
-    let opts = {'relative': 'editor', 'row': row, 'col': col, 'width': width, 'height': height, 'style': 'minimal'}
+    let opts = {
+                \ 'relative': 'editor',
+                \ 'row': row,
+                \ 'col': col,
+                \ 'width': width,
+                \ 'height': height,
+                \ 'style': 'minimal'
+                \ }
 
     let top = "╭" . repeat("─", width - 2) . "╮"
     let mid = "│" . repeat(" ", width - 2) . "│"
@@ -550,6 +583,30 @@ endfunction
 
 " autocommands/functions
 
+" Show image in dashboard using ansi escape sequences
+function! DashboardImage()
+    let imgwidth = 120
+    let imgheight = 17
+    let imgrow = float2nr(imgheight / 5)
+    let imgcol = float2nr((&columns - imgwidth) / 2)
+    let imgopts = {
+                \ 'relative': 'editor',
+                \ 'row': imgrow,
+                \ 'col': imgcol,
+                \ 'width': imgwidth,
+                \ 'height': imgheight,
+                \ 'style': 'minimal',
+                \ 'focusable': 0
+                \ }
+    let imgbuf = nvim_create_buf(v:false, v:true)
+    let imgwin = nvim_open_win(imgbuf, v:true, imgopts)
+    hi! DashboardImage guibg=NONE guifg=NONE
+    call nvim_win_set_option(imgwin, "winblend", 0)
+    call nvim_win_set_option(imgwin, "winhl", "Normal:DashboardImage")
+    terminal catimg ~/Pictures/neovimlogo.png
+    :exe "normal \<C-W>\<C-w>"
+endfunction
+
 " make sure neovim restores cursor shape when exit to console.
 augroup RestoreCursorShapeOnExit
     autocmd!
@@ -562,10 +619,14 @@ autocmd FileType dashboard set showtabline=0 | autocmd WinLeave <buffer> set sho
 " show which-key instantly inside dashboard(prevents loading buffers
 " specifically terminal without statusline and tabline.)
 autocmd Filetype dashboard set timeoutlen=0 | autocmd WinLeave <buffer> set timeoutlen=500
+" show image in dashboard
+autocmd user DashboardReady call DashboardImage() | autocmd BufLeave <buffer> execute "bdelete! 2"
 " highlight yanked text
 autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=1000, on_visual=true}
 " Disable terminal numbers(non relative)
 autocmd TermOpen * setlocal nonu
+
+
 
 " enable neovim-remote for lazygit
 " (use split when git commit in lazygit)
