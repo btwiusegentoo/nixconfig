@@ -246,6 +246,7 @@ in
             "suv" = "sudoedit";
             "diff" = "diff-so-fancy";
             "cat" = "bat";
+            "tree" = "tree -C";
             "top" = "ytop";
             "untar" = "tar -xvzf";
             "uefi" = "systemctl reboot --firmware-setup";
