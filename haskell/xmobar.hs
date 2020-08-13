@@ -3,7 +3,7 @@ import           Xmobar
 
 config :: Config
 config = defaultConfig {
-        font = "xft:TamzenForPowerline-14:style=regular,GohuFont Nerd Font:size=12"
+        font = "xft:Tamzen-14:style=regular,GohuFont Nerd Font:size=12"
        , additionalFonts = []
        , borderColor = "#232635"
        , border = BottomB

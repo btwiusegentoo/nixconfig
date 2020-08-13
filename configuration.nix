@@ -149,12 +149,16 @@ in
 
     #fonts{{{
     fonts = {
-        fontconfig.enable = true;
+        fontconfig = {
+            enable = true;
+            allowBitmaps = true;
+        };
         enableFontDir = true;
         enableGhostscriptFonts = true;
         fonts = with pkgs; [
             (nerdfonts.override { fonts = ["Gohu"]; })
             unstable.tamzen
+            scientifica
             #(tamzen-nerdfont.override { size = "10x20";})
             san-francisco-font 
             apple-color-emoji

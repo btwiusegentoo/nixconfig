@@ -474,25 +474,25 @@ in
             };
             font = {
             normal = {
-                family = "Tamzen";
-                style = "Regular";
+                family = "scientifica";
+                style = "Medium";
             };
             bold = {
-                family = "Tamzen";
+                family = "scientifica";
                 style = "Bold";
             };
             italic = {
-                family = "Tamzen";
-                style = "Regular";
+                family = "scientifica";
+                style = "Italic";
             };
-            size = 11.25;
+            size = 12.75;
             offset = {
                 x = 0;
-                y = 6;
+                y = 0;
             };
             glyph_offset = {
                 x = 0;
-                y = 3;
+                y = 0;
             };
             };
             draw_bold_text_with_bright_colors = false;
@@ -674,28 +674,28 @@ in
             };
 
             fonts = {
-            default_family = "SFNS Diplay";
-            web.family.fixed = "Tamzen";
+            default_family = "SFNS Display";
+            web.family.fixed = "scientifica";
             completion = {
-                category = "13pt Tamzen";
-                entry = "13pt Tamzen";
+                category = "13pt scientifica";
+                entry = "13pt scientifica";
             };
-            contextmenu = "13pt Tamzen";
-            debug_console = "13pt Tamzen";
+            contextmenu = "13pt scientifica";
+            debug_console = "13pt scientifica";
             default_size = "9pt";
-            downloads = "13pt Tamzen";
+            downloads = "13pt scientifica";
             hints = "13pt Tamzen";
             keyhint = "13pt Tamzen";
             messages = {
-                error = "13pt Tamzen";
-                info = "13pt Tamzen";
-                warning = "13pt Tamzen";
+                error = "13pt scientifica";
+                info = "13pt scientifica";
+                warning = "13pt scientifica";
             };
-            prompts = "13pt Tamzen";
-            statusbar = "13pt Tamzen";
-            tabs.selected = "13pt Tamzen";
-            tabs.unselected = "13pt Tamzen";
-            #tabs = "13pt Tamzen";
+            prompts = "13pt scientifica";
+            statusbar = "13pt scientifica";
+            tabs.selected = "13pt scientifica";
+            tabs.unselected = "13pt scientifica";
+            #tabs = "13pt scientifica";
             };
 
             # colors{{{
@@ -1137,7 +1137,7 @@ in
         <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
         <fontconfig>
             <alias>
-                <family>Tamzen</family>
+                <family>scientifica</family>
                 <prefer>
                     <family>GohuFont Nerd Font</family> 
                 </prefer>

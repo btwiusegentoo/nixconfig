@@ -95,7 +95,7 @@ I think I will make a script or TUI or something to make installation easier in 
 -   Alacritty
 -   qutebrowser
 -   fish shell + plugins
--   Tamzen bitmap font as main font
+-   scientifica font as main font, tamzen for xmobar and some places
 -   NerdFont as fallback(GohuFont)
 -   Apple emoji
 -   Apple SF fonts installed
