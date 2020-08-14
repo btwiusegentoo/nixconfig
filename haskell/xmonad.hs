@@ -6,6 +6,7 @@ import           System.Exit
 import           XMonad                             hiding ((|||))
 import           XMonad.Actions.Navigation2D
 import           XMonad.Hooks.DynamicLog
+import           XMonad.Hooks.EwmhDesktops
 import           XMonad.Hooks.ManageDocks
 import           XMonad.Layout.BinarySpacePartition
 import           XMonad.Layout.LayoutCombinators
@@ -274,7 +275,7 @@ getActiveLayoutDescription = do
 main = do
     h <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
 
-    xmonad $ docks $ withNavigation2DConfig def $ def {
+    xmonad $ docks $ withNavigation2DConfig def $ ewmh def{ handleEventHook = handleEventHook def <+> fullscreenEventHook } {
         -- simple stuff
             terminal           = myTerminal,
             focusFollowsMouse  = myFocusFollowsMouse,
