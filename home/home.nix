@@ -57,6 +57,7 @@ in
     lightlocker
     circleci-cli
     fontforge
+    palenight-gtk-theme
     unstable.ueberzug
     unstable.pandoc
     unstable.nitrogen

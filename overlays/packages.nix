@@ -4,6 +4,7 @@ self: super: rec {
     tamzen-nerdfont = super.callPackage ../packages/tamzen-nerdfont { };
     mosh-master = super.callPackage ../packages/mosh-master { };
     scientifica = super.callPackage ../packages/scientifica { };
+    palenight-gtk-theme = super.callPackage ../packages/palenight-gtk-theme { };
 }
 
 # vim: shiftwidth=4:
