@@ -13,7 +13,7 @@ let
         pylint
         pymodoro
     ];
-    python-with-my-packages = unstable.python3.withPackages my-python-packages;
+    python-with-my-packages = unstable.python37.withPackages my-python-packages;
     # }}}
 
     # Custom python packages that I want globally{{{
