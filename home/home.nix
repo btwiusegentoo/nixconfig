@@ -1277,6 +1277,13 @@ in
             sha256 = "12l5mg3xp716n3z2grx4cqj1inc3w8wfd9hpjny184lb3asx2as5";
         };
 
+        #"nvim/after/syntax".source = pkgs.fetchFromGitHub {
+            #owner = "NerdyPepper";
+            #repo = "scientifica";
+            #rev = "bb4cfa5af8710602e4965cb1f7297a7792217a41";
+            #sha256 = "103x7pi5kysq75mw5jfjlrqxb2vi676b013da5grspyinrcia7j0";
+        #} + "/ligature_plugins"; # you can fetch specific folder from git
+
         ## for local testing purposes
         #"qutebrowser/css/palenight-all-sites.css".source = ../../projects/palenight-everything-css/palenight-all-sites.css;
 
