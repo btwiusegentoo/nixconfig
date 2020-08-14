@@ -58,6 +58,7 @@ in
     circleci-cli
     fontforge
     palenight-gtk-theme
+    unstable.pop-icon-theme
     unstable.ueberzug
     unstable.pandoc
     unstable.nitrogen
