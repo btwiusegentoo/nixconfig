@@ -48,6 +48,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
 
     [ ((modm,                 xK_Return ), spawn $ XMonad.terminal conf)
     , ((modm,                 xK_v      ), spawn $ myTerminal ++ " -e nvim")
+    , ((modm,                 xK_z      ), spawn $ myTerminal ++ " -e nvim -c term -c startinsert" )
     , ((modm,                 xK_d      ), shellPrompt myXPConfig)                  -- use xmonad prompt instead of dmenu.
     , ((modm .|. controlMask, xK_t      ), namedScratchpadAction myScratchPads "terminal") -- terminal scratchpad
     , ((modm .|. controlMask, xK_s      ), namedScratchpadAction myScratchPads "mixer") -- sound mixer scratchpad
