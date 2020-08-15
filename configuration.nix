@@ -19,13 +19,14 @@ let
     # Custom python packages that I want globally{{{
 
     # pymodoro{{{
-    pymodoro = unstable.python3Packages.buildPythonPackage rec {
+    pymodoro = unstable.python37Packages.buildPythonPackage rec {
         pname = "pymodoro";
         version = "1.14";
-        src = pkgs.fetchgit {
-            url = "https://github.com/dattanchu/pymodoro";
-            rev = "f666ef9c62261e91351cc734ada23b5a2f029220";
-            sha256 = "1gkq989cfq19cm4nxch6lf63sz9rmkkibaw7r0n2pcwdamjssgj1";
+        src = pkgs.fetchFromGitHub {
+            owner = "dattanchu";
+            repo = "pymodoro";
+            rev = "0f24e5012945bb241f144fab2672d3d880c00b5c";
+            sha256 = "0pz40whyijkxbd7mi059bzgrhmqzrcrd7fzmwl11hndpn9zl0r37";
         };
     };
     # }}}
