@@ -5,6 +5,7 @@ self: super: rec {
     mosh-master = super.callPackage ../packages/mosh-master { };
     scientifica = super.callPackage ../packages/scientifica { };
     palenight-gtk-theme = super.callPackage ../packages/palenight-gtk-theme { };
+    vifmimg = super.callPackage ../packages/vifmimg { };
 }
 
 # vim: shiftwidth=4:

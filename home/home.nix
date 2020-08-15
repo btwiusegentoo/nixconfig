@@ -59,10 +59,10 @@ in
     fontforge
     palenight-gtk-theme
     unstable.pop-icon-theme
-    unstable.ueberzug
     unstable.pandoc
     unstable.nitrogen
     unstable.chafa
+    unstable.ueberzug
     # nixpkgs
     nixpkgs-fmt
     nixpkgs-review
@@ -70,7 +70,8 @@ in
     unstable.cargo
     # tui apps
     cava
-    unstable.nnn
+    unstable.vifm-full
+    vifmimg
     htop
     unstable.ytop
     ncpamixer
@@ -91,6 +92,7 @@ in
     nodePackages.gitmoji-cli
     # dependencies
     ffmpeg-full
+    unstable.ffmpegthumbnailer
     frei0r
     unstable.universal-ctags
     libnotify
@@ -108,6 +110,7 @@ in
     unstable.xdotool
     unstable.xorg.xwininfo
     unstable.xfontsel
+    unstable.xorg.libXext
     xorg.xev
     file
     catimg
@@ -279,10 +282,8 @@ in
             #screenshot
             "scrotclipsel" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
             "scrotclip" = "scrot ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
-            # nnn(filemanager)
-            "n" = "nnn -a";
-            "nh" = "nnn -a -H";
-            "nnnplugins" = "curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh";
+            # vifm (filemanager)
+            "vf" = "vifm";
             # nixos
             "nixre" = "doas nixos-rebuild switch";
             "dnixtrash" = "doas nix-collect-garbage -d";
@@ -369,6 +370,7 @@ in
             set -U fish_pager_color_prefix white --bold #--underline
             set -U fish_pager_color_progress brwhite --background=cyan
 
+            # Open lazygit commit window inside neovim
             if [ -n "$NVIM_LISTEN_ADDRESS" ];
                 alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
             end
@@ -381,7 +383,11 @@ in
                 export EDITOR="nvim"
             end
 
+            # lorri direnv
             eval (direnv hook fish)
+
+            # vifm image preview
+            alias vifm="bash -c 'vifmrun'"
 
             ''; # }}}
 
@@ -1273,6 +1279,14 @@ in
         '';
         # }}}
 
+        "vifm/vifmrc".source = ./config/vifmrc.vim;
+        #"vifm/colors/palenight.vifm".source = pkgs.fetchFromGitHub {
+            #owner = "vifm";
+            #repo = "vifm-colors";
+            #rev = "39b5337c55573e469a56433ccc9f07338742c8fd";
+            #sha256 = "1crl5rx7i5300s7qd45iyqhdbqvsbkv7sk8brw80xbcv94k30pfh";
+        #} + /palenight.vifm;
+
         "qutebrowser/css/palenight-all-sites.css".source = pkgs.fetchurl {
             url = "https://raw.githubusercontent.com/btwiusegentoo/palenight-everything-css/master/palenight-all-sites.css";
             sha256 = "12l5mg3xp716n3z2grx4cqj1inc3w8wfd9hpjny184lb3asx2as5";
@@ -1340,7 +1354,6 @@ in
     home.sessionVariables = {
         "XDG_CONFIG_HOME" = "$HOME/.config";
         "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
-        "NNN_PLUG" = "p:preview-tabbed";
         "COLORTERM" = "truecolor";
     }; # }}}
 
