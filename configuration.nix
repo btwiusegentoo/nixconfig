@@ -92,7 +92,7 @@ in
     # Supposedly better for the SSD.
     fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
     # Boot faster
-    systemd.services.systemd-udev-settle.enable = false;
+    systemd.services.systemd-udev-settle.serviceConfig.TimeoutSec = 5;
     systemd.services.NetworkManager-wait-online.enable = false;
     # }}}
 
@@ -140,13 +140,17 @@ in
     # The global useDHCP flag is deprecated, therefore explicitly set to false here.
     # Per-interface useDHCP will be mandatory in the future, so this generated config
     # replicates the default behaviour.
-    networking.useDHCP = false;
-    networking.interfaces.enp9s0.useDHCP = true;
-    networking.networkmanager.enable = true;
-
-    # Configure network proxy if necessary
-    # networking.proxy.default = "http://user:password@proxy:port/";
-    # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";}}}
+    networking = {
+        dhcpcd.enable = false;
+        useNetworkd = true;
+        useDHCP = false;
+        interfaces.enp9s0.useDHCP = true;
+        networkmanager = {
+            enable = true;
+            dns = "systemd-resolved";
+        };
+    };
+    #}}}
 
     #fonts{{{
     fonts = {
