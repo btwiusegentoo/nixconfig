@@ -454,6 +454,14 @@ in
                 vim-rooter
             ]; #}}}
 
+            # plugins that don't work with vim-plug goes here.
+            packages.myVimPackage = with master.vimPlugins // plugins; {
+                # loaded on launch
+                start = [ nvim-treesitter ];
+                # loaded manually with packadd
+                opt = [ ];
+            };
+
             customRC = import ./config/nvim.vim;
 
         };
