@@ -53,7 +53,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} = M.fromList $
     , ((modm .|. controlMask, xK_t      ), namedScratchpadAction myScratchPads "terminal") -- terminal scratchpad
     , ((modm .|. controlMask, xK_s      ), namedScratchpadAction myScratchPads "mixer") -- sound mixer scratchpad
     , ((modm .|. controlMask, xK_h      ), namedScratchpadAction myScratchPads "ytop")  -- ytop scratchpad
-    , ((modm .|. controlMask, xK_n      ), namedScratchpadAction myScratchPads "nnn")   -- file manager scratchpad
+    , ((modm .|. controlMask, xK_n      ), namedScratchpadAction myScratchPads "vifm")   -- file manager scratchpad
     , ((modm .|. controlMask, xK_m      ), manPrompt myXPConfig) -- search manpage
     , ((modm .|. controlMask, xK_e      ), mkUnicodePrompt "xsel" ["-b"] "/home/btw/textfiles/UnicodeData.txt" myEmojiXPConfig) -- emoji->clipboard
     , ((modm,                 xK_b      ), spawn "qutebrowser")                     -- launch qutebrowser
@@ -200,7 +200,7 @@ myLayout = avoidStruts (tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgap
 myScratchPads = [ NS "terminal" spawnTerm  findTerm  manageTerm
                 , NS "mixer"    spawnMixer findMixer manageMixer
                 , NS "ytop"     spawnytop  findytop  manageytop
-                , NS "nnn"      spawnnnn   findnnn   managennn
+                , NS "vifm"      spawnvifm   findvifm   managevifm
                 ]
     where
         centralh    = 0.9
@@ -225,9 +225,9 @@ myScratchPads = [ NS "terminal" spawnTerm  findTerm  manageTerm
         findytop    = title   =? "ytopScratchpad"
         manageytop  = customFloating $ W.RationalRect centrall centralt centralw centralh
 
-        spawnnnn    = myTerminal ++ " --title=nnnScratchpad"   ++ " -e nnn -a"
-        findnnn     = title   =? "nnnScratchpad"
-        managennn   = customFloating $ W.RationalRect centrall centralt centralw centralh
+        spawnvifm    = myTerminal ++ " --title=vifmScratchpad"   ++ " -e bash -c 'vifmrun'"
+        findvifm     = title   =? "vifmScratchpad"
+        managevifm   = customFloating $ W.RationalRect centrall centralt centralw centralh
 -- }}}
 
 -- managehook{{{
