@@ -623,8 +623,8 @@ autocmd Filetype dashboard set timeoutlen=0 | autocmd WinLeave <buffer> set time
 autocmd user DashboardReady call DashboardImage() | autocmd BufLeave <buffer> execute "bdelete! 2"
 " highlight yanked text
 autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=1000, on_visual=true}
-" Disable terminal numbers(non relative)
-autocmd TermOpen * setlocal nonu
+" Disable terminal numbers
+autocmd TermOpen * setlocal nonu nornu
 
 
 
