@@ -25,6 +25,7 @@ let
     );
     # }}}
 
+
     # import variables
     username = (import ../uservars.nix).username;
 
@@ -68,6 +69,9 @@ in
     nixpkgs-review
     # rust
     unstable.cargo
+    # lua
+    unstable.luajit
+    unstable.luajitPackages.lua-lsp
     # tui apps
     cava
     unstable.vifm-full
@@ -409,6 +413,7 @@ in
                 coc-clangd
                 coc-prettier
                 coc-html
+                coc-lua
                 coc-pairs
                 coc-tabnine
                 palenight-vim
@@ -452,6 +457,7 @@ in
                 rust-vim
                 coc-rust-analyzer
                 vim-rooter
+                nvim-utils
             ]; #}}}
 
             # plugins that don't work with vim-plug goes here.

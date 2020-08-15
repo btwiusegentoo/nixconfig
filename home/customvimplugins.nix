@@ -183,6 +183,26 @@ in {
         };
     };
 
+    "coc-lua" = buildVimPlugin {
+        name = "coc-lua";
+        src = fetchFromGitHub {
+            owner = "josa42";
+            repo = "coc-lua";
+            rev = "63cf8f68b95e7e4cd38e8cd0ee022901a7d37b19";
+            sha256 = "1yjccvhsc0l35ww0r6nqj9hfdbnfsy5akcz54xk8j22zky2wjss8";
+        };
+    };
+
+    "nvim-utils" = buildVimPlugin {
+        name = "nvim-utils";
+        src = fetchFromGitHub {
+            owner = "norcalli";
+            repo = "nvim_utils";
+            rev = "71919c2f05920ed2f9718b4c2e30f8dd5f167194";
+            sha256 = "0wn1lzbpa69aplxqyp4mrf6gaa937mfjm8p3hcglhmsfw8v2ifln";
+        };
+    };
+
 }
 
 # vim: foldmethod=marker shiftwidth=4:
