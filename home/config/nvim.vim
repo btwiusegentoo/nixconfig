@@ -36,8 +36,8 @@ set nu rnu
 set foldmethod=marker
 " autocompletion opacity
 set pumblend=10
-" floating windows(like fzf) opacity
-set winblend=10
+" floating windows opacity(make completely opaque)
+set winblend=0
 " Use floating window autocompletion for commands.
 set wildmenu
 " Show top tabbar
