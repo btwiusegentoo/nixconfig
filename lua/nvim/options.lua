@@ -1,5 +1,3 @@
-require 'nvim_utils'
-
 local commonOptions = {
     hidden = true;             -- Hide buffer instead of closing when opening file
     modelines = 2;             -- Set modeline lines number (# vim: sw=4)<-this
@@ -39,4 +37,3 @@ local commonOptions = {
 for name, value in pairs(commonOptions) do
     nvim.o[name] = value
 end
-

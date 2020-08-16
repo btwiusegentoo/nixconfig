@@ -464,7 +464,6 @@ nnoremap <Leader>sl :<C-u>SessionLoad<CR>
 " coc
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 nnoremap <leader><S-f>  :call CocAction('format')<CR>
-nnoremap <C-K> :call <SID>show_documentation()<CR>
 
 " open terminal
 nnoremap <silent> <leader>t :terminal<CR>
@@ -493,38 +492,6 @@ nnoremap <silent> <leader>gds :<c-u>Gdiffsplit<CR>
 " Open git diff of current repo
 nnoremap <silent> <leader>gdf :<c-u>Git diff<CR>
 
-"}}}
-
-"Coc{{{
-let g:coc_global_extensions = ['coc-python', 'coc-syntax', 'coc-emoji', 'coc-discord-neovim', 'coc-explorer']
-
-function! s:show_documentation()
-    if (index(['vim','help'], &filetype) >= 0)
-        execute 'h '.expand('<cword>')
-    else
-        call CocAction('doHover')
-    endif
-endfunction
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-augroup mygroup
-    autocmd!
-    autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
-command! -nargs=0 Format :call CocAction('format')
-command! -nargs=? Fold :call CocAction('fold', <f-args>)
-command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
-inoremap <silent><expr> <TAB>
-    \ pumvisible() ? "\<C-n>" :
-    \ <SID>check_back_space() ? "\<TAB>" :
-    \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col -1] =~# '\s'
-endfunction
 "}}}
 
 " autocommands/functions

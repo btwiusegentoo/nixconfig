@@ -23,6 +23,7 @@ it's not meant to read from GitHub.
 ** TODO Use neovim as manpager
 * xmonad
 ** DONE Fix light-locker dual lock problem.(fixed using xautolock)
+** TODO Fix screenshot(selection is broken)
 * xmobar
 ** DONE Use other iconfont.
 * qutebrowser

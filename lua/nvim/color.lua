@@ -1,5 +1,3 @@
-require 'nvim_utils'
-
 -- Set true color
 nvim.o.termguicolors = true
 -- Set colorscheme
