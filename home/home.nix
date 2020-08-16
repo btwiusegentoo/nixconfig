@@ -1101,6 +1101,10 @@ in
 
         # }}}
 
+        "nvim/lua/init.lua".source = ../lua/nvim/init.lua;
+        "nvim/lua/options.lua".source = ../lua/nvim/options.lua;
+        "nvim/lua/color.lua".source = ../lua/nvim/color.lua;
+
         #neofetch{{{
         "neofetch/config.conf".text = ''
         print_info() {

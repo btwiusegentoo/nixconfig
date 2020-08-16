@@ -1,4 +1,5 @@
 ''
+
 " get neovim version
 let g:neovim_version = matchstr(execute('version'), 'NVIM v\zs[^\n]*')
 
@@ -27,36 +28,8 @@ if !exists("*SourceConfigCommand")
     endfunction
 endif
 
-set modelines=2
 syntax on
 filetype plugin indent on
-" hybrid number
-set nu rnu
-" use marker fold. still better to write modeline everytime.
-set foldmethod=marker
-" autocompletion opacity
-set pumblend=10
-" floating windows opacity(make completely opaque)
-set winblend=0
-" Use floating window autocompletion for commands.
-set wildmenu
-" Show top tabbar
-set showtabline=2
-"Don't show mode below statusbar because lightline already shows.
-set noshowmode
-"set cmdheight=2
-set ignorecase
-set smartcase
-set wrapscan
-set incsearch
-set inccommand=split
-"indent
-set tabstop=4
-set shiftwidth=4
-set softtabstop=0
-set expandtab
-set smarttab
-set shiftround
 set breakindent
 set breakindentopt=shift:1
 set showbreak=⤿
@@ -70,25 +43,14 @@ set shortmess+=c
 set signcolumn=yes
 " use 4 shiftwidth in nix file because I prefer
 let g:nix_recommended_style=0
-
+" cosco vim
 let g:auto_comma_or_semicolon = 1
-let g:palenight_terminal_italics = 1
-colorscheme palenight
-set termguicolors
-" custom colors
-hi! Normal guibg=NONE
-hi! SignColumn guibg=NONE
-hi! MatchParen guifg=#F07178 guibg=#202331
-hi! LineNr guibg=NONE guifg=#a6accd
-hi! CursorLineNr guifg=#82aaff
-hi! NormalFloat guifg=#A6ACCD guibg=#292D3E
-hi! VertSplit guifg=#4E5579
+
+"colorscheme palenight
+" set custom colors
 " remove annoying tilde(EndOfBuffer)
 let &fcs='eob: '
 
-lua <<EOF
-require'colorizer'.setup()
-EOF
 
 "haskell{{{
 let g:stylishask_on_save = 1
@@ -633,6 +595,11 @@ autocmd TermOpen * setlocal nonu nornu
 if has('nvim') && executable('nvr')
   let $GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
 endif
+
+" Load lua modules
+lua <<EOF
+require('init')
+EOF
 
 " vim: fdm=marker sw=4 ft=vim:
 ''
