@@ -28,40 +28,8 @@ if !exists("*SourceConfigCommand")
     endfunction
 endif
 
-" use 4 shiftwidth in nix file because I prefer
-let g:nix_recommended_style=0
-" cosco vim
-let g:auto_comma_or_semicolon = 1
-
 " remove annoying tilde(EndOfBuffer) TODO Move this to options.lua
 let &fcs='eob: '
-
-
-"haskell{{{
-let g:stylishask_on_save = 1
-let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
-let g:haskell_enable_recursivedo = 1      " to enable highlighting of `mdo` and `rec`
-let g:haskell_enable_arrowsyntax = 1      " to enable highlighting of `proc`
-let g:haskell_enable_pattern_synonyms = 1 " to enable highlighting of `pattern`
-let g:haskell_enable_typeroles = 1        " to enable highlighting of type roles
-let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
-let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
-"}}}
-
-"cosco.vim
-let g:cosco_ignore_comment_lines = 1
-let g:cosco_filetype_whitelist = ['php', 'javascript']
-
-" vim-sneak
-let g:sneak#label = 1
-
-" indentLine
-let g:indentLine_char = ''
-let g:indentLine_first_char = ''
-let g:indentLine_showFirstIndentLevel = 1
-let g:indentLine_color_gui = '#4E5579'
-let g:indentLine_fileTypeExclude = [ 'dashboard', 'fzf', 'coc-explorer' ]
-let g:indentLine_bufTypeExclude = [ 'help' ]
 
 " dashboard{{{
 "custom header
@@ -282,12 +250,6 @@ let g:fzf#proj#project_dir = '~/projects/'
 let g:fzf#proj#max_proj_depth = 2
 let g:fzf#proj#project#open_new_tab = 0
 " }}}
-
-" vim-rooter{{{
-let g:rooter_cd_cmd = 'lcd'
-let g:rooter_silent_chdir = 1
-let g:rooter_patterns = ['.git', 'Makefile', '*.sln', 'build/env.sh']
-"}}}
 
 "lightline{{{
 let g:lightline = {
