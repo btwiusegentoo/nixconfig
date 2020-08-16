@@ -28,27 +28,12 @@ if !exists("*SourceConfigCommand")
     endfunction
 endif
 
-syntax on
-filetype plugin indent on
-set breakindent
-set breakindentopt=shift:1
-set showbreak=⤿
-set linebreak
-
-set hidden
-set nobackup
-set nowritebackup
-set updatetime=100
-set shortmess+=c
-set signcolumn=yes
 " use 4 shiftwidth in nix file because I prefer
 let g:nix_recommended_style=0
 " cosco vim
 let g:auto_comma_or_semicolon = 1
 
-"colorscheme palenight
-" set custom colors
-" remove annoying tilde(EndOfBuffer)
+" remove annoying tilde(EndOfBuffer) TODO Move this to options.lua
 let &fcs='eob: '
 
 
@@ -166,7 +151,6 @@ endfunction
 
 " set timeout before show which-key
 set timeoutlen=1000
-set ttimeout
 set ttimeoutlen=30
 " set which-key floating window color to same as normal floating window
 hi! WhichKeyFloating guifg=#A6ACCD guibg=#292D3E
