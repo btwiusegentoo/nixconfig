@@ -87,7 +87,7 @@ in
         loader.systemd-boot.enable = true;
         loader.efi.canTouchEfiVariables = true;
         # Enable latest linux kernel
-        kernelPackages = unstable.linuxPackages_latest;
+        kernelPackages = unstable.linuxPackages_zen;
     };
     # Supposedly better for the SSD.
     fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
