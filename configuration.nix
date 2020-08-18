@@ -299,33 +299,7 @@ in
         "icons/nix-snowflake.xpm".source = ./icons/nix-snowflake.xpm;
         "icons/haskell-logo.xpm".source = ./icons/haskell-logo.xpm;
         "icons/NewTux.xpm".source = ./icons/NewTux.xpm;
-
-        # change wacom tablet orientation.{{{
-        "X11/xorg.conf.d/50-wacomtweak.conf".text = ''
-        Section "InputClass" 
-            Identifier "Wacom"
-            MatchProduct "Wacom Bamboo 16FG 4x5 Finger"
-            Driver "wacom"
-            Option "Rotate" "Half"
-            Option "AccelerationProfile" "-1"
-            Option "AccelerationThreshold" "0.1"
-        EndSection
-
-        Section "InputClass" 
-            Identifier "Wacom"
-            MatchProduct "Wacom Bamboo 16FG 4x5 Pen"
-            Driver "wacom"
-            Option "Rotate" "Half"
-        EndSection
-
-        Section "InputClass" 
-            Identifier "Wacom"
-            MatchProduct "Wacom Bamboo 16FG 4x5 Pad"
-            Driver "wacom"
-            Option "Rotate" "Half"
-        EndSection
-        '';
-        # }}}
+        "icons/clock.xpm".source = ./icons/clock.xpm;
     };
     # I will not delete just to make a example.
     # use pkgs.writeScript to make executable.
