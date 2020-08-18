@@ -31,58 +31,8 @@ endif
 " remove annoying tilde(EndOfBuffer) TODO Move this to options.lua
 let &fcs='eob: '
 
-" dashboard{{{
-"custom header
-"let g:dashboard_custom_header = [
-"\"",
-"\"       ▄▄        ▄▄ ",
-"\"     ▄████       ███▄                                            ▄▄ ",
-"\"   ▄ ▀█████▄     █████                                           ▀▀ ",
-"\"   ▌ ▀▄██████    █████     ▌ ▄▀▀▄▄   ▄▄▀▀ ▄    ▄ ▀▀▄▄ ▓█▄    ▄█▌▐██ ▐██▄███▄▄▓███▄ ",
-"\"   ▌    ▀█████▄  █████     ▌     ▐  ▓      █ ▄▀     ▐▌ ██▄  ▄█▌ ▐██ ▐██   ▐██   ▓██ ",
-"\"   ▌   ▐  ██████ █████     ▌     ▐▌ █▀▀▀▀▀▀▀ █       █  ██ ▐██  ▐██ ▐██   ▐██   ▐██ ",
-"\"   ▌   ▐   ▀█████▄████     ▌     ▐▌ █        ▀▄      █   ████   ▐██ ▐██   ▐██   ▐██ ",
-"\"   ▌   ▐    ▀█████▄▀██     ▌     ▐   ▀▀▄▄▄▀▀   ▀▄▄▄▀▀    ▐▀▀    ▐▀▀ ▐▀▀   ▐▀▀   ▐▀▀ ",
-"\"   ▀   ▐      ▀█████ █ ",
-"\"     ▀▄▐       ▀████ ",
-"\"       ▀         ▀ ",
-"\"",
-"\"                                                             version: ". g:neovim_version ."",
-"\"",
-"\"",
-"\"",
-"\"",
-"\"",
-"\ ]
-let g:dashboard_custom_header = [
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\"",
-\ ]
-"headercolor
-hi! dashboardHeader guifg=#c3e88d
-hi! dashboardCenter guifg=#89ddff
-hi! dashboardShortcut guifg=#c792ea
-hi! dashboardFooter guifg=#676E95
-"use fzf in dashboard
-let g:dashboard_default_executive = "fzf"
 
+" TODO Move dashboard custom section to lua
 let g:dashboard_custom_section = {
 \ 'last_session'         :['  Reload last session                   SPC s l'],
 \ 'find_history'         :['  Recently opened files                 SPC f h'],
@@ -91,7 +41,6 @@ let g:dashboard_custom_section = {
 \ 'find_file'            :['  Find  File                            SPC f f'],
 \ 'private_config'       :['  Open private configuration            SPC r c']
 \ }
-"}}}
 
 " dashboard functions {{{
 function! FIND_HISTORY()

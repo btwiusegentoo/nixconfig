@@ -1,5 +1,3 @@
-local api = vim.api
-
 -- coc extensions that don't work installing with Nix goes here
 nvim.g.coc_global_extensions = {
     'coc-python',
@@ -9,7 +7,7 @@ nvim.g.coc_global_extensions = {
     'coc-explorer'
 }
 
-api.nvim_exec([[
+nvim.exec([[
     command! -nargs=0 Format :call CocAction('format')
     command! -nargs=? Fold :call CocAction('fold', <f-args>)
     command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')

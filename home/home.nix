@@ -1106,6 +1106,7 @@ in
         "nvim/lua/color.lua".source = ../lua/nvim/color.lua;
         "nvim/lua/plugins/coc.lua".source = ../lua/nvim/plugins/coc.lua;
         "nvim/lua/plugins/common.lua".source = ../lua/nvim/plugins/common.lua;
+        "nvim/lua/plugins/dashboard.lua".source = ../lua/nvim/plugins/dashboard.lua;
 
         #neofetch{{{
         "neofetch/config.conf".text = ''

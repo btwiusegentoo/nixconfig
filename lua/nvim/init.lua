@@ -9,3 +9,4 @@ require'colorizer'.setup()
 -- import plugin configs
 require'plugins.common'
 require'plugins.coc'
+require'plugins.dashboard'
