@@ -1,5 +1,5 @@
-''
 
+''
 " get neovim version
 let g:neovim_version = matchstr(execute('version'), 'NVIM v\zs[^\n]*')
 
@@ -32,7 +32,7 @@ endif
 let &fcs='eob: '
 
 
-" TODO Move dashboard custom section to lua
+" TODO Move dashboard custom section to dashboard.lua
 let g:dashboard_custom_section = {
 \ 'last_session'         :['  Reload last session                   SPC s l'],
 \ 'find_history'         :['  Recently opened files                 SPC f h'],
