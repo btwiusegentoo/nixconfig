@@ -25,7 +25,8 @@ config = defaultConfig {
        , commands = [ Run $ Cpu ["-t","<icon=cpu.xpm/> <total>%"] 10
                     , Run $ Memory ["-t","<icon=activity.xpm/> <used>MB"] 10
                     , Run $ Swap ["-t", "<icon=arrow-right.xpm/> <icon=hard-drive.xpm/> <used>MB"] 10
-                    , Run $ Date "%a %m/%_d %H:%M:%S" "date" 10
+                    , Run $ Date "%a %m/%_d" "date" 10
+                    , Run $ Date "%H:%M:%S" "time" 10
                     , Run $ Com "uname" [ "-r" ] "" 36000
                     , Run $ CommandReader "pymodoro" "pomodoro"
                     , Run $ Volume "default" "Master" ["-t", "<status> <volume>%", "--",
@@ -37,9 +38,10 @@ config = defaultConfig {
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = " %StdinReader% }\
-                    \{  <fc=#f07178>%cpu%</fc> | <fc=#80cbc4>%memory% %swap%</fc> | <fc=#f78c6c><icon=calendar.xpm/> %date%</fc> | <fc=#9cc4ff>%default:Master%</fc> | <fc=#f07178>\57345 %pomodoro%</fc> \
-                    \| <fc=#ffcb6b><icon=NewTux.xpm/> %uname% </fc> <icon=nix-snowflake.xpm/> <icon=haskell-logo.xpm/> "
+       , template = "%StdinReader% }\
+                    \ <fc=#89ddff><icon=clock.xpm/> %time%</fc> \
+                    \{ <fc=#f07178>%cpu%</fc>  <fc=#80cbc4>%memory% %swap%</fc>  <fc=#f78c6c><icon=calendar.xpm/> %date%</fc>  <fc=#9cc4ff>%default:Master%</fc>  <fc=#f07178>\57345 %pomodoro%</fc> \
+                    \ <fc=#ffcb6b><icon=NewTux.xpm/> %uname% </fc> <icon=nix-snowflake.xpm/> <icon=haskell-logo.xpm/>"
        }
 
 

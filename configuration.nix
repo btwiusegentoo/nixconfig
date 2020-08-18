@@ -326,6 +326,7 @@ in
         EndSection
         '';
         # }}}
+        "icons/clock.xpm".source = ./icons/clock.xpm;
     };
     # I will not delete just to make a example.
     # use pkgs.writeScript to make executable.
