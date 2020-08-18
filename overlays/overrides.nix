@@ -5,8 +5,8 @@ let
         pkgs.fetchFromGitHub {
             owner = "NixOS";
             repo = "nixpkgs";
-            rev = "8e2b14aceb1d40c7e8b84c03a7c78955359872bb";
-            sha256 = "0zzjpd9smr7rxzrdf6raw9kbj42fbvafxb5bz36lcxgv290pgsm8";
+            rev = "1e3f09feaa5667be4ed6eca96a984b4642420b83";
+            sha256 = "1vcmzjzzmcy4mvlyshv9j3cri4kvxndjqk3ziqafc8ik0vv117p8";
         };
 
     nixpkgsmaster =
