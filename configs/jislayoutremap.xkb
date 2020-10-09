@@ -1,0 +1,16 @@
+xkb_keymap {
+	xkb_keycodes  { include "evdev+aliases(qwerty)"	};
+	xkb_types     { include "complete"	};
+	xkb_compat    { include "complete"	};
+	xkb_symbols   { 
+        include "pc+us(dvorak)+inet(evdev)+altwin(swap_alt_win)+ctrl(nocaps)"
+        key <AE13>   {[ BackSpace, BackSpace  ]};
+        key <AB11>   {[ backslash,    bar     ]};
+        key <BKSL>   {[ Return ]};
+        key <HKTG>   { [ Super_R ] };
+        key <HENK>   { [ Return    ] };
+        key <MUHE>   { [ BackSpace ] };
+        key <RALT>   { [ Escape ] };
+    };
+	xkb_geometry  { include "pc(pc104)"	};
+};

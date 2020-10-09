@@ -1,0 +1,38 @@
+#+TITLE: TODO
+#+STARTUP: nofold
+#+begin_quote:
+My NixOS config todos. It's designed to be viewed within vim
+with org mode plugin or emacs. I don't care how it looks on GitHub because
+it's not meant to read from GitHub.
+#+end_quote
+
+* NixOS config
+** TODO Pin nixos-stable rev to make more reproducible
+** TODO Use nix flakes instead of importing tarball
+** TODO Use flake for home-manager instead of using as module
+** TODO Try nix-darwin for hackintosh
+** DONE Split into modules because emacs folding really sucks
+** DONE Find a way to store secrets
+** TODO Make a command to auto update nixpkgs rev
+** TODO Make a script to auto install.
+** TODO Stop using marker folds. affects emacs performance and decreases readability. Split into modules instead
+* neovim
+** KILL Integrate nix package manager with neovim (Maybe look at emacs)
+** KILL Integrate lorri/nix-shell with neovim
+** TODO Change keybinds to doom-emacs like
+* doom-emacs
+** DONE Learn basics first
+** DONE Learn magit, org-mode
+** DONE Use vim-like marker folding. default behaviour sucks
+** TODO Try nix-shell,lorri,remote file editing etc etc
+** TODO Make doom emacs as git submodule.
+* xmonad
+** DONE Fix light-locker dual lock problem.(fixed using xautolock)
+* xmobar
+** DONE Use other iconfont.
+* qutebrowser
+** TODO Fix widevine
+** TODO Upgrade chromium version(if I can)
+* Other
+** TODO Fix bat theme
+** TODO Fix lambda prompt after installation without nerdfont. I don't want to use nerdfont inside emacs

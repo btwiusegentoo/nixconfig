@@ -1,0 +1,3 @@
+{
+    libvirtd = (import ./libvirtd.nix);
+}
