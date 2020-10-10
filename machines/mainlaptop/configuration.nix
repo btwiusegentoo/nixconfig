@@ -169,16 +169,16 @@ in
     services.xserver.deviceSection = ''
         Option "TearFree" "true"
     '';
-    services.xserver.synaptics.enable = true;
-    # services.xserver.inputClassSections = [
-    #     ''
-    #     Identifier "Disable thinkpad touchpad because coreboot can't"
-    #      MatchProduct "SynPS/2 Synaptics TouchPad"
-    #      MatchIsTouchpad "on"
-    #      MatchDevicePath "/dev/input/event*"
-    #      Option "Ignore" "on"
-    #     ''
-    # ];
+    services.xserver.synaptics.enable = false;
+    services.xserver.inputClassSections = [
+        ''
+        Identifier "Disable ThinkPad trackpad"
+         MatchProduct "SynPS/2 Synaptics TouchPad"
+         MatchIsTouchpad "on"
+         MatchDevicePath "/dev/input/event*"
+         Option "Ignore" "on"
+        ''
+    ];
 
 
     home-manager = {
