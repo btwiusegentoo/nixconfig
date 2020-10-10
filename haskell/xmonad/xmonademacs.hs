@@ -137,10 +137,10 @@ myKeys conf@XConfig { XMonad.modMask = modm } =
          , spawn "setxkbmap us"
          ) -- Switch to qwerty layout
        , ( (modm, xK_F3)
-         , spawn "synclient TouchpadOff=1"
+         , spawn "xinput --disable 11"
          ) -- Disable trackpad
        , ( (modm, xK_F4)
-         , spawn "synclient TouchpadOff=0"
+         , spawn "xinput --enable 11"
          ) -- Enable trackpad
        , ((modm .|. shiftMask, xK_c), kill)
        , ((modm, xK_space)          , sendMessage NextLayout)
