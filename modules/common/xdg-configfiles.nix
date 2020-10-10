@@ -13,6 +13,10 @@
     # keynav{{{
     "keynav/keynavrc".text = ''
             super+semicolon start
+            m click 6
+            w click 5
+            v click 4
+            z click 7
         '';
     # }}}
 
