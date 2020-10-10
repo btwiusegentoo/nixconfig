@@ -38,7 +38,7 @@ in
 
     imports = [
         # import xmonad nix expression
-        ../../modules/common/xmonad.nix
+        ../../modules/common/xmonademacs.nix
     ];
 
     # Packages to install{{{
@@ -131,6 +131,7 @@ in
         dunst = (import ../../modules/services/dunst.nix);
         gpg-agent = (import ../../modules/services/gpg-agent.nix);
         picom = (import ../../modules/services/picomlightweight.nix);
+        emacs = (import ../../modules/services/emacsdaemon.nix);
         keynav.enable = true;
         lorri.enable = true;
 
@@ -149,7 +150,7 @@ in
             extraPackages = (epkgs: [ epkgs.vterm ]);
         };
         alacritty = (import ../../modules/terminal/alacritty.nix);
-        git = (import ../../modules/terminal/git.nix) { inherit pkgs; };
+        git = (import ../../modules/terminal/gitemacs.nix) { inherit pkgs; };
         fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
         tmux = (import ../../modules/terminal/tmux.nix) { inherit pkgs; };
         bat = (import ../../modules/terminal/bat.nix) { inherit pkgs; };
@@ -262,6 +263,7 @@ in
         "XDG_CONFIG_HOME" = "$HOME/.config";
         "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
         "COLORTERM" = "truecolor";
+        "EDITOR" = "emacsclient -c";
     }; # }}}
 
     xdg = import ../../modules/common/xdg.nix { inherit pkgs; };

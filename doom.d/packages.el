@@ -56,6 +56,9 @@
 ;; (package! origami)                 ; vim-like folding
 (package! emms)                    ; emacs multimedia system
 (package! soundklaus)              ; soundcloud for emms
+(package! centaur-tabs
+  :recipe(:host github :repo "MoritzMaxeiner/centaur-tabs" :branch "daemon"))
+(package! frames-only-mode)
 
 ;; company(autocompletion) packages
 ;; (package! company-tabnine)
