@@ -55,6 +55,7 @@ in
         extraModprobeConfig = ''
             options bluetooth disable_ertm=Y
             options iwlwifi 11n_disable=8 bt_coex_active=N
+            options thinkpad_acpi experimental=1 fan_control=1
         '';
         kernelParams = [
             "acpi_osi='!Windows 2012'"
@@ -141,6 +142,23 @@ in
                 USB_AUTOSUSPEND=1
             '';
         };
+        thinkfan = {
+            enable = true;
+            fan = "tp_fan /proc/acpi/ibm/fan";
+            sensors = ''
+                hwmon /sys/class/thermal/thermal_zone0/temp
+            '';
+            levels = ''
+                (0, 0,  60)
+                (1, 53, 65)
+                (2, 55, 66)
+                (3, 57, 68)
+                (4, 61, 70)
+                (5, 64, 71)
+                (7, 68, 32767)
+                ("level full-speed", 63, 32767)
+            '';
+        };
         openssh = import (../../modules/common/openssh.nix);
     };
 
@@ -169,14 +187,33 @@ in
     services.xserver.deviceSection = ''
         Option "TearFree" "true"
     '';
-    services.xserver.synaptics.enable = false;
     services.xserver.inputClassSections = [
         ''
-        Identifier "Disable ThinkPad trackpad"
-         MatchProduct "SynPS/2 Synaptics TouchPad"
-         MatchIsTouchpad "on"
-         MatchDevicePath "/dev/input/event*"
-         Option "Ignore" "on"
+        Identifier "touchpad"
+        MatchProduct "SynPS/2 Synaptics TouchPad"
+        # MatchTag "lenovo_x230_all"
+        Driver "synaptics"
+        # fix touchpad resolution
+        Option "VertResolution" "100"
+        Option "HorizResolution" "65"
+        # disable synaptics driver pointer acceleration
+        Option "MinSpeed" "1"
+        Option "MaxSpeed" "1"
+        # tweak the X-server pointer acceleration
+        Option "AccelerationProfile" "2"
+        Option "AdaptiveDeceleration" "16"
+        Option "ConstantDeceleration" "16"
+        Option "VelocityScale" "20"
+        Option "AccelerationNumerator" "30"
+        Option "AccelerationDenominator" "10"
+        Option "AccelerationThreshold" "10"
+        # Disable two fingers right mouse click
+        Option "TapButton2" "0"
+        Option "HorizHysteresis" "100"
+        Option "VertHysteresis" "100"
+        # fix touchpad scroll speed
+        Option "VertScrollDelta" "500"
+        Option "HorizScrollDelta" "500"
         ''
     ];
 
