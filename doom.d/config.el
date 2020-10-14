@@ -82,10 +82,6 @@
    centaur-tabs-set-modified-marker t
    centaur-tabs-set-bar 'left))
 
-; integration with xmonad
-(use-package! frames-only-mode
-  :hook (emacs-startup . frames-only-mode))
-
 ; Disable current line highlight
 (remove-hook! (prog-mode text-mode conf-mode special-mode) 'hl-line-mode)
 
