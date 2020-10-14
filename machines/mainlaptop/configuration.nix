@@ -187,27 +187,39 @@ in
         openssh = import (../../modules/common/openssh.nix);
     };
 
-    #systemd.services = {
+    #systemd.user.services = {
         #xkb-restore = {
             #description = "Restore keyboard layout after suspend";
-            #after = [ "suspend.target" ];
+            #after = [ "suspend.target" "graphical-session.target" ];
             #serviceConfig = {
-                #User = "%I";
                 #Type = "simple";
                 #Environment = "DISPLAY=:0";
-                #ExecStartPre = "/bin/sleep 3";
+                #ExecStartPre = "/usr/bin/env sleep 3";
                 #ExecStart = "/usr/bin/xkbcomp /etc/.jislayoutremap.xkb :0";
             #};
-            #wantedBy = [ "suspend.target" ];
+            #wantedBy = [ "suspend.target" "graphical-session.target" ];
         #};
     #};
-
+    systemd.user.services = {
+        xkb-restore = {
+            description = "Restore keyboard layout after suspend";
+            after = [ "suspend.target" "graphical-session.target" ];
+            serviceConfig = {
+                Type = "simple";
+                Environment = "DISPLAY=:0";
+                ExecStartPre = "/usr/bin/env sleep 3";
+                ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/x230key.xkb :0\"";
+            };
+            wantedBy = [ "suspend.target" "graphical-session.target" ];
+        };
+    };
+   
     # enable sound
     sound.enable = true;
 
     services.xserver.layout = "us";
     services.xserver.xkbVariant = "dvorak";
-    services.xserver.xkbOptions = "ctrl:nocaps,altwin:swap_alt_win,swap_lalt_lwin";
+    # services.xserver.xkbOptions = "ctrl:nocaps,altwin:swap_alt_win,swap_lalt_lwin";
     services.xserver.videoDrivers = [ "intel" ];
     services.xserver.deviceSection = ''
         Option "TearFree" "true"
@@ -249,7 +261,7 @@ in
         users.${username} = import ./home.nix;
     };
 
-    environment.etc = import (../../modules/common/etcfiles.nix);
+    environment.etc = import ../../modules/common/etcfiles.nix { inherit pkgs; };
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 

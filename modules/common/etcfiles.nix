@@ -1,3 +1,5 @@
+{ pkgs }:
+
 {
     # wallpapers
     "wallpapers/wallpaper1.png".source = ../../pictures/wallpaper1.png;
@@ -18,4 +20,5 @@
     "icons/clock.xpm".source = ../../icons/clock.xpm;
     # misc
     ".jislayoutremap.xkb".source = ../../configs/jislayoutremap.xkb;
+    "x230key.xkb".source = ../../configs/thinkpadlayout.xkb;
 }
