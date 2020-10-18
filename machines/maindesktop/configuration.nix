@@ -116,7 +116,7 @@ in
         users.${username} = import ./home.nix;
     };
 
-    environment.etc = import (../../modules/common/etcfiles.nix);
+    environment.etc = import ../../modules/common/etcfiles.nix { inherit pkgs; };
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 

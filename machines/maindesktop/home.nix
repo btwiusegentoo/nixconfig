@@ -38,7 +38,7 @@ in
 
     imports = [
         # import xmonad nix expression
-        ../../modules/common/xmonad.nix
+        ../../modules/common/xmonademacs.nix
     ];
 
     # Packages to install{{{
@@ -156,6 +156,7 @@ in
 
         picom = (import ../../modules/services/picom.nix);
         dunst = (import ../../modules/services/dunst.nix);
+        emacs = (import ../../modules/services/emacsdaemon.nix);
         gpg-agent = (import ../../modules/services/gpg-agent.nix);
         keynav.enable = true;
         lorri.enable = true;
@@ -185,7 +186,7 @@ in
         gpg.enable = true;
 
         mpv = (import ../../modules/gui/mpv.nix);
-        qutebrowser = (import ../../modules/gui/qutebrowser.nix);
+        qutebrowser = (import ../../modules/gui/qutebrowseremacs.nix);
         firefox = (import ../../modules/gui/firefox.nix) { inherit pkgs; };
         zathura = (import ../../modules/gui/zathura.nix);
     };
