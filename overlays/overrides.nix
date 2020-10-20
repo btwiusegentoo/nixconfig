@@ -66,13 +66,13 @@ self: super: with pkgs; {
         };
         patches = oldattrs.patches ++ [ ../patches/nvim_fix_terminal_colors.patch ];
     });
-    picom = unstable.picom.overrideAttrs (oldattrs: {
-        version = "unstable-2020-08-04";
+    picomfork = unstable.picom.overrideAttrs (oldattrs: {
+        version = "unstable-2020-10-01";
         src = fetchFromGitHub {
-            owner = "ibhagwan";
+            owner = "jonaburg";
             repo = "picom";
-            rev = "44b4970f70d6b23759a61a2b94d9bfb4351b41b1";
-            sha256 = "0iff4bwpc00xbjad0m000midslgx12aihs33mdvfckr75r114ylh";
+            rev = "3ecf9e24441bd16faa39d8ee23471560fbf395b5";
+            sha256 = "1r74vlfnv388ynw112bd0nz833i80xjhzkk2hpb66ni67vhgr5hk";
         };
     });
     neofetch = unstable.neofetch.overrideAttrs (oldattrs: {

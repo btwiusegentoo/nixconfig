@@ -130,7 +130,7 @@ in
 
         dunst = (import ../../modules/services/dunst.nix);
         gpg-agent = (import ../../modules/services/gpg-agent.nix);
-        picom = (import ../../modules/services/picomlightweight.nix);
+        picom = (import ../../modules/services/picomanimations.nix) { inherit pkgs; };
         emacs = (import ../../modules/services/emacsdaemon.nix);
         keynav.enable = true;
         lorri.enable = true;
