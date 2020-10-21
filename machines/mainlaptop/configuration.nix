@@ -174,14 +174,13 @@ in
                 hwmon /sys/class/thermal/thermal_zone0/temp
             '';
             levels = ''
-                (0, 0,  60)
-                (1, 53, 65)
-                (2, 55, 66)
-                (3, 57, 68)
-                (4, 61, 70)
-                # (5, 64, 71)
-                # (7, 68, 32767)
-                ("level full-speed", 63, 32767)
+                (0, 0,  42)
+                (1, 36, 46)
+                (2, 45, 55)
+                (3, 54, 60)
+                (4, 59, 68)
+                (5, 67, 75)
+                ("level full-speed", 60, 32767)
             '';
         };
         openssh = import (../../modules/common/openssh.nix);

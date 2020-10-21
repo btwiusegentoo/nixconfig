@@ -19,18 +19,18 @@
         };
         font = {
             normal = {
-                family = "Tamzen";
+                family = "Spleen";
                 style = "Regular";
             };
             bold = {
-                family = "Tamzen";
+                family = "Spleen";
                 style = "Bold";
             };
             italic = {
-                family = "Tamzen";
+                family = "Spleen";
                 style = "Regular";
             };
-            size = 12.75;
+            size = 12;
             offset = {
                 x = 0;
                 y = 0;

@@ -1,7 +1,7 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
 ;; Specify font here
-(setq doom-font (font-spec :family "Tamzen" :size 12.75)
+(setq doom-font (font-spec :family "Spleen" :size 16)
       doom-variable-pitch-font (font-spec :family "SFNS Display" :size 13.5 :weight 'Regular))
 ;; Emoji and nerdfont stuff
 (set-fontset-font t 'symbol "Apple Color Emoji" nil)

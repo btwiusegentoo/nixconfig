@@ -97,7 +97,7 @@ I think I will make a script or TUI or something to make installation easier in 
 -   Alacritty
 -   qutebrowser
 -   fish shell + plugins
--   Tamzen font
+-   Spleen font
 -   NerdFont as fallback(GohuFont)
 -   Apple emoji
 -   Apple SF fonts installed

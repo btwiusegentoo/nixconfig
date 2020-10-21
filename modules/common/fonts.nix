@@ -12,6 +12,7 @@
         (nerdfonts.override { fonts = ["Gohu"]; })
         unstable.dejavu_fonts
         unstable.tamzen
+        unstable.spleen
         #(tamzen-nerdfont.override { size = "10x20";})
         san-francisco-font
         apple-color-emoji

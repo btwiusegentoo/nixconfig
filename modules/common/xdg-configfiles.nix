@@ -38,19 +38,6 @@
         sha256 = "04mjqsiajqdzp43fn16j6sfz3972yfpqq6s2vw0cnim5bp9a642b";
     };
 
-    # stylesheet css
-    "qutebrowser/css/palenight-all-sites.css".source = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/btwiusegentoo/palenight-everything-css/main/palenight-all-sites.css";
-        sha256 = "12l5mg3xp716n3z2grx4cqj1inc3w8wfd9hpjny184lb3asx2as5";
-    };
-
-    # statusbar nyancat
-    "qutebrowser/qutenyan".source = pkgs.fetchgit {
-        url = "https://gitlab.com/jgkamat/qutenyan";
-        rev = "1fd054f061b36c8c342a9e7747cb69c33bf72160";
-        sha256 = "0x37kx3czh1g1as4yasx8j33gab03ajxgy23d53wzvxvfrmyza3q";
-    };
-
     ## for local testing purposes
     #"qutebrowser/css/palenight-all-sites.css".source = ../../projects/palenight-everything-css/palenight-all-sites.css;
 }

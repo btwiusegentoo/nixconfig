@@ -8,36 +8,32 @@
     settings = {
         url.start_pages = [ "https://btwiusegentoo.github.io/start.html" ];
         url.default_page = "https://btwiusegentoo.github.io/start.html";
-        scrolling = {
-            smooth = true;
-            bar = "always";
-        };
 
         completion.web_history.max_items = 30;
 
         fonts = {
             default_family = "SFNS Display";
-            web.family.fixed = "Tamzen";
+            web.family.fixed = "Spleen";
             completion = {
-                category = "13pt Tamzen";
-                entry = "13pt Tamzen";
+                category = "12pt Spleen";
+                entry = "12pt Spleen";
             };
-            contextmenu = "13pt Tamzen";
-            debug_console = "13pt Tamzen";
+            contextmenu = "12pt Spleen";
+            debug_console = "12pt Spleen";
             default_size = "9pt";
-            downloads = "13pt Tamzen";
-            hints = "13pt Tamzen";
-            keyhint = "13pt Tamzen";
+            downloads = "12pt Spleen";
+            hints = "12pt Spleen";
+            keyhint = "12pt Spleen";
             messages = {
-                error = "13pt Tamzen";
-                info = "13pt Tamzen";
-                warning = "13pt Tamzen";
+                error = "12pt Spleen";
+                info = "12pt Spleen";
+                warning = "12pt Spleen";
             };
-            prompts = "13pt Tamzen";
-            statusbar = "13pt Tamzen";
-            tabs.selected = "13pt Tamzen";
-            tabs.unselected = "13pt Tamzen";
-            #tabs = "13pt Tamzen";
+            prompts = "12pt Spleen";
+            statusbar = "12pt Spleen";
+            tabs.selected = "12pt Spleen";
+            tabs.unselected = "12pt Spleen";
+            #tabs = "12pt Spleen";
         };
 
         # colors{{{
@@ -222,9 +218,6 @@
         config.bind('yd', 'spawn mpv --ytdl-format="bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best" {url}')
         config.bind('yf', 'hint links spawn mpv --ytdl-format="bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best" --force-window yes {hint-url}')
         c.url.searchengines = {'DEFAULT': 'https://google.com/search?q={}'}
-        c.content.user_stylesheets = ['~/.config/qutebrowser/css/palenight-all-sites.css']
-        #c.content.user_stylesheets = ['~/projects/palenight-everything-css/palenight-all-sites.css']
-        config.source('qutenyan/nyan.py')
     '';
 
 }

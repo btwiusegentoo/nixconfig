@@ -71,8 +71,8 @@ myKeys conf@XConfig { XMonad.modMask = modm } =
   M.fromList
     $  [ ((modm, xK_Return), spawn $ XMonad.terminal conf)
        , ((modm, xK_v)     , spawn $ myTerminal ++ " -e nvim")
-       , ((modm, xK_z), spawn $ myTerminal ++ " -e nvim -c term -c startinsert")
-       , ((modm, xK_w)     , spawn "emacsclient -c")
+       , ((modm, xK_z), spawn "emacsclient -c -a emacs ~/")
+       , ((modm, xK_w)     , spawn "emacsclient -c -a emacs")
        , ( (modm, xK_d)
          , shellPrompt myXPConfig
          )                  -- use xmonad prompt instead of dmenu.
@@ -121,20 +121,20 @@ myKeys conf@XConfig { XMonad.modMask = modm } =
        , ( (0, 0x1008ff03)
          , spawn "xbacklight -dec 5"
          )        -- increase brightness
-       , ( (0, xK_Print)
-         , spawn "scrot screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'"
-         ) -- fn+c(HHKB Dvorak)
+       -- , ( (0, xK_Print)
+       --   , spawn "scrot screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'"
+       --   ) -- fn+c(HHKB Dvorak)
        , ( (0 .|. controlMask, xK_Print)
          , spawn "scrot -s screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'"
          ) -- ctrl+fn+c(HHKB Dvorak)
        , ( (modm, xK_Print)
          , spawn "scrot tmp.png -e 'xclip $f && rm $f'"
-         ) -- mod+fn+c(HHKB Dvorak)
-       , ( (modm, xK_F1)
-         , spawn "setxkbmap dvorak"
-         ) -- Switch to Dvorak layout
-       , ( (modm, xK_F2)
-         , spawn "setxkbmap us"
+       --   ) -- mod+fn+c(HHKB Dvorak)
+       -- , ( (modm, xK_F1)
+       --   , spawn "setxkbmap dvorak"
+       --   ) -- Switch to Dvorak layout
+       -- , ( (modm, xK_F2)
+       --   , spawn "setxkbmap us"
          ) -- Switch to qwerty layout
        , ( (modm, xK_F3)
          , spawn "xinput --disable 11"
