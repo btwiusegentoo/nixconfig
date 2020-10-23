@@ -15,7 +15,7 @@ xkb_keycodes "evdev+aliases(qwerty)" {
     <AE10> = 19;
     <AE11> = 20;
     <AE12> = 21;
-    <BKSP> = 22;
+    <BKSP> = 51;
      <TAB> = 23;
     <AD01> = 24;
     <AD02> = 25;
@@ -44,7 +44,7 @@ xkb_keycodes "evdev+aliases(qwerty)" {
     <AC11> = 48;
     <TLDE> = 49;
     <LFSH> = 50;
-    <BKSL> = 51;
+    <BKSL> = 22;
     <AB01> = 52;
     <AB02> = 53;
     <AB03> = 54;
