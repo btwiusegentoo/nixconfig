@@ -43,7 +43,7 @@ in
     # Hardware{{{
     hardware = {
         pulseaudio = (import ../../modules/services/pulseaudio.nix) { inherit pkgs; };
-        bluetooth.enable = true;
+        bluetooth = (import ../../modules/common/bluetooth.nix) { inherit pkgs; };
         opengl.enable = true;
         opengl.driSupport = true;
         cpu.intel.updateMicrocode = true;

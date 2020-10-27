@@ -76,7 +76,7 @@ in
     # Hardware{{{
     hardware = {
         pulseaudio = (import ../../modules/services/pulseaudio.nix) { inherit pkgs; };
-        bluetooth.enable = true;
+        bluetooth = (import ../../modules/common/bluetooth.nix) { inherit pkgs; };
         opengl.enable = true;
         opengl.driSupport = true;
         opengl.extraPackages = with pkgs; [
@@ -128,61 +128,8 @@ in
     services = {
         fstrim.enable = true;                                   # Trim ssd
         blueman.enable = true;                                  # Used for bluetooth
-        tlp = {
-            enable = true;
-            extraConfig = ''
-                SOUND_POWER_SAVE_ON_AC=0
-                SOUND_POWER_SAVE_ON_BAT=1
-                SOUND_POWER_SAVE_CONTROLLER=Y
-                BAY_POWEROFF_ON_AC=0
-                BAY_POWEROFF_ON_BAT=1
-                DISK_APM_LEVEL_ON_AC="254 254"
-                DISK_APM_LEVEL_ON_BAT="128 128"
-                DISK_IOSCHED="none none"
-                SATA_LINKPWR_ON_AC="med_power_with_dipm max_performance"
-                SATA_LINKPWR_ON_BAT=min_power
-                MAX_LOST_WORK_SECS_ON_AC=15
-                MAX_LOST_WORK_SECS_ON_BAT=60
-                NMI_WATCHDOG=0
-                WIFI_PWR_ON_AC=off
-                WIFI_PWR_ON_BAT=on
-                WOL_DISABLE=Y
-                CPU_SCALING_GOVERNOR_ON_AC=powersave
-                CPU_SCALING_GOVERNOR_ON_BAT=powersave
-                CPU_MIN_PERF_ON_AC=0
-                CPU_MAX_PERF_ON_AC=100
-                CPU_MIN_PERF_ON_BAT=0
-                CPU_MAX_PERF_ON_BAT=50
-                CPU_BOOST_ON_AC=1
-                CPU_BOOST_ON_BAT=1
-                SCHED_POWERSAVE_ON_AC=0
-                SCHED_POWERSAVE_ON_BAT=1
-                ENERGY_PERF_POLICY_ON_AC=performance
-                ENERGY_PERF_POLICY_ON_BAT=power
-                RESTORE_DEVICE_STATE_ON_STARTUP=0
-                RUNTIME_PM_ON_AC=on
-                RUNTIME_PM_ON_BAT=auto
-                PCIE_ASPM_ON_AC=default
-                PCIE_ASPM_ON_BAT=powersupersave
-                USB_AUTOSUSPEND=1
-            '';
-        };
-        thinkfan = {
-            enable = true;
-            fan = "tp_fan /proc/acpi/ibm/fan";
-            sensors = ''
-                hwmon /sys/class/thermal/thermal_zone0/temp
-            '';
-            levels = ''
-                (0, 0,  42)
-                (1, 36, 46)
-                (2, 45, 55)
-                (3, 54, 60)
-                (4, 59, 68)
-                (5, 67, 75)
-                ("level full-speed", 60, 32767)
-            '';
-        };
+        tlp = import (../../modules/services/tlp.nix);
+        thinkfan = import (../../modules/services/thinkfan.nix);
         openssh = import (../../modules/common/openssh.nix);
     };
 
