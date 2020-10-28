@@ -11,20 +11,17 @@ in
         add_newline = true;
 
         character = {
-            style_success = "#c792ea";
-            use_symbol_for_status = true;
-            symbol = "𝝺";
-            vicmd_symbol = " ";
-            error_symbol = "☓ ";
+            success_symbol = "[𝝺](#c792ea)";
+            vicmd_symbol = "[ ](bold green)";
+            error_symbol = "[☓ ](bold red)";
         };
 
         directory = {
-            style = "cyan";
+            style = "bold cyan";
         };
 
         nix_shell = {
             disabled = false;
-            use_name = true;
             symbol = " ";
         };
 
