@@ -36,6 +36,7 @@
         "gmv" = "git mv";
         "gl" = "git log --graph --color=always";
         "glo" = "git log --graph --color=always --oneline";
+        "sshgit" = "ssh-add ~/.ssh/githubkey";
         #screenshot
         "scrotclipsel" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
         "scrotclip" = "scrot ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
