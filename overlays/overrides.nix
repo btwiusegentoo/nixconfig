@@ -30,9 +30,9 @@ self: super: with pkgs; {
     # required globally
     unstable = import nixpkgs-unstable {
         config = import ../configs/nixpkgs-config.nix;
-        overlays =  [
-                    (import ./emacs.nix)
-                    ];
+        # overlays =  [
+        #             (import ./.nix)
+        #             ];
     };
     master = import nixpkgsmaster {
         config = import ../configs/nixpkgs-config.nix;

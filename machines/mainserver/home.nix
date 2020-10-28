@@ -7,29 +7,6 @@ let
     unstable = pkgs.unstable;
     master = pkgs.master;
 
-    # Haskell packages{{{
-    haskell-env = unstable.haskellPackages.ghcWithPackages (
-        hp: with hp; [
-            xmonad
-            xmonad-contrib
-            xmonad-extras
-            apply-refact
-            haskell-language-server
-            brittany
-            cabal-install
-            hlint
-            xmobar
-        ]
-    );
-    # }}}
-
-    # doom emacs
-    doom-emacs = unstable.callPackage (builtins.fetchTarball {
-        url = "https://github.com/vlaci/nix-doom-emacs/archive/develop.tar.gz";
-    }) {
-        doomPrivateDir = ../../doom.d;
-    };
-
     # import variables
     username = (import ../../uservars.nix).username;
 
@@ -46,47 +23,20 @@ in
         binutils
         killall
         neofetch
-        nodePackages.node2nix
-        cabal2nix
         unstable.mosh
         nix-index
         niv
-        haskell-env
-        rnix-lsp
         scrot
         feh
         lightlocker
         circleci-cli
-        fontforge
-        palenight-gtk-theme
-        unstable.pandoc
-        unstable.chafa
         # nixpkgs
-        nixfmt
-        nixpkgs-fmt
-        nixpkgs-review
         nix-prefetch-git
         nix-prefetch-github
-        pypi2nix
-        # rust
-        unstable.cargo
-        # lua
-        unstable.luajit
-        unstable.luajitPackages.lua-lsp
         # tui apps
-        cava
-        unstable.vifm-full
-        vifmimg
         htop
-        unstable.bottom
-        ncpamixer
-        unstable.mps-youtube
-        unstable.lazygit
-        # node packages
-        nodePackages.gitmoji-cli
         # dependencies
         libnotify
-        xsel # used by xmonad emoji prompt
         unstable.youtube-dl
         unstable.neovim-remote
         unstable.direnv
