@@ -17,19 +17,21 @@ in
                 '';
             }
         ];
-        displayManager.lightdm = {
-            enable = true;
+        displayManager = {
             autoLogin.enable = true;
             autoLogin.user = "${username}";
-            greeters.mini = {
+            lightdm = {
                 enable = true;
-                user = "${username}";
-                extraConfig = ''
-                    [greeter]
-                    show-password-label = false
-                    [greeter-theme]
-                    background-image = "/etc/wallpapers/wallpaper2.png"
-                '';
+                greeters.mini = {
+                    enable = true;
+                    user = "${username}";
+                    extraConfig = ''
+                        [greeter]
+                        show-password-label = false
+                        [greeter-theme]
+                        background-image = "/etc/wallpapers/wallpaper2.png"
+                    '';
+                };
             };
         };
         autoRepeatDelay = 200;

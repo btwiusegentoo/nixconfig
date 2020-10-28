@@ -1,4 +1,3 @@
-
 { config, pkgs, fetchgit, ... }:
 
 let
@@ -16,9 +15,7 @@ in
             # import cachix
             ./cachix.nix
             # import home-manager module
-            (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/96d7de6db18d9a5bf254ddf3525bb4ef1d2a6bda.tar.gz}/nixos")
-            # import unstable doas
-            (import "${builtins.fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz}/nixos/modules/security/doas.nix")
+            (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/28eb093a1e6999d52e60811008b4bfc7e20cc591.tar.gz}/nixos")
             # import user settings
             ../../usersettings.nix
             # import user defaults

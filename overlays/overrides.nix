@@ -5,27 +5,19 @@ let
         pkgs.fetchFromGitHub {
             owner = "NixOS";
             repo = "nixpkgs";
-            rev = "84d74ae9c9cbed73274b8e4e00be14688ffc93fe";
-            sha256 = "0ww70kl08rpcsxb9xdx8m48vz41dpss4hh3vvsmswll35l158x0v";
+            rev = "7ad5e816faba3f808e2a8815b14d0f023a4e2160";
+            sha256 = "1vqqpcnybwl10h5br5nm8n0l33qfzj3rxhahf3pfjfvrc8iyk762";
         };
 
     nixpkgsmaster =
         pkgs.fetchFromGitHub {
             owner = "NixOS";
             repo = "nixpkgs";
-            rev = "b0a8a175e57d45ead90903e6218ec68ae482be91";
-            sha256 = "1k7sg15bxplpk2cswzgpwg9jf6z24y5303hmr1r4ww6xvcjnb90h";
+            rev = "c127653b72574199463a73a56e1809223eaec0df";
+            sha256 = "0wld8ig9xdyqhgv6ck4739jgb55pxkw2m4b12qly5ly2fpy9fj9j";
         };
 
-    qtpkgsrev =
-        pkgs.fetchFromGitHub {
-            owner = "NixOS";
-            repo = "nixpkgs";
-            rev = "c71518e75bf067fb639d44264fdd8cf80f53d75a";
-            sha256 = "0hwa79prsqgvfwd3ah54nl0wh73q215z7np4k6y0pd6zr3m17vxs";
-        };
-
-    nurrev =
+    nurpin =
         pkgs.fetchFromGitHub {
             owner = "nix-community";
             repo = "NUR";
@@ -45,10 +37,7 @@ self: super: with pkgs; {
     master = import nixpkgsmaster {
         config = import ../configs/nixpkgs-config.nix;
     };
-    qtpkgs = import qtpkgsrev {
-        config = import ../configs/nixpkgs-config.nix;
-    };
-    nur = import nurrev {
+    nur = import nurpin {
         inherit pkgs;
     };
     # configuration.nix
@@ -85,6 +74,4 @@ self: super: with pkgs; {
     youtube-dl = unstable.youtube-dl;
     mpv = unstable.mpv;
     fzf = unstable.fzf;
-    qutebrowser = qtpkgs.qutebrowser;
-    qtwebengine = qtpkgs.qtwebengine;
 }

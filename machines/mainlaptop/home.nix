@@ -88,7 +88,7 @@ in
         vifmimg
         htop
         unstable.powertop
-        unstable.ytop
+        unstable.bottom
         ncpamixer
         unstable.mps-youtube
         unstable.lazygit

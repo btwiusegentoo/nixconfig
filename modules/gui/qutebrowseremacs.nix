@@ -1,8 +1,16 @@
 {
     enable = true;
-    #searchEngines = {
-    #DEFAULT = "https://google.com/search?q={}";
-    #};
+
+    searchEngines = {
+        DEFAULT = "https://google.com/search?q={}";
+    };
+
+    keyBindings = {
+        normal = {
+            "yd" = "spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' {url}";
+            "yf" = "hint links spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' --force-window yes {hint-url}";
+        };
+    };
 
     # settings{{{
     settings = {
@@ -215,9 +223,6 @@
     # }}}
 
     extraConfig = ''
-        config.bind('yd', 'spawn mpv --ytdl-format="bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best" {url}')
-        config.bind('yf', 'hint links spawn mpv --ytdl-format="bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best" --force-window yes {hint-url}')
-        c.url.searchengines = {'DEFAULT': 'https://google.com/search?q={}'}
         c.editor.command = ["emacsclient", "-c", "--eval", "(find-file \"{}\")", "(org-mode)"]
     '';
 

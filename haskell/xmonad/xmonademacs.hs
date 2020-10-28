@@ -83,8 +83,8 @@ myKeys conf@XConfig { XMonad.modMask = modm } =
          , namedScratchpadAction myScratchPads "mixer"
          ) -- sound mixer scratchpad
        , ( (modm .|. controlMask, xK_h)
-         , namedScratchpadAction myScratchPads "ytop"
-         )  -- ytop scratchpad
+         , namedScratchpadAction myScratchPads "bottom"
+         )  -- bottom scratchpad
        , ( (modm .|. controlMask, xK_n)
          , namedScratchpadAction myScratchPads "vifm"
          )   -- file manager scratchpad
@@ -293,7 +293,7 @@ myLayout = avoidStruts $ smartBorders
 myScratchPads =
   [ NS "terminal" spawnTerm  findTerm  manageTerm
   , NS "mixer"    spawnMixer findMixer manageMixer
-  , NS "ytop"     spawnytop  findytop  manageytop
+  , NS "bottom"     spawnbottom  findbottom  managebottom
   , NS "vifm"     spawnvifm  findvifm  managevifm
   ]
  where
@@ -316,9 +316,9 @@ myScratchPads =
   manageMixer =
     customFloating $ W.RationalRect centrall centralt centralw centralh
 
-  spawnytop = myTerminal ++ " --title=ytopScratchpad" ++ " -e ytop"
-  findytop  = title =? "ytopScratchpad"
-  manageytop =
+  spawnbottom = myTerminal ++ " --title=bottomScratchpad" ++ " -e bottom"
+  findbottom  = title =? "bottomScratchpad"
+  managebottom =
     customFloating $ W.RationalRect centrall centralt centralw centralh
 
   spawnvifm =

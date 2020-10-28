@@ -92,7 +92,7 @@ in
         unstable.vifm-full
         vifmimg
         htop
-        unstable.ytop
+        unstable.bottom
         ncpamixer
         unstable.mps-youtube
         unstable.lazygit
