@@ -50,7 +50,7 @@ in
         unstable.ripgrep
         unstable.fd
         unstable.fzf
-        mosh-master
+        unstable.mosh
         binutils
         killall
         neofetch
