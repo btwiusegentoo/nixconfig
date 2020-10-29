@@ -69,7 +69,7 @@ in
     };
 
     # Networking{{{
-    networking.hostName = "nixos"; # Define your hostname.
+    networking.hostName = "desktop1"; # Define your hostname.
     # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
     # The global useDHCP flag is deprecated, therefore explicitly set to false here.

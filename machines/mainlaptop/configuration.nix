@@ -97,7 +97,7 @@ in
     };
 
     # Networking{{{
-    networking.hostName = "nixos"; # Define your hostname.
+    networking.hostName = "laptop1"; # Define your hostname.
     # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
     # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -197,13 +197,6 @@ in
         Option "HorizScrollDelta" "500"
         ''
     ];
-
-
-    home-manager = {
-        useUserPackages=true;
-        verbose = true;
-        users.${username} = import ./home.nix;
-    };
 
     environment.etc = import ../../modules/common/etcfiles.nix { inherit pkgs; };
 
