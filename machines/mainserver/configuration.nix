@@ -91,19 +91,7 @@ in
 
     nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs; };
 
-    nix.buildMachines = [ {
-        hostName = "maindesktopbuild";
-        system = "x86_64-linux";
-        maxJobs = 8;
-        speedFactor = 2;
-        supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
-        mandatoryFeatures = [ ];
-    } ];
-    nix.distributedBuilds = true;
-	# optional, useful when the builder has a faster internet connection than yours
-    nix.extraOptions = ''
-        builders-use-substitutes = true
-    '';
+    nix = import ../../modules/common/Nix.nix { inherit pkgs; };
 
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions
