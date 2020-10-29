@@ -125,6 +125,7 @@ in
     services = {
         fstrim.enable = true;                                   # Trim ssd
         blueman.enable = true;                                  # Used for bluetooth
+        earlyoom.enable = true;
         tlp = import (../../modules/services/tlp.nix);
         thinkfan = import (../../modules/services/thinkfan.nix);
         openssh = import (../../modules/common/openssh.nix);

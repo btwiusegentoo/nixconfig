@@ -73,6 +73,7 @@ in
 
     services = {
         blueman.enable = true;                                  # Used for bluetooth
+        earlyoom.enable = true;
         openssh = import (../../modules/common/openssh.nix);
     };
 
