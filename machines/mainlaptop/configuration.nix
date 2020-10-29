@@ -14,10 +14,6 @@ in
             ./hardware-configuration.nix
             # import cachix
             ./cachix.nix
-            # import home-manager module
-            (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/28eb093a1e6999d52e60811008b4bfc7e20cc591.tar.gz}/nixos")
-            # import user settings
-            ../../usersettings.nix
             # import user defaults
             ../../modules/common/userdefaults.nix
             # import xserver configs
