@@ -57,7 +57,7 @@
 
         home-manager.enable = true;
 
-        neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs master; }; # don't compile
+        neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs unstable master; }; # don't compile
 
         git = (import ../../modules/terminal/git.nix) { inherit pkgs unstable; };
         fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
@@ -119,7 +119,7 @@
     # Home Manager config{{{
     # Home Manager needs a bit of information about you and the
     # paths it should manage.
-    home.hac = "hac";
+    home.username = "hac";
     home.homeDirectory = "/home/hac";
 
     # This value determines the Home Manager release that your

@@ -67,7 +67,7 @@
     # enable sound
     sound.enable = true;
 
-    environment.etc = import ../../modules/common/etcfiles.nix { inherit pkgs; };
+    environment.etc = import ../../modules/common/etcfiles.nix;
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
