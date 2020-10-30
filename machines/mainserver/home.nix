@@ -1,16 +1,5 @@
-# Don't forget to setup swapfile and use cachix just in case something have to compile.
-# sometime haskell package starts compiling
+{ config, pkgs, unstable, master, lib, ... }:
 
-{ config, pkgs, lib, ... }:
-
-let
-    unstable = pkgs.unstable;
-    master = pkgs.master;
-
-    # import variables
-    username = (import ../../uservars.nix).username;
-
-in
 {
 
     # Packages to install{{{
@@ -67,13 +56,13 @@ in
 
         home-manager.enable = true;
 
-        neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; }; # don't compile
+        neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs master; }; # don't compile
 
-        git = (import ../../modules/terminal/git.nix) { inherit pkgs; };
+        git = (import ../../modules/terminal/git.nix) { inherit pkgs unstable; };
         fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
         tmux = (import ../../modules/terminal/tmux.nix) { inherit pkgs; };
         bat = (import ../../modules/terminal/bat.nix) { inherit pkgs; };
-        starship = (import ../../modules/terminal/starship.nix) { inherit pkgs; };
+        starship = (import ../../modules/terminal/starship.nix) { inherit pkgs unstable; };
         lsd = (import ../../modules/terminal/lsd.nix);
         fzf = (import ../../modules/terminal/fzf.nix);
     };
@@ -128,8 +117,8 @@ in
     # Home Manager config{{{
     # Home Manager needs a bit of information about you and the
     # paths it should manage.
-    home.username = "${username}";
-    home.homeDirectory = "/home/${username}";
+    home.hac = "hac";
+    home.homeDirectory = "/home/hac";
 
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
@@ -152,7 +141,7 @@ in
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
-    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs; };
+    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
 
 }
 # vim:ft=nix fdm=marker sw=4:

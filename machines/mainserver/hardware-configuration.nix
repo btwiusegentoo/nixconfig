@@ -4,9 +4,6 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports =
-    [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-    ];
 
   boot.initrd.availableKernelModules = [ "ohci_pci" "ehci_pci" "pata_amd" "ahci" "firewire_ohci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];

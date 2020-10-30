@@ -1,25 +1,12 @@
+{ config, pkgs, unstable, master, fetchgit, ... }:
 
-{ config, pkgs, fetchgit, ... }:
-
-let
-    unstable = pkgs.unstable;
-
-
-    # import variables
-    username = (import ../../uservars.nix).username;
-
-in
 {
 
     imports =
         [ # Include the results of the hardware scan.
             ./hardware-configuration.nix
-            # import home-manager module
-            (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/28eb093a1e6999d52e60811008b4bfc7e20cc591.tar.gz}/nixos")
             # import user settings
-            ../../usersettings.nix
-            # import user defaults
-            ../../modules/common/userdefaults.nix
+            ./usersettings.nix
             # import system packages
             ../../modules/common/systempackages.nix
             # import locale configs
@@ -80,17 +67,11 @@ in
     # enable sound
     sound.enable = true;
 
-    home-manager = {
-        useUserPackages=true;
-        verbose = true;
-        users.${username} = import ./home.nix;
-    };
-
     environment.etc = import ../../modules/common/etcfiles.nix { inherit pkgs; };
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
-    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs; };
+    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
 
     nix = import ../../modules/common/Nix.nix { inherit pkgs; };
 
@@ -103,5 +84,3 @@ in
     system.stateVersion = "20.03"; # Did you read the comment?
 
 }
-
-# vim:ft=nix sw=4 fdm=marker:
