@@ -47,7 +47,7 @@
     services = {
 
         lorri.enable = true;
-        gpg-agent = (import ../../modules/services/gpg-agent.nix);
+        gpg-agent = (import ../../modules/services/gpg-agent-curses.nix);
 
     };
     #}}}
