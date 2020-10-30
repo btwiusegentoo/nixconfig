@@ -27,7 +27,9 @@
             master = (import master) {
                 system = "x86_64-linux";
             };
-            username = (import ./uservars.nix).username;
+            desktop1username = (import ./machines/maindesktop/uservars.nix).username;
+            laptop1username = (import ./machines/mainloptop/uservars.nix).username;
+            server1username = (import ./machines/mainserver/uservars.nix).username;
 
         in
         {
@@ -40,7 +42,7 @@
                         {
                             home-manager.useGlobalPkgs = true;
                             home-manager.useUserPackages = true;
-                            home-manager.users.${username} =  ./machines/maindesktop/home.nix;
+                            home-manager.users.${desktop1username} =  ./machines/maindesktop/home.nix;
                         }
                     ];
                 };
@@ -48,12 +50,12 @@
                     system = "x86_64-linux";
                     modules = [
                         ./machines/mainlaptop/configuration.nix
-                        ./usersettings.nix
+                        ./machines/mainlaptop/usersettings.nix
                         home-manager.nixosModules.home-manager
                         {
                             home-manager.useGlobalPkgs = true;
                             home-manager.useUserPackages = true;
-                            home-manager.users.${username} =  ./machines/mainlaptop/home.nix;
+                            home-manager.users.${laptop1username} =  ./machines/mainlaptop/home.nix;
                         }
                     ];
                 };
@@ -65,7 +67,7 @@
                         {
                             home-manager.useGlobalPkgs = true;
                             home-manager.useUserPackages = true;
-                            home-manager.users.${username} =  ./machines/mainserver/home.nix;
+                            home-manager.users.${server1username} =  ./machines/mainserver/home.nix;
                         }
                     ];
                 };
