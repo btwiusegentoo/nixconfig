@@ -1,12 +1,4 @@
-{ config, pkgs, fetchgit, ... }:
-
-let
-    unstable = pkgs.unstable;
-
-    # import variables
-    username = (import ../../uservars.nix).username;
-
-in
+{ config, pkgs, unstable, master, fetchgit, ... }:
 {
 
     imports =
@@ -14,12 +6,8 @@ in
             ./hardware-configuration.nix
             # import cachix
             ./cachix.nix
-            # import home-manager module
-            (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/28eb093a1e6999d52e60811008b4bfc7e20cc591.tar.gz}/nixos")
-            # import user settings
-            ../../usersettings.nix
-            # import user defaults
-            ../../modules/common/userdefaults.nix
+            # import usersettings
+            ./usersettings.nix
             # import xserver configs
             ../../modules/common/xserver.nix
             # import system packages
@@ -97,7 +85,7 @@ in
     };
 
     # Networking{{{
-    networking.hostName = "nixos"; # Define your hostname.
+    networking.hostName = "laptop1"; # Define your hostname.
     # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
     # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -118,13 +106,14 @@ in
     };
     #}}}
 
-    fonts = (import ../../modules/common/fonts.nix) { inherit pkgs; };
+    fonts = (import ../../modules/common/fonts.nix) { inherit pkgs unstable master; };
 
     environment.variables = (import ../../modules/common/globalvars.nix);
 
     services = {
         fstrim.enable = true;                                   # Trim ssd
         blueman.enable = true;                                  # Used for bluetooth
+        earlyoom.enable = true;
         tlp = import (../../modules/services/tlp.nix);
         thinkfan = import (../../modules/services/thinkfan.nix);
         openssh = import (../../modules/common/openssh.nix);
@@ -197,18 +186,13 @@ in
         ''
     ];
 
-
-    home-manager = {
-        useUserPackages=true;
-        verbose = true;
-        users.${username} = import ./home.nix;
-    };
-
-    environment.etc = import ../../modules/common/etcfiles.nix { inherit pkgs; };
+    environment.etc = import ../../modules/common/etcfiles.nix;
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
-    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs; };
+    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
+
+    nix = import ../../modules/common/Nix.nix { inherit pkgs; };
 
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions

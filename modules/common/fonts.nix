@@ -1,5 +1,4 @@
-{ pkgs }:
-
+{ pkgs, unstable, master }:
 {
     fontconfig = {
         enable = true;

@@ -1,10 +1,6 @@
-{ pkgs }:
-
+{ pkgs, unstable, master }:
 let
     plugins = pkgs.callPackage ./customvimplugins.nix {};
-    unstable = pkgs.unstable;
-    master = pkgs.master;
-
 in
 {
     enable = true;

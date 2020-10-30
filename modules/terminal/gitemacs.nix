@@ -1,9 +1,4 @@
-{ pkgs }:
-
-let
-    unstable = pkgs.unstable;
-
-in
+{ pkgs, unstable }:
 {
     enable = true;
     package = unstable.git;

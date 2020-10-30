@@ -1,8 +1,4 @@
 { pkgs, config, ... }:
-let
-    username = (import ../../uservars.nix).username;
-
-in
 {
     services.xserver = {
         enable = true;
@@ -18,13 +14,10 @@ in
             }
         ];
         displayManager = {
-            autoLogin.enable = true;
-            autoLogin.user = "${username}";
             lightdm = {
                 enable = true;
                 greeters.mini = {
                     enable = true;
-                    user = "${username}";
                     extraConfig = ''
                         [greeter]
                         show-password-label = false

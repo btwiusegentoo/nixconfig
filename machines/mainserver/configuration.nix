@@ -1,25 +1,12 @@
+{ config, pkgs, unstable, master, fetchgit, ... }:
 
-{ config, pkgs, fetchgit, ... }:
-
-let
-    unstable = pkgs.unstable;
-
-
-    # import variables
-    username = (import ../../uservars.nix).username;
-
-in
 {
 
     imports =
         [ # Include the results of the hardware scan.
             ./hardware-configuration.nix
-            # import home-manager module
-            (import "${builtins.fetchTarball https://github.com/rycee/home-manager/archive/28eb093a1e6999d52e60811008b4bfc7e20cc591.tar.gz}/nixos")
             # import user settings
-            ../../usersettings.nix
-            # import user defaults
-            ../../modules/common/userdefaults.nix
+            ./usersettings.nix
             # import system packages
             ../../modules/common/systempackages.nix
             # import locale configs
@@ -51,7 +38,7 @@ in
     zramSwap = (import ../../modules/services/zram.nix);
 
     # Networking{{{
-    networking.hostName = "nixos"; # Define your hostname.
+    networking.hostName = "server1"; # Define your hostname.
     # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
     # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -73,37 +60,20 @@ in
 
     services = {
         blueman.enable = true;                                  # Used for bluetooth
+        earlyoom.enable = true;
         openssh = import (../../modules/common/openssh.nix);
     };
 
     # enable sound
     sound.enable = true;
 
-    home-manager = {
-        useUserPackages=true;
-        verbose = true;
-        users.${username} = import ./home.nix;
-    };
-
-    environment.etc = import ../../modules/common/etcfiles.nix { inherit pkgs; };
+    environment.etc = import ../../modules/common/etcfiles.nix;
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
-    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs; };
+    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
 
-    nix.buildMachines = [ {
-        hostName = "maindesktopbuild";
-        system = "x86_64-linux";
-        maxJobs = 8;
-        speedFactor = 2;
-        supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
-        mandatoryFeatures = [ ];
-    } ];
-    nix.distributedBuilds = true;
-	# optional, useful when the builder has a faster internet connection than yours
-    nix.extraOptions = ''
-        builders-use-substitutes = true
-    '';
+    nix = import ../../modules/common/Nix.nix { inherit pkgs; };
 
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions
@@ -114,5 +84,3 @@ in
     system.stateVersion = "20.03"; # Did you read the comment?
 
 }
-
-# vim:ft=nix sw=4 fdm=marker:
