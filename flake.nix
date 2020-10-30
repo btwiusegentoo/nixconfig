@@ -9,20 +9,15 @@
                 nixpkgs.follows = "nixpkgs";
             };
         };
+        nur.url = "github:nix-community/NUR";
 
-        nixpkgs = {
-            url = "github:nixos/nixpkgs/nixos-20.09";
-        };
-        unstable = {
-            url = "github:nixos/nixpkgs/nixos-unstable";
-        };
-        master = {
-            url = "github:nixos/nixpkgs/master";
-        };
+        nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
+        unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+        master.url = "github:nixos/nixpkgs/master";
     };
 
 
-    outputs = inputs@{ self, home-manager, nixpkgs, unstable, master, ... }:
+    outputs = inputs@{ self, home-manager, nur, nixpkgs, unstable, master, ... }:
         let
             pkgs = (import nixpkgs) {
                 system = "x86_64-linux";
@@ -66,6 +61,9 @@
                                         };
                                     };
                                 })
+                            { nixpkgs.overlays = [
+                                  nur.overlay
+                              ]; }
                         ];
                 };
                 laptop1 = nixpkgs.lib.nixosSystem {
@@ -103,6 +101,9 @@
                                         };
                                     };
                                 })
+                            { nixpkgs.overlays = [
+                                  nur.overlay
+                              ]; }
                         ];
                 };
                 server1 = nixpkgs.lib.nixosSystem {
@@ -140,6 +141,9 @@
                                         };
                                     };
                                 })
+                            { nixpkgs.overlays = [
+                                  nur.overlay
+                              ]; }
                         ];
                 };
 
