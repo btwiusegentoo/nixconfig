@@ -5,6 +5,8 @@
 
 {
 
+  hardware.enableRedistributableFirmware = true;
+
   boot.initrd.availableKernelModules = [ "ohci_pci" "ehci_pci" "pata_amd" "ahci" "firewire_ohci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-intel" ];
