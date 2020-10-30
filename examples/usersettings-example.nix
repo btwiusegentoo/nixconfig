@@ -1,19 +1,26 @@
-let
-    username = (import ./uservars.nix).username;
-in
+{ pkgs, ... }:
+# This file goes inside machines/(machinename)
+# contains machine specific configs and maybe secrets
 {
     services.openssh.ports = [ 22 ];        # Change to better port if you want
-    time.timeZone = "America/Chicago";      # set your local timezone. See timedatectl list-timezones
+    time.timeZone = "Europe/Amsterdam";      # set your local timezone. See timedatectl list-timezones
+    services.xserver.displayManager.lightdm.greeters.mini.user = "myusername";
+    services.xserver.displayManager.autoLogin.enable = true;
+    services.xserver.displayManager.autoLogin.user = "myusername";
 
-    home-manager.users.${username} = {
-        # Set your keyboard layout. I recommend Dvorak.
-        home.keyboard = {                  
-            layout = "us";
-            variant = "dvorak";
-        };
-        # Scale 1080p monitor to WQHD.
-        #xsession.profileExtra = "xrandr --output DVI-D-0 --scale 1.33333333333333x1.33333333333333 --panning 2560x1440 ";
-        # Scale to 1080p
-        #xsession.profileExtra = "xrandr --output LVDS1 --scale-from 1920x1080 --panning 1920x1080";
+    users.users.myusername = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" "input" "libvirtd" ];
+        shell = pkgs.fish;
     };
+    # use doas instead of sudo
+    security.sudo.enable = false;
+    security.doas = {
+        enable = true;
+        wheelNeedsPassword = true;
+        extraRules = [
+            { groups = [ "wheel" ]; noPass = false; keepEnv = true; persist = true;}
+        ];
+    };
+    nix.allowedUsers = [ "@wheel" ];
 }

@@ -1,5 +1,4 @@
 { pkgs, unstable }:
-
 {
     enable = true;
     package = unstable.git;

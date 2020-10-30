@@ -1,5 +1,4 @@
 { config, pkgs, unstable, master, fetchgit, ... }:
-
 {
 
     imports =
@@ -9,8 +8,6 @@
             ./cachix.nix
             # import usersettings
             ./usersettings.nix
-            # import user defaults
-            ../../modules/common/userdefaults.nix
             # import xserver configs
             ../../modules/common/xserver.nix
             # import system packages

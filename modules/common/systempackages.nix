@@ -27,6 +27,7 @@ in
     environment.systemPackages = with pkgs; [
         wget
         git
+        git-crypt
         bat
         unstable.neovim
         unstable.nodejs
