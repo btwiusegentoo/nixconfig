@@ -1,45 +1,6 @@
-{ pkgs }:
+{ pkgs, unstable, master }:
 
-let
-    nixpkgs-unstable =
-        pkgs.fetchFromGitHub {
-            owner = "NixOS";
-            repo = "nixpkgs";
-            rev = "7ad5e816faba3f808e2a8815b14d0f023a4e2160";
-            sha256 = "1vqqpcnybwl10h5br5nm8n0l33qfzj3rxhahf3pfjfvrc8iyk762";
-        };
-
-    nixpkgsmaster =
-        pkgs.fetchFromGitHub {
-            owner = "NixOS";
-            repo = "nixpkgs";
-            rev = "c127653b72574199463a73a56e1809223eaec0df";
-            sha256 = "0wld8ig9xdyqhgv6ck4739jgb55pxkw2m4b12qly5ly2fpy9fj9j";
-        };
-
-    nurpin =
-        pkgs.fetchFromGitHub {
-            owner = "nix-community";
-            repo = "NUR";
-            rev = "4f1bda8aee8e3e6fbd161cd5dba86ac9866e3fce";
-            sha256 = "0yxms4k7mrlnnf4vi7pqf2hd08dm6wc1ycf5vh0iqhqn7wv3b1s1";
-        };
-
-in
 self: super: with pkgs; {
-    # required globally
-    unstable = import nixpkgs-unstable {
-        config = import ../configs/nixpkgs-config.nix;
-        # overlays =  [
-        #             (import ./.nix)
-        #             ];
-    };
-    master = import nixpkgsmaster {
-        config = import ../configs/nixpkgs-config.nix;
-    };
-    nur = import nurpin {
-        inherit pkgs;
-    };
     # configuration.nix
     lua = unstable.lua;
     neovim = unstable.neovim.override {
@@ -69,7 +30,6 @@ self: super: with pkgs; {
     });
     nerdfonts = unstable.nerdfonts;
     doas = unstable.doas;
-    alacritty = unstable.alacritty;
     fish = unstable.fish;
     youtube-dl = unstable.youtube-dl;
     mpv = unstable.mpv;

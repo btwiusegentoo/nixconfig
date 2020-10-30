@@ -3,9 +3,6 @@
 let
     unstable = pkgs.unstable;
 
-    # import variables
-    username = (import ../../uservars.nix).username;
-
 in
 {
 
@@ -14,6 +11,8 @@ in
             ./hardware-configuration.nix
             # import cachix
             ./cachix.nix
+            # import usersettings
+            ./usersettings.nix
             # import user defaults
             ../../modules/common/userdefaults.nix
             # import xserver configs

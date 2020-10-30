@@ -166,6 +166,14 @@ in
     };
     #}}}
 
+    # Set your keyboard layout. I recommend Dvorak.
+    home.keyboard = {
+        layout = "us";
+        variant = "dvorak";
+    };
+    #Scale to 1080p
+    xsession.profileExtra = "xrandr --output LVDS1 --scale-from 1920x1080 --panning 1920x1080";
+
     # home files{{{
     home.file = {
 

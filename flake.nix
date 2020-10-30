@@ -27,9 +27,6 @@
             master = (import master) {
                 system = "x86_64-linux";
             };
-            desktop1username = (import ./machines/maindesktop/uservars.nix).username;
-            laptop1username = (import ./machines/mainloptop/uservars.nix).username;
-            server1username = (import ./machines/mainserver/uservars.nix).username;
 
         in
         {
@@ -42,7 +39,7 @@
                         {
                             home-manager.useGlobalPkgs = true;
                             home-manager.useUserPackages = true;
-                            home-manager.users.${desktop1username} =  ./machines/maindesktop/home.nix;
+                            home-manager.users.btw =  ./machines/maindesktop/home.nix;
                         }
                     ];
                 };
@@ -50,12 +47,11 @@
                     system = "x86_64-linux";
                     modules = [
                         ./machines/mainlaptop/configuration.nix
-                        ./machines/mainlaptop/usersettings.nix
                         home-manager.nixosModules.home-manager
                         {
                             home-manager.useGlobalPkgs = true;
                             home-manager.useUserPackages = true;
-                            home-manager.users.${laptop1username} =  ./machines/mainlaptop/home.nix;
+                            home-manager.users.x230 =  ./machines/mainlaptop/home.nix;
                         }
                     ];
                 };
@@ -67,7 +63,7 @@
                         {
                             home-manager.useGlobalPkgs = true;
                             home-manager.useUserPackages = true;
-                            home-manager.users.${server1username} =  ./machines/mainserver/home.nix;
+                            home-manager.users.hac =  ./machines/mainserver/home.nix;
                         }
                     ];
                 };
