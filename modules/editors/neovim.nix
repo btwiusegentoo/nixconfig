@@ -1,8 +1,7 @@
-{ pkgs }:
+{ pkgs, master }:
 
 let
     plugins = pkgs.callPackage ./customvimplugins.nix {};
-    master = pkgs.master;
 
 in
 {
