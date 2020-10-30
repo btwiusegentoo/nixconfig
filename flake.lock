@@ -7,16 +7,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1600463964,
-        "narHash": "sha256-sMOleAVVaEzD2oc0TNnODFTv8rCKau7c1N1jWRGiLio=",
+        "lastModified": 1603922580,
+        "narHash": "sha256-rPJ3YxsVm5YYHzIRLy1w3jSXIQvVXK1KydraC7m/2xc=",
         "owner": "rycee",
         "repo": "home-manager",
-        "rev": "c5fbe2c4c2369c7fa565e806556444c1346eb015",
+        "rev": "a98ec6ec158686387d66654ea96153ec06be33d7",
         "type": "github"
       },
       "original": {
         "owner": "rycee",
-        "ref": "bqv-flakes",
         "repo": "home-manager",
         "type": "github"
       }

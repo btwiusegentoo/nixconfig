@@ -1,6 +1,5 @@
-{ pkgs, config, ... }:
+{ pkgs, unstable, master, config, ... }:
 let
-    unstable = pkgs.unstable;
     my-python-packages = python-packages: with python-packages; [
         jedi
         pynvim

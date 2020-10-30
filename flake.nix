@@ -3,12 +3,7 @@
 
     inputs = {
         home-manager = {
-            url = "github:rycee/home-manager/bqv-flakes";
-            inputs = {
-                nixpkgs.follows = "nixpkgs";
-                unstable.follows = "unstable";
-                master.follows = "master";
-            };
+            url = "github:rycee/home-manager";
         };
 
         nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";

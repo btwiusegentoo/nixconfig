@@ -1,8 +1,5 @@
-{ pkgs }:
-let
-    unstable = pkgs.unstable;
+{ pkgs, unstable }:
 
-in
 {
     enable = true;
     enableFishIntegration = true;

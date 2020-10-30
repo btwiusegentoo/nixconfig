@@ -1,9 +1,5 @@
-{ config, pkgs, fetchgit, ... }:
+{ config, pkgs, unstable, master, fetchgit, ... }:
 
-let
-    unstable = pkgs.unstable;
-
-in
 {
 
     imports =
@@ -113,7 +109,7 @@ in
     };
     #}}}
 
-    fonts = (import ../../modules/common/fonts.nix) { inherit pkgs; };
+    fonts = (import ../../modules/common/fonts.nix) { inherit pkgs unstable master; };
 
     environment.variables = (import ../../modules/common/globalvars.nix);
 
@@ -193,11 +189,11 @@ in
         ''
     ];
 
-    environment.etc = import ../../modules/common/etcfiles.nix { inherit pkgs; };
+    environment.etc = import ../../modules/common/etcfiles.nix;
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
-    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs; };
+    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
 
     nix = import ../../modules/common/Nix.nix { inherit pkgs; };
 
