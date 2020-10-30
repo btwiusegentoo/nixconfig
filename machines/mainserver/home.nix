@@ -139,9 +139,5 @@
         "COLORTERM" = "truecolor";
     }; # }}}
 
-    nixpkgs.config = import ../../configs/nixpkgs-config.nix;
-
-    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
-
 }
 # vim:ft=nix fdm=marker sw=4:
