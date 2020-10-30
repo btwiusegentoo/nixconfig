@@ -47,6 +47,7 @@
     services = {
 
         lorri.enable = true;
+        gpg-agent = (import ../../modules/services/gpg-agent.nix);
 
     };
     #}}}
@@ -65,6 +66,7 @@
         starship = (import ../../modules/terminal/starship.nix) { inherit pkgs unstable; };
         lsd = (import ../../modules/terminal/lsd.nix);
         fzf = (import ../../modules/terminal/fzf.nix);
+        gpg.enable = true;
     };
     #}}}
 
