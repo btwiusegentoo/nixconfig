@@ -94,7 +94,7 @@ myKeys conf@XConfig { XMonad.modMask = modm } =
        , ( (modm .|. controlMask, xK_e)
          , mkUnicodePrompt "xsel"
                            ["-b"]
-                           "~/textfiles/UnicodeData.txt"
+                           "/etc/UnicodeData.txt"
                            myEmojiXPConfig
          ) -- emoji->clipboard
        , ( (modm, xK_b)

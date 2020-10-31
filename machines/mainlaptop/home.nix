@@ -189,9 +189,6 @@ in
         # tmux theme
         ".palenight-tmux".source = ../../.palenight-tmux;
 
-        # emojis
-        "textfiles/UnicodeData.txt".source = ../../textfiles/UnicodeData.txt;
-
         # neofetch ascii
         "textfiles/neofetchascii.txt".source = ../../textfiles/neofetchascii.txt;
 

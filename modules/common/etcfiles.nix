@@ -20,4 +20,6 @@
     # misc
     ".jislayoutremap.xkb".source = ../../configs/jislayoutremap.xkb;
     "x230key.xkb".source = ../../configs/thinkpadlayout.xkb;
+    # emojis
+    "UnicodeData.txt".source = ../../textfiles/UnicodeData.txt;
 }
