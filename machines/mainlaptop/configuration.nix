@@ -35,7 +35,7 @@
         loader.timeout = 0;
         # Enable latest linux kernel
         kernelPackages = unstable.linuxPackages_latest;
-        kernelModules = [ "i915" "acpi_call" "tpm-rng" ];
+        kernelModules = [ "i915" "tpm-rng" ];
         extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
         extraModprobeConfig = ''
             options bluetooth disable_ertm=Y
