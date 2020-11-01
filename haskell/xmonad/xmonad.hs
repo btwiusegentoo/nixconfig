@@ -316,7 +316,7 @@ myScratchPads =
   manageMixer =
     customFloating $ W.RationalRect centrall centralt centralw centralh
 
-  spawnbottom = myTerminal ++ " --title=bottomScratchpad" ++ " -e bottom"
+  spawnbottom = myTerminal ++ " --title=bottomScratchpad" ++ " -e btm"
   findbottom  = title =? "bottomScratchpad"
   managebottom =
     customFloating $ W.RationalRect centrall centralt centralw centralh
