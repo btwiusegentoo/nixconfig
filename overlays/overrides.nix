@@ -26,7 +26,13 @@ self: super: with pkgs; {
         };
     });
     neofetch = unstable.neofetch.overrideAttrs (oldattrs: {
-        patches = [ ../patches/escapesequence.patch ];
+        version = "unstable-2020-11-02";
+        src = fetchFromGitHub {
+            owner = "dylanaraps";
+            repo = "neofetch";
+            rev = "5dfce0f9c3068d4d8a49d0b7182bdace61b8f4d0";
+            sha256 = "131r07wllkvrcgw0ndyf5avqpzqkym56ii0qck6qyjfa8ylx6s31";
+        };
     });
     nerdfonts = unstable.nerdfonts;
     doas = unstable.doas;
@@ -34,4 +40,5 @@ self: super: with pkgs; {
     youtube-dl = master.youtube-dl;
     mpv = master.mpv;
     fzf = unstable.fzf;
+    nix-prefetch-github = unstable.nix-prefetch-github;
 }
