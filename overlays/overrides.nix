@@ -31,7 +31,7 @@ self: super: with pkgs; {
     nerdfonts = unstable.nerdfonts;
     doas = unstable.doas;
     fish = unstable.fish;
-    youtube-dl = unstable.youtube-dl;
-    mpv = unstable.mpv;
+    youtube-dl = master.youtube-dl;
+    mpv = master.mpv;
     fzf = unstable.fzf;
 }
