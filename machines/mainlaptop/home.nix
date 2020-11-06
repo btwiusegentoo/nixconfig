@@ -152,6 +152,8 @@ in
         starship = (import ../../modules/terminal/starship.nix) { inherit pkgs unstable; };
         lsd = (import ../../modules/terminal/lsd.nix);
         fzf = (import ../../modules/terminal/fzf.nix);
+        firefox = (import ../../modules/gui/firefox.nix) { inherit pkgs unstable; };
+
         gpg.enable = true;
 
         mpv = (import ../../modules/gui/mpvintel.nix);
