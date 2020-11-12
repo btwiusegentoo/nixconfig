@@ -84,6 +84,10 @@
         adb.enable = true;
     };
 
+    virtualisation.docker = {
+        enable = true;
+    };
+
     # Networking{{{
     networking.hostName = "laptop1"; # Define your hostname.
     # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
