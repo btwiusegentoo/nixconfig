@@ -54,6 +54,7 @@
     programs = {
         dconf.enable = true;
         adb.enable = true;
+        java.enable = true;
     };
 
     # Networking{{{
