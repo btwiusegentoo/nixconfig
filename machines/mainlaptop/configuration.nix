@@ -84,9 +84,6 @@
         adb.enable = true;
     };
 
-    virtualisation.docker = {
-        enable = true;
-    };
 
     # Networking{{{
     networking.hostName = "laptop1"; # Define your hostname.
@@ -122,6 +119,8 @@
         thinkfan = import (../../modules/services/thinkfan.nix);
         openssh = import (../../modules/common/openssh.nix);
     };
+
+    virtualisation = import (../../modules/virtualisation/default.nix);
 
     #systemd.user.services = {
         #xkb-restore = {
