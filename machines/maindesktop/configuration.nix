@@ -55,6 +55,7 @@
         dconf.enable = true;
         adb.enable = true;
         java.enable = true;
+        java.package = unstable.jdk;
     };
 
     # Networking{{{
