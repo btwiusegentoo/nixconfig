@@ -187,6 +187,14 @@ in
     };
     #}}}
 
+    # Set your keyboard layout. I recommend Dvorak.
+    home.keyboard = {
+        layout = "us";
+        variant = "dvorak";
+    };
+    #Scale to 1080p
+    xsession.profileExtra = "xrandr --output DVI-D-0 --scale-from 2560x1440 --panning 2560x1440";
+
     # home files{{{
     home.file = {
 
