@@ -112,6 +112,7 @@ in
         xclip
         file
         catimg
+        steam-run
         # joke command
         cmatrix
         figlet
