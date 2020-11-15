@@ -29,6 +29,7 @@ in
         git
         git-crypt
         bat
+        sox
         unstable.neovim
         unstable.nodejs
         unstable.yarn
