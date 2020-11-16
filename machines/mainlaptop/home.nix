@@ -1,12 +1,10 @@
-# Don't forget to setup swapfile and use cachix just in case something have to compile.
-# sometime haskell package starts compiling
-
 { config, pkgs, unstable, master, lib, ... }:
 
 let
 
     # Haskell packages{{{
-    haskell-env = unstable.haskellPackages.ghcWithHoogle (
+    haskell-env = unstable.haskellPackages.ghcWithHoogle
+        (
         hp: with hp; [
             xmonad
             xmonad-contrib
@@ -142,7 +140,7 @@ in
         neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs unstable master; };
         emacs = {
             enable = true;
-            package = unstable.emacs;
+            package = unstable.emacsGccPgtk;
             extraPackages = (epkgs: [ epkgs.vterm ]);
         };
         alacritty = (import ../../modules/terminal/alacritty.nix);

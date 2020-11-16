@@ -103,7 +103,8 @@
                                 })
                             { nixpkgs.overlays = [
                                   nur.overlay
-                              ]; }
+                              ];
+                            }
                         ];
                 };
                 server1 = nixpkgs.lib.nixosSystem {

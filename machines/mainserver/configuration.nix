@@ -5,6 +5,8 @@
     imports =
         [ # Include the results of the hardware scan.
             ./hardware-configuration.nix
+            # import Nix config
+            ../../modules/common/Nix.nix
             # import user settings
             ./usersettings.nix
             # import system packages
@@ -72,8 +74,6 @@
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
     nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
-
-    nix = import ../../modules/common/Nix.nix { inherit pkgs; };
 
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions

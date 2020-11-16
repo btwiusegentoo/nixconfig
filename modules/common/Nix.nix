@@ -1,9 +1,9 @@
 { pkgs, ... }:
 
 {
-    package = pkgs.nixUnstable;
+    nix.package = pkgs.nixUnstable;
 
-    extraOptions = ''
+    nix.extraOptions = ''
         experimental-features = nix-command flakes
         builders-use-substitutes = true
     '';

@@ -6,6 +6,8 @@
             ./hardware-configuration.nix
             # import cachix
             ./cachix.nix
+            # import Nix config
+            ../../modules/common/Nix.nix
             # import usersettings
             ./usersettings.nix
             # import xserver configs
@@ -196,8 +198,6 @@
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
     nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
-
-    nix = import ../../modules/common/Nix.nix { inherit pkgs; };
 
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions
