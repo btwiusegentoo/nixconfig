@@ -140,7 +140,7 @@ in
         neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs unstable master; };
         emacs = {
             enable = true;
-            package = unstable.emacsGccPgtk;
+            package = unstable.emacs;
             extraPackages = (epkgs: [ epkgs.vterm ]);
         };
         alacritty = (import ../../modules/terminal/alacritty.nix);
