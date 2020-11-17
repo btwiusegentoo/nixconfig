@@ -125,10 +125,6 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-;;opacity adjustment
-;; (set-frame-parameter (selected-frame)'alpha '(90 . 90))
-;; (add-to-list 'default-frame-alist'(alpha . (90 . 90)))
-
 ;; Load tabnine
 ;; (use-package! company-tabnine)
 ;; (add-to-list 'company-backends #'company-tabnine)
@@ -233,5 +229,6 @@
 (fast-scroll-mode 1)
 (setq fast-scroll-throttle 0.9)
 
+;; opacity
 (set-frame-parameter (selected-frame) 'alpha '(85 . 50))
 (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
