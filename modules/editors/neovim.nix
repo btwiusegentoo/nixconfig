@@ -65,7 +65,7 @@ in
         ]; #}}}
 
         # plugins that don't work with vim-plug goes here.
-        packages.myVimPackage = with master.vimPlugins // plugins; {
+        packages.myVimPackage = with pkgs.master.vimPlugins // plugins; {
             # loaded on launch
             # start = [ nvim-treesitter ];
             # loaded manually with packadd
