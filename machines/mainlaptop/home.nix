@@ -19,13 +19,6 @@ let
     );
     # }}}
 
-    # doom emacs
-    # doom-emacs = unstable.callPackage (builtins.fetchTarball {
-    #     url = "https://github.com/vlaci/nix-doom-emacs/archive/develop.tar.gz";
-    # }) {
-    #     doomPrivateDir = ../../doom.d;
-    # };
-
 in
 {
 

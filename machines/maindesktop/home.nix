@@ -21,13 +21,6 @@ let
     );
     # }}}
 
-    # doom emacs
-    # doom-emacs = unstable.callPackage (builtins.fetchTarball {
-    #     url = "https://github.com/vlaci/nix-doom-emacs/archive/develop.tar.gz";
-    # }) {
-    #     doomPrivateDir = ../../doom.d;
-    # };
-
 in
 {
 
@@ -167,7 +160,7 @@ in
         neovim = (import ../../modules/editors/neovim.nix) { inherit pkgs; };
         emacs = {
             enable = true;
-            package = pkgs.unstable.emacs;
+            package = pkgs.emacsGccPgtk;
             extraPackages = (epkgs: [ epkgs.vterm ]);
         };
         alacritty = (import ../../modules/terminal/alacritty.nix);
