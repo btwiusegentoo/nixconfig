@@ -1,22 +1,21 @@
 {
   "nodes": {
-    "emacs-overlay": {
+    "emacs": {
       "inputs": {
         "emacs-pgtk-nativecomp": "emacs-pgtk-nativecomp",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1602275790,
-        "narHash": "sha256-v1Wopl1iBtZNJYmsedGmzJr4edPMvdFh9hkBrMFmn40=",
+        "lastModified": 1602224844,
+        "narHash": "sha256-w7snN4argtZfqNfEJpvbU50F9Qx1QRdUI1BWX3CaqRk=",
         "owner": "berbiche",
         "repo": "emacs-pgtk-nativecomp-overlay",
-        "rev": "faeb797b784141d60fe1c35a8abcf10e1736d69f",
+        "rev": "b517b806ff6313fec99eb42292b1ebabf047b473",
         "type": "github"
       },
       "original": {
         "owner": "berbiche",
-        "ref": "master-2",
         "repo": "emacs-pgtk-nativecomp-overlay",
         "type": "github"
       }
@@ -138,7 +137,7 @@
     },
     "root": {
       "inputs": {
-        "emacs-overlay": "emacs-overlay",
+        "emacs": "emacs",
         "home-manager": "home-manager",
         "master": "master",
         "nixpkgs": "nixpkgs_2",

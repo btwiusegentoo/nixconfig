@@ -10,6 +10,7 @@
             };
         };
         nur.url = "github:nix-community/NUR";
+        emacs.url = "github:berbiche/emacs-pgtk-nativecomp-overlay";
 
         nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
         unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -24,6 +25,7 @@
                 config = { allowUnfree = true; };
             };
             defaults = { pkgs, ... }: {
+                imports = [ ./cachix.nix ];
                 _module.args.unstable = import inputs.unstable {
                     inherit (pkgs.stdenv.targetPlatform) system;
                     config.allowUnfree = true;
@@ -41,7 +43,6 @@
                     modules =
                         [
                             defaults
-                            ./cachix.nix
                             ./machines/maindesktop/configuration.nix
                             home-manager.nixosModules.home-manager
                                 ({
@@ -71,7 +72,6 @@
                     modules =
                         [
                             defaults
-                            ./cachix.nix
                             ./machines/mainlaptop/configuration.nix
                             home-manager.nixosModules.home-manager
                                 ({
@@ -93,6 +93,7 @@
                                 })
                             { nixpkgs.overlays = [
                                   nur.overlay
+                                  inputs.emacs.overlay
                               ];
                             }
                         ];
