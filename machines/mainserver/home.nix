@@ -1,5 +1,4 @@
-{ config, pkgs, unstable, master, lib, ... }:
-
+{ config, pkgs, lib, ... }:
 {
 
     # Packages to install{{{
@@ -57,13 +56,13 @@
 
         home-manager.enable = true;
 
-        neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs unstable master; }; # don't compile
+        neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; }; # don't compile
 
-        git = (import ../../modules/terminal/git.nix) { inherit pkgs unstable; };
+        git = (import ../../modules/terminal/git.nix) { inherit pkgs; };
         fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
         tmux = (import ../../modules/terminal/tmux.nix) { inherit pkgs; };
         bat = (import ../../modules/terminal/bat.nix) { inherit pkgs; };
-        starship = (import ../../modules/terminal/starship.nix) { inherit pkgs unstable; };
+        starship = (import ../../modules/terminal/starship.nix) { inherit pkgs; };
         lsd = (import ../../modules/terminal/lsd.nix);
         fzf = (import ../../modules/terminal/fzf.nix);
         gpg.enable = true;

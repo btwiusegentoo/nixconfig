@@ -1,8 +1,8 @@
-{ pkgs, unstable }:
+{ pkgs }:
 {
     enable = true;
     enableFishIntegration = true;
-    package = unstable.starship;
+    package = pkgs.unstable.starship;
     settings = {
         add_newline = true;
 

@@ -1,5 +1,4 @@
-{ config, pkgs, unstable, master, fetchgit, ... }:
-
+{ config, pkgs, fetchgit, ... }:
 {
 
     imports =
@@ -18,7 +17,7 @@
         loader.grub.enable = true;
         loader.grub.version = 2;
         # Enable latest linux kernel
-        kernelPackages = unstable.linuxPackages_latest;
+        kernelPackages = pkgs.unstable.linuxPackages_latest;
     };
     # Boot faster
     systemd.services.systemd-udev-settle.serviceConfig.TimeoutSec = 5;
@@ -70,8 +69,6 @@
     environment.etc = import ../../modules/common/etcfiles.nix;
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
-
-    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
 
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions

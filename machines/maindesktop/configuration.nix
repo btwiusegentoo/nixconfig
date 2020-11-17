@@ -1,6 +1,4 @@
-
-{ config, pkgs, unstable, master, fetchgit, ... }:
-
+{ config, pkgs, fetchgit, ... }:
 {
 
     imports =
@@ -22,8 +20,8 @@
         loader.systemd-boot.enable = true;
         loader.efi.canTouchEfiVariables = true;
         # Enable latest linux kernel
-        kernelPackages = unstable.linuxPackages_latest;
-        extraModulePackages = with unstable.linuxPackages_latest; [ xpadneo ];
+        kernelPackages = pkgs.unstable.linuxPackages_latest;
+        extraModulePackages = with pkgs.unstable.linuxPackages_latest; [ xpadneo ];
         extraModprobeConfig = ''
         options bluetooth disable_ertm=Y
         '';
@@ -42,7 +40,7 @@
         opengl.enable = true;
         opengl.driSupport = true;
         opengl.driSupport32Bit = true;
-        opengl.extraPackages32 = with unstable.pkgsi686Linux; [ libva ];
+        opengl.extraPackages32 = with pkgs.unstable.pkgsi686Linux; [ libva ];
         cpu.amd.updateMicrocode = true;
     };
     # }}}
@@ -53,7 +51,7 @@
         dconf.enable = true;
         adb.enable = true;
         java.enable = true;
-        java.package = unstable.jdk;
+        java.package = pkgs.unstable.jdk;
     };
 
     # Networking{{{
@@ -75,7 +73,7 @@
     };
     #}}}
 
-    fonts = (import ../../modules/common/fonts.nix) { inherit pkgs unstable master; };
+    fonts = (import ../../modules/common/fonts.nix) { inherit pkgs; };
 
     environment.variables = (import ../../modules/common/globalvars.nix);
 
@@ -99,8 +97,6 @@
     environment.etc = import ../../modules/common/etcfiles.nix;
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
-
-    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
 
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions

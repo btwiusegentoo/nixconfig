@@ -4,5 +4,5 @@
         enable = true;
         arguments = [ "-c" ];
     };
-    socketActivation.enable = true;
+    socketActivation.enable = false;
 }

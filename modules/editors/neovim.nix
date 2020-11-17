@@ -1,4 +1,4 @@
-{ pkgs, master }:
+{ pkgs }:
 
 let
     plugins = pkgs.callPackage ./customvimplugins.nix {};
@@ -10,7 +10,7 @@ in
     vimAlias = true;
     configure = {
         # plugins {{{
-        plug.plugins = with master.vimPlugins // plugins; [
+        plug.plugins = with pkgs.master.vimPlugins // plugins; [
             coc-nvim
             coc-json
             coc-css

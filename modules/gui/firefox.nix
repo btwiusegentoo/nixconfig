@@ -1,8 +1,7 @@
-{ pkgs, unstable, ... }:
-
+{ pkgs, ... }:
 {
     enable = true;
-    package = unstable.firefox;
+    package = pkgs.unstable.firefox;
     extensions = with pkgs.nur.repos.rycee.firefox-addons; [
         vimium
         ublock-origin

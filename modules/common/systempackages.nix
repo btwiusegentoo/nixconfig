@@ -1,4 +1,4 @@
-{ pkgs, unstable, master, config, ... }:
+{ pkgs, config, ... }:
 let
     my-python-packages = python-packages: with python-packages; [
         jedi
@@ -8,9 +8,9 @@ let
         pylint
         pymodoro
     ];
-    python-with-my-packages = unstable.python37.withPackages my-python-packages;
+    python-with-my-packages = pkgs.unstable.python37.withPackages my-python-packages;
     # pymodoro{{{
-    pymodoro = unstable.python37Packages.buildPythonPackage rec {
+    pymodoro = pkgs.unstable.python37Packages.buildPythonPackage rec {
         pname = "pymodoro";
         version = "1.14";
         src = pkgs.fetchFromGitHub {

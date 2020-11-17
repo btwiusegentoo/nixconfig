@@ -20,27 +20,52 @@
 
     outputs = inputs@{ self, home-manager, nur, nixpkgs, ... }:
         let
+            inherit (builtins) listToAttrs attrValues attrNames readDir;
+            inherit (nixpkgs) lib;
+            inherit (lib) removeSuffix;
+
+
             pkgs = (import nixpkgs) {
                 system = "x86_64-linux";
                 config = { allowUnfree = true; };
+                overlays = attrValues self.overlays;
             };
+
             defaults = { pkgs, ... }: {
                 imports = [
                     ./cachix.nix
                     ./modules/common/nix.nix
                     ./modules/common/doas.nix
                 ];
-                _module.args.unstable = import inputs.unstable {
-                    inherit (pkgs.stdenv.targetPlatform) system;
-                    config.allowUnfree = true;
-                };
-                _module.args.master = import inputs.master {
-                    inherit (pkgs.stdenv.targetPlatform) system;
-                    config.allowUnfree = true;
-                };
             };
         in
         {
+            overlays = let
+                overlayFiles = listToAttrs (map (name: {
+                    name = removeSuffix ".nix" name;
+                    value = import (./overlays + "/${name}");
+                }) (attrNames (readDir ./overlays)));
+            in overlayFiles // {
+                nur = final: prev: {
+                    nur = import inputs.nur { nurpkgs = final; pkgs = final; };
+                };
+                emacsPgtk = final: prev: {
+                    emacsGccPgtk = inputs.emacs.packages.${final.system}.emacsGccPgtk;
+                };
+                unstable = final: prev: {
+                    unstable = import inputs.unstable {
+                        system = final.system;
+                        config.allowUnfree = true;
+                    };
+                };
+                master = final: prev: {
+                    master = import inputs.master {
+                        system = final.system;
+                        config.allowUnfree = true;
+                    };
+                };
+            };
+
             nixosConfigurations = {
                 desktop1 = nixpkgs.lib.nixosSystem {
                     system = "x86_64-linux";
@@ -56,19 +81,8 @@
                                         imports = [
                                             ./machines/maindesktop/home.nix
                                         ];
-                                        _module.args.unstable = import inputs.unstable {
-                                            inherit (pkgs.stdenv.targetPlatform) system;
-                                            config.allowUnfree = true;
-                                        };
-                                        _module.args.master = import inputs.master {
-                                            inherit (pkgs.stdenv.targetPlatform) system;
-                                            config.allowUnfree = true;
-                                        };
                                     };
                                 })
-                            { nixpkgs.overlays = [
-                                  nur.overlay
-                              ]; }
                         ];
                 };
                 laptop1 = nixpkgs.lib.nixosSystem {
@@ -85,22 +99,10 @@
                                         imports = [
                                             ./machines/mainlaptop/home.nix
                                         ];
-                                        _module.args.unstable = import inputs.unstable {
-                                            inherit (pkgs.stdenv.targetPlatform) system;
-                                            config.allowUnfree = true;
-                                        };
-                                        _module.args.master = import inputs.master {
-                                            inherit (pkgs.stdenv.targetPlatform) system;
-                                            config.allowUnfree = true;
-                                        };
                                     };
                                 })
-                            { nixpkgs.overlays = [
-                                  nur.overlay
-                                  inputs.emacs.overlay
-                              ];
-                            }
                         ];
+                    inherit pkgs;
                 };
                 server1 = nixpkgs.lib.nixosSystem {
                     system = "x86_64-linux";
@@ -116,19 +118,8 @@
                                         imports = [
                                             ./machines/mainserver/home.nix
                                         ];
-                                        _module.args.unstable = import inputs.unstable {
-                                            inherit (pkgs.stdenv.targetPlatform) system;
-                                            config.allowUnfree = true;
-                                        };
-                                        _module.args.master = import inputs.master {
-                                            inherit (pkgs.stdenv.targetPlatform) system;
-                                            config.allowUnfree = true;
-                                        };
                                     };
                                 })
-                            { nixpkgs.overlays = [
-                                  nur.overlay
-                              ]; }
                         ];
                 };
 

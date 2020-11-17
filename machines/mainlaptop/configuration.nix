@@ -1,4 +1,4 @@
-{ config, pkgs, unstable, master, fetchgit, ... }:
+{ config, pkgs, fetchgit, ... }:
 {
 
     imports =
@@ -32,7 +32,7 @@
         };
         loader.timeout = 0;
         # Enable latest linux kernel
-        kernelPackages = unstable.linuxPackages_latest;
+        kernelPackages = pkgs.unstable.linuxPackages_latest;
         kernelModules = [ "i915" "tpm-rng" ];
         extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
         extraModprobeConfig = ''
@@ -81,7 +81,7 @@
         dconf.enable = true;
         adb.enable = true;
         java.enable = true;
-        java.package = unstable.jdk;
+        java.package = pkgs.unstable.jdk;
     };
 
 
@@ -107,7 +107,7 @@
     };
     #}}}
 
-    fonts = (import ../../modules/common/fonts.nix) { inherit pkgs unstable master; };
+    fonts = (import ../../modules/common/fonts.nix) { inherit pkgs; };
 
     environment.variables = (import ../../modules/common/globalvars.nix);
 
@@ -192,8 +192,6 @@
     environment.etc = import ../../modules/common/etcfiles.nix;
 
     nixpkgs.config = import ../../configs/nixpkgs-config.nix;
-
-    nixpkgs.overlays = import ../../overlays/all-overlays.nix { inherit pkgs unstable master; };
 
     # This value determines the NixOS release from which the default
     # settings for stateful data, like file locations and database versions

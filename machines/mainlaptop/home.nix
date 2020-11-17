@@ -1,9 +1,9 @@
-{ config, pkgs, unstable, master, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 let
 
     # Haskell packages{{{
-    haskell-env = unstable.haskellPackages.ghcWithHoogle
+    haskell-env = pkgs.unstable.haskellPackages.ghcWithHoogle
         (
         hp: with hp; [
             xmonad
@@ -137,21 +137,21 @@ in
 
         home-manager.enable = true;
 
-        neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs unstable master; };
+        neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; };
         emacs = {
             enable = true;
-            package = unstable.emacs;
+            package = pkgs.emacsGccPgtk;
             extraPackages = (epkgs: [ epkgs.vterm ]);
         };
         alacritty = (import ../../modules/terminal/alacritty.nix);
-        git = (import ../../modules/terminal/gitemacs.nix) { inherit pkgs unstable; };
+        git = (import ../../modules/terminal/gitemacs.nix) { inherit pkgs; };
         fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
         tmux = (import ../../modules/terminal/tmux.nix) { inherit pkgs; };
         bat = (import ../../modules/terminal/bat.nix) { inherit pkgs; };
-        starship = (import ../../modules/terminal/starship.nix) { inherit pkgs unstable; };
+        starship = (import ../../modules/terminal/starship.nix) { inherit pkgs; };
         lsd = (import ../../modules/terminal/lsd.nix);
         fzf = (import ../../modules/terminal/fzf.nix);
-        firefox = (import ../../modules/gui/firefox.nix) { inherit pkgs unstable; };
+        firefox = (import ../../modules/gui/firefox.nix) { inherit pkgs; };
 
         gpg.enable = true;
 

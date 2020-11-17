@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
     enable = true;
-    package = pkgs.picomfork;
+    package = pkgs.nur.repos.xeals.picom-animations;
     backend = "glx";
     experimentalBackends = true;
     opacityRule = [

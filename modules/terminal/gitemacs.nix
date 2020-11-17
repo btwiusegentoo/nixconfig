@@ -1,7 +1,7 @@
-{ pkgs, unstable }:
+{ pkgs }:
 {
     enable = true;
-    package = unstable.git;
+    package = pkgs.unstable.git;
     extraConfig = {
         init = {
             defaultBranch = "main";
