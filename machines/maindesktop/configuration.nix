@@ -21,7 +21,7 @@
         loader.efi.canTouchEfiVariables = true;
         # Enable latest linux kernel
         kernelPackages = pkgs.unstable.linuxPackages_latest;
-        extraModulePackages = with pkgs.unstable.linuxPackages_latest; [ xpadneo ];
+        extraModulePackages = with config.boot.kernelPackages; [ xpadneo ];
         extraModprobeConfig = ''
         options bluetooth disable_ertm=Y
         '';
