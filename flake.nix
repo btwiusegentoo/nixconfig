@@ -17,11 +17,21 @@
     };
 
 
-    outputs = inputs@{ self, home-manager, nur, nixpkgs, unstable, master, ... }:
+    outputs = inputs@{ self, home-manager, nur, nixpkgs, ... }:
         let
             pkgs = (import nixpkgs) {
                 system = "x86_64-linux";
                 config = { allowUnfree = true; };
+            };
+            defaults = { pkgs, ... }: {
+                _module.args.unstable = import inputs.unstable {
+                    inherit (pkgs.stdenv.targetPlatform) system;
+                    config.allowUnfree = true;
+                };
+                _module.args.master = import inputs.master {
+                    inherit (pkgs.stdenv.targetPlatform) system;
+                    config.allowUnfree = true;
+                };
             };
         in
         {
@@ -29,19 +39,9 @@
                 desktop1 = nixpkgs.lib.nixosSystem {
                     system = "x86_64-linux";
                     modules =
-                        let
-                            defaults = { pkgs, ... }: {
-                                _module.args.unstable = import inputs.unstable {
-                                    inherit (pkgs.stdenv.targetPlatform) system;
-                                    config.allowUnfree = true;
-                                };
-                                _module.args.master = import inputs.master {
-                                    inherit (pkgs.stdenv.targetPlatform) system;
-                                    config.allowUnfree = true;
-                                };
-                            };
-                        in [
+                        [
                             defaults
+                            ./cachix.nix
                             ./machines/maindesktop/configuration.nix
                             home-manager.nixosModules.home-manager
                                 ({
@@ -69,19 +69,9 @@
                 laptop1 = nixpkgs.lib.nixosSystem {
                     system = "x86_64-linux";
                     modules =
-                        let
-                            defaults = { pkgs, ... }: {
-                                _module.args.unstable = import inputs.unstable {
-                                    inherit (pkgs.stdenv.targetPlatform) system;
-                                    config.allowUnfree = true;
-                                };
-                                _module.args.master = import inputs.master {
-                                    inherit (pkgs.stdenv.targetPlatform) system;
-                                    config.allowUnfree = true;
-                                };
-                            };
-                        in [
+                        [
                             defaults
+                            ./cachix.nix
                             ./machines/mainlaptop/configuration.nix
                             home-manager.nixosModules.home-manager
                                 ({
@@ -110,18 +100,7 @@
                 server1 = nixpkgs.lib.nixosSystem {
                     system = "x86_64-linux";
                     modules =
-                        let
-                            defaults = { pkgs, ... }: {
-                                _module.args.unstable = import inputs.unstable {
-                                    inherit (pkgs.stdenv.targetPlatform) system;
-                                    config.allowUnfree = true;
-                                };
-                                _module.args.master = import inputs.master {
-                                    inherit (pkgs.stdenv.targetPlatform) system;
-                                    config.allowUnfree = true;
-                                };
-                            };
-                        in [
+                        [
                             defaults
                             ./machines/mainserver/configuration.nix
                             home-manager.nixosModules.home-manager
