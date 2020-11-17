@@ -6,8 +6,6 @@
     imports =
         [ # Include the results of the hardware scan.
             ./hardware-configuration.nix
-            # import Nix config
-            ../../modules/common/Nix.nix
             # import user settings
             ./usersettings.nix
             # import xserver configs

@@ -25,7 +25,11 @@
                 config = { allowUnfree = true; };
             };
             defaults = { pkgs, ... }: {
-                imports = [ ./cachix.nix ];
+                imports = [
+                    ./cachix.nix
+                    ./modules/common/nix.nix
+                    ./modules/common/doas.nix
+                ];
                 _module.args.unstable = import inputs.unstable {
                     inherit (pkgs.stdenv.targetPlatform) system;
                     config.allowUnfree = true;
