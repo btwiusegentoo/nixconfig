@@ -1,5 +1,5 @@
 {
-   enable = true;
-   enableSshSupport = true;
-   pinentryFlavor = "curses";
+  enable = true;
+  enableSshSupport = true;
+  pinentryFlavor = "curses";
 }

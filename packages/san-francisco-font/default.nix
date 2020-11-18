@@ -52,6 +52,6 @@ stdenv.mkDerivation rec {
     homepage = https://github.com/supermarin/YosemiteSanFranciscoFont;
     license = stdenv.lib.licenses.asl20;
     platforms = stdenv.lib.platforms.all;
-    maintainers = [];
+    maintainers = [ ];
   };
 }

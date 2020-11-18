@@ -1,4 +1,4 @@
 {
-    libvirtd = (import ./libvirtd.nix);
-    docker = (import ./docker.nix);
+  libvirtd = (import ./libvirtd.nix);
+  docker = (import ./docker.nix);
 }

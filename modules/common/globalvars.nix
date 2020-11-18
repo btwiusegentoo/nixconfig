@@ -1,5 +1,5 @@
 {
-    EDITOR = "nvim";
-    XMODIFIERS = "@im=fcitx";
-    XMODIFIER = "@im=fcitx";
+  EDITOR = "nvim";
+  XMODIFIERS = "@im=fcitx";
+  XMODIFIER = "@im=fcitx";
 }
