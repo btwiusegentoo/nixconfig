@@ -82,6 +82,38 @@
    centaur-tabs-set-modified-marker t
    centaur-tabs-set-bar 'left))
 
+;; Company completion
+(after! company
+  (setq company-idle-delay 0
+        company-minimum-prefix-length 1)
+  (setq company-show-numbers t)
+  (add-hook 'evil-normal-state-entry-hook #'company-abort))
+
+(set-company-backend! '(c-mode
+                        c++-mode
+                        haskell-mode
+                        lisp-mode
+                        sh-mode
+                        css-mode
+                        web-mode
+                        js-mode
+                        python-mode
+                        rust-mode
+                        org-mode
+                        nix-mode)
+  '(:separate company-tabnine
+              company-files))
+
+(setq +lsp-company-backends '(company-lsp :with company-tabnine :separate))
+
+; Add nix lsp
+(add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+                  :major-modes '(nix-mode)
+                  :server-id 'nix))
+
+
 ; Disable current line highlight
 (remove-hook! (prog-mode text-mode conf-mode special-mode) 'hl-line-mode)
 
@@ -125,89 +157,6 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-;; Load tabnine
-;; (use-package! company-tabnine)
-;; (add-to-list 'company-backends #'company-tabnine)
-;; Load company emoji
-;; (use-package! company-emoji)
-;; (add-to-list 'company-backends #'company-emoji)
-
-;; Autocompletion(company)
-(setq company-idle-delay 0
-      company-minimum-prefix-length 2
-      company-show-numbers t
-      )
-
-;; Use vim-like mark folding
-;; (use-package! origami
-;;   :config
-;;   (global-origami-mode 1)
-
-;;   (defun nin-origami-toggle-node ()
-;;     (interactive)
-;;     (if (equal major-mode 'org-mode)
-;; 	(org-cycle)
-;;       (save-excursion ;; leave point where it is
-;; 	(goto-char (point-at-eol))             ;; then go to the end of line
-;; 	(origami-toggle-node (current-buffer) (point)))))                 ;; and try to fold
-
-;;   (add-hook 'prog-mode-hook
-;; 	    (lambda ()
-;; 	      ;; parsers see in variable origami-parser-alist
-;; 	      (setq-local origami-fold-style 'triple-braces)
-;; 	      (origami-mode)
-;; 	      (origami-close-all-nodes (current-buffer))
-;; 	      ))
-;;   (evil-define-key 'normal prog-mode-map (kbd "<tab>") 'nin-origami-toggle-node)
-
-;;   (define-key evil-normal-state-map "za" 'origami-forward-toggle-node)
-;;   (define-key evil-normal-state-map "zR" 'origami-close-all-nodes)
-;;   (define-key evil-normal-state-map "zM" 'origami-open-all-nodes)
-;;   (define-key evil-normal-state-map "zr" 'origami-close-node-recursively)
-;;   (define-key evil-normal-state-map "zm" 'origami-open-node-recursively)
-;;   (define-key evil-normal-state-map "zo" 'origami-show-node)
-;;   (define-key evil-normal-state-map "zc" 'origami-close-node)
-;;   (define-key evil-normal-state-map "zj" 'origami-forward-fold)
-;;   (define-key evil-normal-state-map "zk" 'origami-previous-fold)
-;;   (define-key evil-visual-state-map "zf"
-;;     '(lambda ()
-;;        "create fold and add comment to it"
-;;        (interactive)
-;;        (setq start (region-beginning))
-;;        (setq end (region-end))
-;;        (deactivate-mark)
-;;        (and (< end start)
-;; 	    (setq start (prog1 end (setq end start))))
-;;        (goto-char start)
-;;        (beginning-of-line)
-;;        (indent-according-to-mode)
-;;        (if (equal major-mode 'emacs-lisp-mode)
-;; 	   (insert ";; ")
-;; 	 (insert comment-start " "))
-
-;;        (setq start (point))
-;;        (insert " {{{")
-;;        (newline-and-indent)
-;;        (goto-char end)
-;;        (end-of-line)
-;;        (and (not (bolp))
-;; 	    (eq 0 (forward-line))
-;; 	    (eobp)
-;; 	    (insert ?\n))
-;;        (indent-according-to-mode)
-;;        (if (equal major-mode 'emacs-lisp-mode)
-;; 	   (insert ";; }}}")
-
-;; 	 (if (equal comment-end "")
-;; 	     (insert comment-start " }}}")
-;; 	   (insert comment-end "}}}")))
-;;        (newline-and-indent)
-;;        (goto-char start)
-;;        ))
-;;   )
-
-(use-package lsp-mode)
-
 ;; Haskell stuff
 (use-package! haskell-mode
   :config
@@ -227,7 +176,7 @@
 (add-hook 'fast-scroll-end-hook (lambda () (display-line-numbers-mode 1)))
 (fast-scroll-config)
 (fast-scroll-mode 1)
-(setq fast-scroll-throttle 0.9)
+(setq fast-scroll-throttle 0.5)
 
 ;; opacity
 (set-frame-parameter (selected-frame) 'alpha '(85 . 50))

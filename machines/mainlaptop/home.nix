@@ -23,8 +23,8 @@ in
 {
 
     imports = [
-        # import xmonad nix expression
-        ../../modules/common/xmonademacs.nix
+        # import xmonad module
+        ../../modules/common/xmonad.nix
     ];
 
     # Packages to install{{{
@@ -192,12 +192,6 @@ in
             sha256 = "1vl7mi87wisqhd9zigg24y2ksjyyjk6225bvw9qk4s6gfv62w4jm";
         });
 
-        # doom emacs dashboard logo
-        "Pictures/doomdashboardlogo.png".source = (pkgs.fetchurl {
-            url = "https://user-images.githubusercontent.com/7713/81558554-cbf53680-9385-11ea-8db6-2dc6abe0c1ae.png";
-            sha256 = "1pkagclyj1vggiwx27ws7cdfzslw1yx2pbsiqs953mnyq1d4sqnj";
-        });
-
         # doom emacs
         # ".emacs.d/init.el".text = ''
         #     (load "default.el")
@@ -221,8 +215,8 @@ in
             #${pkgs.xorg.xkbcomp}/bin/xkbcomp /etc/.jislayoutremap.xkb $DISPLAY
         #'';
         pointerCursor = {
-            package = pkgs.capitaine-cursors;
-            name = "capitaine-cursors";
+            package = pkgs.bibata-cursors;
+            name = "Bibata Ice";
             size = 16;
         };
 

@@ -22,10 +22,8 @@
        japanese
 
        :completion
-       (company +childframe)          ; the ultimate code completion backend
-       ;; Childframe is broken with pure gtk. see https://github.com/masm11/emacs/issues/46
-       ;; One workaround is to use fullscreen
-       ;; (company +tng)          ; the ultimate code completion backend
+       ;; (company +childframe)          ; the ultimate code completion backend
+       (company +tng)          ; the ultimate code completion backend
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        (ivy +fuzzy +prescient +childframe +icons)              ; a search engine for love and life
@@ -134,7 +132,7 @@
        ;;fstar             ; (dependent) types and (monadic) effects and Z3
        ;;gdscript          ; the language you waited for
        ;;(go +lsp)         ; the hipster dialect
-       (haskell +dante +ghcide +lsp)  ; a language that's lazier than I am
+       (haskell +dante +lsp)  ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ;
        json              ; At least it ain't XML

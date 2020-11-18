@@ -60,7 +60,7 @@
   :recipe(:host github :repo "MoritzMaxeiner/centaur-tabs" :branch "daemon"))
 
 ;; company(autocompletion) packages
-;; (package! company-tabnine)
+(package! company-tabnine)
 ;; (package! company-emoji)
 
 ;; misc
