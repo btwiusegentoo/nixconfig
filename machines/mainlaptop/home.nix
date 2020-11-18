@@ -182,9 +182,6 @@ in
     # tmux theme
     ".palenight-tmux".source = ../../.palenight-tmux;
 
-    # neofetch ascii
-    "textfiles/neofetchascii.txt".source = ../../textfiles/neofetchascii.txt;
-
     # neovim dashboard logo
     "Pictures/neovimlogo.png".source = (pkgs.fetchurl {
       url = "https://raw.githubusercontent.com/neovim/neovim.github.io/master/logos/neovim-logo-flat.png";

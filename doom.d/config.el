@@ -33,7 +33,6 @@
  doom-theme 'doom-palenight                            ; Set theme https://github.com/hlissner/emacs-doom-themes
  doom-themes-enable-bold t
  doom-themes-enable-italic t
- fancy-splash-image "~/Pictures/doomdashboardlogo.png" ; Set dashboard image
  display-line-numbers-type 'relative                   ; Set vim-like relative number
  doom-modeline-height 40                               ; Set doom modeline(bottombar) height
  org-directory "~/org/"                                ; Set org mode files directory
