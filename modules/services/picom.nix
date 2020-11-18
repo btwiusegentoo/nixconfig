@@ -1,7 +1,7 @@
+{ pkgs, ... }:
 {
     enable = true;
-    fade = true;
-    fadeDelta = 3;
+    package = pkgs.nur.repos.reedrw.picom-next-ibhagwan;
     backend = "glx";
     experimentalBackends = true;
     opacityRule = [
@@ -9,9 +9,6 @@
         "85:class_g  = 'TelegramDesktop'"
         "85:class_g  = 'Discord'"
         "100:class_g = 'keynav'"
-    ];
-    fadeExclude = [
-        "class_g = 'keynav'"
     ];
     extraOptions = ''
             detect-client-opacity = true;

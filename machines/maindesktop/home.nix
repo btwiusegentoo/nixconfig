@@ -142,7 +142,7 @@ in
     # services {{{
     services = {
 
-        picom = (import ../../modules/services/picomanimations.nix) { inherit pkgs; };
+        picom = (import ../../modules/services/picom.nix) { inherit pkgs; };
         dunst = (import ../../modules/services/dunst.nix);
         emacs = (import ../../modules/services/emacsdaemon.nix);
         gpg-agent = (import ../../modules/services/gpg-agent.nix);
