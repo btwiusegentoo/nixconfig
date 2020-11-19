@@ -8,7 +8,7 @@
     };
     url = {
       "git@github.com:" = {
-        insteadOf = "https://github.com/";
+        pushinsteadOf = "https://github.com/";
       };
     };
     core = {
