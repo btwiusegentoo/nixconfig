@@ -112,9 +112,6 @@
                     :major-modes '(nix-mode)
                     :server-id 'nix)))
 
-; Disable current line highlight
-(remove-hook! (prog-mode text-mode conf-mode special-mode) 'hl-line-mode)
-
 ; Add projects to projectile
 (projectile-add-known-project "~/.nixconfig")
 
