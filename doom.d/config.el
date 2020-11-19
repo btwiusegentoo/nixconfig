@@ -183,5 +183,6 @@
 (setq fast-scroll-throttle 0.5)
 
 ;; opacity
-(set-frame-parameter (selected-frame) 'alpha '(85 . 50))
-(add-to-list 'default-frame-alist '(alpha . (85 . 50)))
+;; (set-frame-parameter (selected-frame) 'alpha '(85 . 60))
+;; (add-to-list 'default-frame-alist '(alpha . (85 . 60)))
+(set-frame-parameter nil 'alpha nil) ;; let picom manage it

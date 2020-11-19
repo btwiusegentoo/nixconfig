@@ -8,6 +8,7 @@
     "85:class_g  = 'Zathura'"
     "85:class_g  = 'TelegramDesktop'"
     "85:class_g  = 'Discord'"
+    "85:class_g  = 'Emacs'"
     "100:class_g = 'keynav'"
   ];
   extraOptions = ''
