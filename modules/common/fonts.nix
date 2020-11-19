@@ -3,7 +3,7 @@
   fontconfig = {
     enable = true;
     allowBitmaps = true;
-    useEmbeddedBitmaps = false;
+    useEmbeddedBitmaps = true; # THIS NEED TO BE ENABLED TO DISPLAY EMOJI
   };
   enableFontDir = true;
   enableGhostscriptFonts = true;

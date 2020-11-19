@@ -3,9 +3,17 @@
 ;; Specify font here
 (setq doom-font (font-spec :family "Spleen" :size 16)
       doom-variable-pitch-font (font-spec :family "SFNS Display" :size 13.5 :weight 'Regular))
-;; Emoji and nerdfont stuff
-(set-fontset-font t 'symbol "Apple Color Emoji" nil)
-(set-fontset-font t 'symbol "GohuFont Nerd Font" nil 'append)
+
+;; Config emoji and nerdfont
+(add-hook! 'doom-load-theme-hook
+           :append
+           (defun my/init-extra-fonts-h(&optional frame)
+             (with-selected-frame (or frame (selected-frame))
+               (set-fontset-font t 'symbol "Spleen" nil)
+               (set-fontset-font t 'symbol "Apple Color Emoji" nil 'append)
+               (set-fontset-font t 'symbol "GohuFont Nerd Font" nil 'append))))
+
+(setq emojify-display-style 'unicode)
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -43,12 +51,6 @@
 
 
 ;; Set tabs to space
-(setq-hook! 'nix-mode-hook
-  tab-width 4
-  evil-shift-width 4
-  standard-indent 4
-  indent-tabs-mode nil
-  )
 (setq-hook! 'haskell-mode-hook
   tab-width 4
   evil-shift-width 4
@@ -100,18 +102,15 @@
                         rust-mode
                         org-mode
                         nix-mode)
-  '(:separate company-tabnine
-              company-files))
+  '(:separate company-files))
 
-(setq +lsp-company-backends '(company-lsp :with company-tabnine :separate))
-
-; Add nix lsp
-(add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
-                  :major-modes '(nix-mode)
-                  :server-id 'nix))
-
+;; LSP language server
+(after! lsp-mode
+  (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+                    :major-modes '(nix-mode)
+                    :server-id 'nix)))
 
 ; Disable current line highlight
 (remove-hook! (prog-mode text-mode conf-mode special-mode) 'hl-line-mode)
@@ -125,6 +124,15 @@
 
 ;; org mode
 (setq org-startup-with-inline-images t)
+
+;; Evil mode
+;; disable evil-escape (jk -> escape)
+(after! evil-escape (evil-escape-mode -1))
+(after! evil (setq evil-ex-substitute-global t))
+
+;; Magit syntax highlight
+(after! magit
+  (magit-delta-mode +1))
 
 ;; Setup emms
 (require 'emms-setup)

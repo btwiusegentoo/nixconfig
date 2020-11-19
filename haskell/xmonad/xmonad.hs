@@ -22,7 +22,7 @@ import           XMonad.Prompt.Unicode
 import           XMonad.Util.NamedScratchpad
 import           XMonad.Util.Run
 import           XMonad.Util.SpawnOnce
-import           XMonad.Util.Cursor
+import           XMonad.Util.Cursor (setDefaultCursor)
 
 import qualified Data.Map                      as M
 import qualified XMonad.StackSet               as W
@@ -104,6 +104,9 @@ myKeys conf@XConfig { XMonad.modMask = modm } =
        , ( (modm .|. shiftMask, xK_p)
          , spawn "rm ~/.cache/pomodoro_session"
          )    -- stop pomodoro
+       , ( (modm, xK_e)
+         , spawn "~/.emacs_anywhere/bin/run"
+         ) -- launch emacs_anywhere
        , ( (0, 0x1008ff11)
          , spawn "amixer -q sset Master 2%-"
          )       -- decrease volume fn+a(HHKB Dvorak)

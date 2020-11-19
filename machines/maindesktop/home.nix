@@ -34,6 +34,7 @@ in
     tree
     bc
     gitAndTools.diff-so-fancy
+    gitAndTools.delta
     unstable.ripgrep
     unstable.fd
     unstable.fzf
@@ -211,6 +212,14 @@ in
     "Pictures/neovimlogo.png".source = (pkgs.fetchurl {
       url = "https://raw.githubusercontent.com/neovim/neovim.github.io/master/logos/neovim-logo-flat.png";
       sha256 = "1vl7mi87wisqhd9zigg24y2ksjyyjk6225bvw9qk4s6gfv62w4jm";
+    });
+
+    # emacs-anywhere
+    ".emacs_anywhere".source = (pkgs.fetchFromGitHub {
+      owner = "btwiusegentoo";
+      repo = "emacs-anywhere";
+      rev = "e739c8bf1930eeb68ecaf312a885f5788942154c";
+      sha256 = "0k0iay6pd01k2nyjm2n648n8ja36mgarvb9677ky2d758xkzgckv";
     });
 
     # doom emacs

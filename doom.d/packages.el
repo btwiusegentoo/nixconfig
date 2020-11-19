@@ -58,9 +58,10 @@
 (package! soundklaus)              ; soundcloud for emms
 (package! centaur-tabs
   :recipe(:host github :repo "MoritzMaxeiner/centaur-tabs" :branch "daemon"))
+(package! magit-delta)             ; magit syntax highlight
 
 ;; company(autocompletion) packages
-(package! company-tabnine)
+;; (package! company-tabnine)
 ;; (package! company-emoji)
 
 ;; misc
