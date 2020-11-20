@@ -3,7 +3,7 @@ import           Xmobar
 
 config :: Config
 config = defaultConfig
-  { font             = "xft:Spleen-9,GohuFont Nerd Font-10.5,DejaVu Sans-10.5"
+  { font             = "xft:Spleen-12,GohuFont Nerd Font-10.5,DejaVu Sans-10.5"
   , additionalFonts  = []
   , borderColor      = "#232635"
   , border           = BottomB
