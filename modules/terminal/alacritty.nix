@@ -30,7 +30,7 @@
         family = "Spleen";
         style = "Regular";
       };
-      size = 12;
+      size = 9;
       offset = {
         x = 0;
         y = 0;

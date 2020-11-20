@@ -1,8 +1,8 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
 ;; Specify font here
-(setq doom-font (font-spec :family "Spleen" :size 16)
-      doom-variable-pitch-font (font-spec :family "SFNS Display" :size 13.5 :weight 'Regular))
+(setq doom-font (font-spec :family "Spleen" :size 12)
+      doom-variable-pitch-font (font-spec :family "SFNS Display" :size 12 :weight 'Regular))
 
 ;; Config emoji and nerdfont
 (add-hook! 'doom-load-theme-hook
@@ -49,6 +49,11 @@
  doom-modeline-enable-word-count nil
  )
 
+;; Set line spacing
+(defun set-bigger-spacing ()
+  (setq-local default-text-properties '(line-spacing 0.25 line-height 1.25)))
+(add-hook 'text-mode-hook 'set-bigger-spacing)
+(add-hook 'prog-mode-hook 'set-bigger-spacing)
 
 ;; Set tabs to space
 (setq-hook! 'haskell-mode-hook
@@ -180,7 +185,7 @@
 (add-hook 'fast-scroll-end-hook (lambda () (display-line-numbers-mode 1)))
 (fast-scroll-config)
 (fast-scroll-mode 1)
-(setq fast-scroll-throttle 0.5)
+(setq fast-scroll-throttle 0.2)
 
 ;; opacity
 ;; (set-frame-parameter (selected-frame) 'alpha '(85 . 60))
