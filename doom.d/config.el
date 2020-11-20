@@ -1,8 +1,8 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
 ;; Specify font here
-(setq doom-font (font-spec :family "Spleen" :size 12)
-      doom-variable-pitch-font (font-spec :family "SFNS Display" :size 12 :weight 'Regular))
+(setq doom-font (font-spec :family "Spleen" :size 16)
+      doom-variable-pitch-font (font-spec :family "SFNS Display" :size 16 :weight 'Regular))
 
 ;; Config emoji and nerdfont
 (add-hook! 'doom-load-theme-hook
