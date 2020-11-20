@@ -65,10 +65,10 @@ config = defaultConfig
       , "<icon=battery-charging.xpm/>"
            -- AC on
       , "-O"
-      , "<icon=battery-charging.xpm/> <timeleft> <watts>"
+      , "<icon=battery-charging.xpm/> <timeleft> <watts> "
            -- Discharging
       , "-o"
-      , "<icon=battery.xpm/> <timeleft> <watts>"
+      , "<icon=battery.xpm/> <timeleft> <watts> "
       , "-H"
       , "10"
       , "-L"
