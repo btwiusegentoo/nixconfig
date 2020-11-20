@@ -41,7 +41,7 @@
       };
     };
     draw_bold_text_with_bright_colors = false;
-    background_opacity = 0.9;
+    background_opacity = 0.8;
     key_bindings = [
       {
         key = "V";

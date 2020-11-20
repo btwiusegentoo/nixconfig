@@ -136,6 +136,13 @@
 (after! magit
   (magit-delta-mode +1))
 
+;; indent guide character
+(after! highlight-indent-guides
+  (setq highlight-indent-guides-method 'bitmap
+        highlight-indent-guides-responsive t
+        highlight-indent-guides-bitmap-function 'highlight-indent-guides--bitmap-line))
+
+
 ;; Setup emms
 (require 'emms-setup)
 (emms-all)

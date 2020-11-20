@@ -5,10 +5,10 @@
   backend = "glx";
   experimentalBackends = true;
   opacityRule = [
-    "85:class_g  = 'Zathura'"
-    "85:class_g  = 'TelegramDesktop'"
-    "85:class_g  = 'Discord'"
-    "85:class_g  = 'Emacs'"
+    "80:class_g  = 'Zathura'"
+    "80:class_g  = 'TelegramDesktop'"
+    "80:class_g  = 'Discord'"
+    "80:class_g  = 'Emacs'"
     "100:class_g = 'keynav'"
   ];
   extraOptions = ''
@@ -17,7 +17,7 @@
     blur:
     {
         method = "kawase";
-        strength = 10;
+        strength = 8;
         background = false;
         background-frame = false;
         background-fixed = false;

@@ -3,7 +3,7 @@
 ## @@@@@@@@@@@@@@@@@@@@@@
 
 # Opacity of window during flash.
-flash-opacity: 0.65
+flash-opacity: 0.60
 
 # Windows are restored to this opacity value at the end of a flash.
 default-opacity: 1
@@ -39,13 +39,13 @@ flash-lone-windows: 'always'
 
 rules:
 - window-class: Alacritty
-  default-opacity: 0.85
+  default-opacity: 0.80
 - window-class: Emacs
-  default-opacity: 0.85
+  default-opacity: 0.80
 - window-class: Zathura
-  default-opacity: 0.85
+  default-opacity: 0.80
 - window-class: TelegramDesktop
-  default-opacity: 0.85
+  default-opacity: 0.80
 
 # Defining window-specific flash rules
 #
