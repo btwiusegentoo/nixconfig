@@ -14,34 +14,38 @@
 
   # settings{{{
   settings = {
+
+    qt.args = [ "enable-native-gpu-memory-buffers" "enable-gpu-rasterization" "use-gl=egl" "ignore-gpu-blacklist" "num-raster-threads=4" ];
     url.start_pages = [ "https://btwiusegentoo.github.io/start.html" ];
     url.default_page = "https://btwiusegentoo.github.io/start.html";
 
     completion.web_history.max_items = 30;
 
+    zoom.default = "90%";
+
     fonts = {
       default_family = "SFNS Display";
       web.family.fixed = "Spleen";
       completion = {
-        category = "12pt Spleen";
-        entry = "12pt Spleen";
+        category = "9pt Spleen";
+        entry = "9pt Spleen";
       };
-      contextmenu = "12pt Spleen";
-      debug_console = "12pt Spleen";
+      contextmenu = "9pt Spleen";
+      debug_console = "9pt Spleen";
       default_size = "9pt";
-      downloads = "12pt Spleen";
-      hints = "12pt Spleen";
-      keyhint = "12pt Spleen";
+      downloads = "9pt Spleen";
+      hints = "9pt Spleen";
+      keyhint = "9pt Spleen";
       messages = {
-        error = "12pt Spleen";
-        info = "12pt Spleen";
-        warning = "12pt Spleen";
+        error = "9pt Spleen";
+        info = "9pt Spleen";
+        warning = "9pt Spleen";
       };
-      prompts = "12pt Spleen";
-      statusbar = "12pt Spleen";
-      tabs.selected = "12pt Spleen";
-      tabs.unselected = "12pt Spleen";
-      #tabs = "12pt Spleen";
+      prompts = "9pt Spleen";
+      statusbar = "9pt Spleen";
+      tabs.selected = "9pt Spleen";
+      tabs.unselected = "9pt Spleen";
+      #tabs = "9pt Spleen";
     };
 
     # colors{{{
@@ -221,5 +225,9 @@
     }; # }}}
   };
   # }}}
+
+  extraConfig = ''
+    c.editor.command = ["emacsclient", "-c", "--eval", "(find-file \"{}\")", "(org-mode)"]
+  '';
 
 }
