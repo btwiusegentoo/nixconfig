@@ -36,6 +36,7 @@
           ./cachix.nix
           ./modules/common/nix.nix
           ./modules/common/doas.nix
+          ./modules/common/console.nix
         ];
       };
     in
