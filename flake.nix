@@ -78,6 +78,7 @@
             [
               defaults
               ./machines/maindesktop/configuration.nix
+              ./modules/common/xserver.nix
               home-manager.nixosModules.home-manager
               ({
                 home-manager.useGlobalPkgs = true;
@@ -97,6 +98,7 @@
             [
               defaults
               ./machines/mainlaptop/configuration.nix
+              ./modules/common/xserverfhd.nix
               home-manager.nixosModules.home-manager
               ({
                 home-manager.useGlobalPkgs = true;

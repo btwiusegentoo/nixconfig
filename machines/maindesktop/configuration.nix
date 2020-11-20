@@ -7,8 +7,6 @@
       ./hardware-configuration.nix
       # import user settings
       ./usersettings.nix
-      # import xserver configs
-      ../../modules/common/xserver.nix
       # import system packages
       ../../modules/common/systempackages.nix
       # import locale configs
