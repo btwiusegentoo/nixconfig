@@ -23,6 +23,11 @@
 ;; Fix native comp
 (setq comp-async-env-modifier-form "")
 
+;; faster GC
+(use-package! gcmh
+  :init
+  (gcmh-mode 1))
+
 ;; Basic settings
 (setq-default
  delete-by-moving-to-trash t                           ; Delete files to trash
@@ -49,12 +54,6 @@
  doom-modeline-enable-word-count nil
  )
 
-;; Set line spacing
-(defun set-bigger-spacing ()
-  (setq-local default-text-properties '(line-spacing 0.25 line-height 1.25)))
-(add-hook 'text-mode-hook 'set-bigger-spacing)
-(add-hook 'prog-mode-hook 'set-bigger-spacing)
-
 ;; Set tabs to space
 (setq-hook! 'haskell-mode-hook
   tab-width 4
@@ -69,7 +68,8 @@
   :init
   (setq centaur-tabs-set-icons t
         centaur-tabs-gray-out-icons 'buffer
-        centaur-tabs-set-bar 'left
+        centaur-tabs-style "chamfer"
+        centaur-tabs-set-bar 'under
         centaur-tabs-set-modified-marker t
         centaur-tabs-close-button "✕"
         centaur-tabs-modified-marker "•"
@@ -86,14 +86,17 @@
    centaur-tabs-height 30
    centaur-tabs-set-icons t
    centaur-tabs-set-modified-marker t
-   centaur-tabs-set-bar 'left))
+   centaur-tabs-set-bar 'under))
 
 ;; Company completion
 (after! company
   (setq company-idle-delay 0
         company-minimum-prefix-length 1)
   (setq company-show-numbers t)
-  (add-hook 'evil-normal-state-entry-hook #'company-abort))
+  (add-hook 'evil-normal-state-entry-hook #'company-abort)
+  (define-key company-active-map (kbd "C-p") #'company-select-previous-or-abort)
+  (define-key company-active-map (kbd "C-n") #'company-select-next-or-abort)
+  )
 
 (set-company-backend! '(c-mode
                         c++-mode
