@@ -348,7 +348,7 @@ myLogHook h = dynamicLogWithPP xmobarPP
   , ppHidden          = xmobarColor "#ab47bc" "" . wrap "\61842" " "
   , ppHiddenNoWindows = xmobarColor "#FFFFFF" "" . wrap "\61915" " "
   , ppLayout          = xmobarColor "#82aaff" ""
-  , ppSep             = " | "
+  , ppSep             = "  |  "
   , ppTitle           = mempty
   }
 -- }}}

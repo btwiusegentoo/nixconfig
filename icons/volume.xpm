@@ -1,0 +1,38 @@
+/* XPM */
+static char *volume[] = {
+/* columns rows colors chars-per-pixel */
+"24 24 8 1 ",
+"  c #A5ABCD",
+". c #A6ABCD",
+"X c #A6ACCC",
+"o c #A7ACCC",
+"O c #A6ACCD",
+"+ c #A7ACCD",
+"@ c #A6ACCE",
+"# c None",
+/* pixels */
+"########################",
+"########################",
+"########################",
+"########################",
+"##########OO######Oo####",
+"#########OOO######OOO###",
+"########OOOO#######OO ##",
+"###### OOOOO###O####OO##",
+"# OOOOOOOOOO##OOO###+O##",
+"#OOOOOOOOOOO###OO####O+#",
+"#OOOOOOOOOOO####O+###OO#",
+"#OOOOOOOOOOO####OO###OO#",
+"#OOOOOOOOOOO####OO###OO#",
+"#OOOOOOOOOOO####+ ###OO#",
+"#+OOOOOOOOOO###OO### O+#",
+"# OOOOOOOOOO###OO###OO##",
+"###### OOOOO########OO##",
+"########OOOO#######OO ##",
+"#########OOO###### OO###",
+"##########OO#######+####",
+"########################",
+"########################",
+"########################",
+"########################"
+};

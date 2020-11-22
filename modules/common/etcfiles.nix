@@ -5,17 +5,12 @@
   "wallpapers/wallpaper2-1080.png".source = ../../pictures/wallpaper2-1080.png;
   # icons
   "icons/cpu.xpm".source = ../../icons/cpu.xpm;
-  "icons/activity.xpm".source = ../../icons/activity.xpm;
-  "icons/arrow-right.xpm".source = ../../icons/arrow-right.xpm;
+  "icons/ram.xpm".source = ../../icons/ram.xpm;
   "icons/battery.xpm".source = ../../icons/battery.xpm;
   "icons/battery-charging.xpm".source = ../../icons/battery-charging.xpm;
-  "icons/hard-drive.xpm".source = ../../icons/hard-drive.xpm;
   "icons/calendar.xpm".source = ../../icons/calendar.xpm;
-  "icons/volume-2.xpm".source = ../../icons/volume-2.xpm;
-  "icons/volume-x.xpm".source = ../../icons/volume-x.xpm;
-  "icons/nix-snowflake.xpm".source = ../../icons/nix-snowflake.xpm;
-  "icons/haskell-logo.xpm".source = ../../icons/haskell-logo.xpm;
-  "icons/NewTux.xpm".source = ../../icons/NewTux.xpm;
+  "icons/volume.xpm".source = ../../icons/volume.xpm;
+  "icons/volume-mute.xpm".source = ../../icons/volume-mute.xpm;
   "icons/clock.xpm".source = ../../icons/clock.xpm;
   # misc
   ".jislayoutremap.xkb".source = ../../configs/jislayoutremap.xkb;

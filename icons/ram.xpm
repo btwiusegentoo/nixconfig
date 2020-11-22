@@ -1,0 +1,34 @@
+/* XPM */
+static char *ram[] = {
+/* columns rows colors chars-per-pixel */
+"24 24 4 1 ",
+"  c #A6ABCD",
+". c #A6ACCD",
+"X c #A6ACCE",
+"o c None",
+/* pixels */
+"oooooooooooooooooooooooo",
+"oooooooooooooooooooooooo",
+"oooooooooooooooooooooooo",
+"oooooooooooooooooooooooo",
+"oooooooo..oooooooooooooo",
+"oooooooo..oooooooooooooo",
+"ooooooo ...ooooooooooooo",
+"ooooooo....ooooooooooooo",
+"ooooooX....Xoooooooooooo",
+"oooooo..oo..oooooooooooo",
+"oooooo. oo .oooooooooooo",
+"o......oooo..oooo......o",
+"o......oooo..oooo......o",
+"oooooooooooo.Xoo .oooooo",
+"oooooooooooo..oo..oooooo",
+"ooooooooooooX.XX.Xoooooo",
+"ooooooooooooo....ooooooo",
+"ooooooooooooo .. ooooooo",
+"oooooooooooooo..oooooooo",
+"oooooooooooooo..oooooooo",
+"oooooooooooooooooooooooo",
+"oooooooooooooooooooooooo",
+"oooooooooooooooooooooooo",
+"oooooooooooooooooooooooo"
+};

@@ -1,0 +1,37 @@
+/* XPM */
+static char *volume_mute[] = {
+/* columns rows colors chars-per-pixel */
+"24 24 7 1 ",
+"  c #A5ABCD",
+". c #A6ABCD",
+"X c #A6ACCC",
+"o c #A6ACCD",
+"O c #A7ACCD",
+"+ c #A6ACCE",
+"@ c None",
+/* pixels */
+"@@@@@@@@@@@@@@@@@@@@@@@@",
+"@@@@@@@@@@@@@@@@@@@@@@@@",
+"@@@@@@@@@@@@@@@@@@@@@@@@",
+"@@@@@@@@@@@@@@@@@@@@@@@@",
+"@@@@@@@@@@oo@@@@@@@@@@@@",
+"@@@@@@@@@ooo@@@@@@@@@@@@",
+"@@@@@@@@oooo@@@@@@@@@@@@",
+"@@@@@@ ooooo@@@o@@@@@@O@",
+"@ oooooooooo@@ooX@@@@ooo",
+"@ooooooooooo@@@ooo@@Xoo@",
+"@ooooooooooo@@@@ooXXoo@@",
+"@ooooooooooo@@@@@oooo@@@",
+"@ooooooooooo@@@@@oooo@@@",
+"@ooooooooooo@@@@oooooo@@",
+"@Ooooooooooo@@@ooo@@ooo@",
+"@ oooooooooo@@ooo@@@@oo+",
+"@@@@@@ ooooo@@@o@@@@@@o@",
+"@@@@@@@@oooo@@@@@@@@@@@@",
+"@@@@@@@@@ooo@@@@@@@@@@@@",
+"@@@@@@@@@@oo@@@@@@@@@@@@",
+"@@@@@@@@@@@@@@@@@@@@@@@@",
+"@@@@@@@@@@@@@@@@@@@@@@@@",
+"@@@@@@@@@@@@@@@@@@@@@@@@",
+"@@@@@@@@@@@@@@@@@@@@@@@@"
+};
