@@ -13,7 +13,11 @@
                (set-fontset-font t 'symbol "Apple Color Emoji" nil 'append)
                (set-fontset-font t 'symbol "GohuFont Nerd Font" nil 'append))))
 
-(setq emojify-display-style 'unicode)
+(setq emojify-display-style 'unicode)                  ; Use unicode emoji
+
+;; doom-modeline font
+(set-face-attribute 'mode-line nil :family "SFNS Display" :height 120)
+(set-face-attribute 'mode-line-inactive nil :family "SFNS Display" :height 120)
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -48,7 +52,7 @@
  doom-themes-enable-italic t
  doom-themes-treemacs-theme "doom-colors"
  display-line-numbers-type 'relative                   ; Set vim-like relative number
- doom-modeline-height 40                               ; Set doom modeline(bottombar) height
+ doom-modeline-height 1                               ; Set doom modeline(bottombar) height
  org-directory "~/org/"                                ; Set org mode files directory
  projectile-project-search-path '("~/code")            ; Set directory to search projects
  auto-save-default t                                   ; Enable autosaving
@@ -82,9 +86,10 @@
   (add-hook '+doom-dashboard-mode-hook #'centaur-tabs-local-mode)
   (add-hook '+popup-buffer-mode-hook #'centaur-tabs-local-mode)
   (centaur-tabs-mode t)
+  (centaur-tabs-change-fonts "SFNS Display" 140)
   (centaur-tabs-group-by-projectile-project)
   (setq
-   centaur-tabs-height 30
+   centaur-tabs-height 32
    centaur-tabs-set-icons t
    centaur-tabs-set-modified-marker t
    centaur-tabs-set-bar 'under))
