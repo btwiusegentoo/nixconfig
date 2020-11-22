@@ -16,8 +16,9 @@
 (setq emojify-display-style 'unicode)                  ; Use unicode emoji
 
 ;; doom-modeline font
-(set-face-attribute 'mode-line nil :family "SFNS Display" :height 120)
-(set-face-attribute 'mode-line-inactive nil :family "SFNS Display" :height 120)
+(custom-set-faces!
+  '(mode-line :family "SFNS Display" :height 120)
+  '(mode-line-inactive :family "SFNS Display" :height 120))
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -52,7 +53,6 @@
  doom-themes-enable-italic t
  doom-themes-treemacs-theme "doom-colors"
  display-line-numbers-type 'relative                   ; Set vim-like relative number
- doom-modeline-height 1                               ; Set doom modeline(bottombar) height
  org-directory "~/org/"                                ; Set org mode files directory
  projectile-project-search-path '("~/code")            ; Set directory to search projects
  auto-save-default t                                   ; Enable autosaving
