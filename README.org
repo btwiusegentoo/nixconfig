@@ -13,13 +13,13 @@
 * Introduction
 Hi! This is my repo that contains my configuration files for my machines (aka dotfiles)
 This repository contains configuration for three hosts currently
-- Main Ryzen desktop
+- Ryzen desktop
 - My portable laptop
 - My lowspec server
 All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix Flakes]].
 [[https://github.com/nix-community/home-manager][home-manager]] is used to manage user environment. I try to install programs/services in user level as much as possible.
 I use [[https://xmonad.org/][xmonad]] as window manager for Desktop and Laptop, while server is headless.
-My English is not good, but I will try to document this just for fun.
+My English is not good, but I will try to make this into literate config just for fun.
 To generate actual files, open this file in emacs, and execute ~M-x org-babel-tangle~.
 You can install this config running this command at repository root ~nixos-rebuild switch --flake .~
 Note that you need [[#nix][flakes to be enabled]].
@@ -35,12 +35,67 @@ Note that you need [[#nix][flakes to be enabled]].
     - [[#desktop][Desktop]]
     - [[#laptop][Laptop]]
     - [[#server][Server]]
-- [[#modules][Modules]]
+- [[#common-configs][Common configs]]
   - [[#nix][Nix]]
+  - [[#doas][doas]]
+  - [[#console][Console]]
+    - [[#early-setup][Early Setup]]
+  - [[#bluetooth][Bluetooth]]
+    - [[#enable-bluetooth][Enable Bluetooth]]
+    - [[#bluetooth-package][Bluetooth package]]
+    - [[#bluetooth-config][Bluetooth config]]
+  - [[#x-server][X server]]
+  - [[#lightdm][LightDM]]
+  - [[#etc-files][/etc files]]
+  - [[#locale][Locale]]
+  - [[#xdg][XDG]]
+    - [[#enable-xdg-module][Enable XDG module]]
+    - [[#enable-xdg-user-dirs][Enable XDG user dirs]]
+    - [[#enable-xdg-mime][Enable XDG mime]]
+    - [[#xdg-mimeapps][XDG mimeapps]]
+  - [[#config-files][~/.config files]]
+- [[#input][Input]]
+  - [[#keyboard][Keyboard]]
+    - [[#xorg-repeat-rate][Xorg repeat rate]]
+    - [[#dvorak][Dvorak]]
+- [[#look-and-feel][Look And Feel]]
+  - [[#color-scheme][Color Scheme]]
+    - [[#console-colors][Console colors]]
+    - [[#lightdm-colors][LightDM colors]]
+  - [[#fonts][Fonts]]
+    - [[#system-xorg-font][System Xorg font]]
+    - [[#console-font][Console font]]
+    - [[#fontconfig][fontconfig]]
+  - [[#wallpaper][Wallpaper]]
+    - [[#wallpaper-files][Wallpaper files]]
+    - [[#lock-screen][Lock screen]]
+- [[#services][Services]]
+  - [[#pulseaudio][PulseAudio]]
+    - [[#enable-pulseaudio][Enable PulseAudio]]
+    - [[#pulseaudio-32bit-support][PulseAudio 32bit support]]
+    - [[#pulseaudio-package][PulseAudio package]]
+    - [[#pulseaudio-extra-modules][PulseAudio extra modules]]
+    - [[#pulseaudio-daemon-config][PulseAudio daemon config]]
+  - [[#openssh][OpenSSH]]
+    - [[#enable-ssh][Enable SSH]]
+    - [[#challenge-response-authentication][Challenge Response Authentication]]
+    - [[#x11-forwarding][X11 forwarding]]
+    - [[#open-firewall][Open firewall]]
+    - [[#password-authentication][Password authentication]]
+    - [[#root-login][Root login]]
+- [[#machines-1][Machines]]
+  - [[#default-system-configs][Default system configs]]
+    - [[#imports][imports]]
+  - [[#desktop-1][Desktop]]
+    - [[#system][System]]
+  - [[#laptop-1][Laptop]]
+    - [[#system-1][System]]
+  - [[#server-1][Server]]
+    - [[#system-2][System]]
 - [[#credits][Credits]]
 
 * Flake
-A flake is (usually) a Git repository that contains a file named ~flake.nix~ at root.
+A [[https://nixos.wiki/wiki/Flakes][flake]] is (usually) a Git repository that contains a file named ~flake.nix~ at root.
 This repository is compatible with nix flakes.
 The following code is the base code of  ~flake.nix~ file.
 #+begin_src nix :tangle flake.nix :noweb no-export
@@ -110,6 +165,12 @@ Import default modules(that every machine uses)
           ./modules/common/nix.nix
           ./modules/common/doas.nix
           ./modules/common/console.nix
+          ./modules/common/bluetooth.nix
+          ./modules/common/etcfiles.nix
+          ./modules/common/systempackages.nix
+          ./modules/common/globallocale.nix
+          ./modules/services/pulseaudio.nix
+          ./modules/services/openssh.nix
         ];
       };
 #+end_src
@@ -177,6 +238,7 @@ It imports modules (that contains configuration for) for each machines.
               defaults
               ./machines/maindesktop/configuration.nix
               ./modules/common/xserver.nix
+              ./modules/common/fonts.nix
               home-manager.nixosModules.home-manager
               ({
                 home-manager.useGlobalPkgs = true;
@@ -201,7 +263,8 @@ It imports modules (that contains configuration for) for each machines.
             [
               defaults
               ./machines/mainlaptop/configuration.nix
-              ./modules/common/xserverfhd.nix
+              ./modules/common/xserverlaptop.nix
+              ./modules/common/fonts.nix
               home-manager.nixosModules.home-manager
               ({
                 home-manager.useGlobalPkgs = true;
@@ -240,8 +303,685 @@ It imports modules (that contains configuration for) for each machines.
           inherit pkgs;
         };
 #+end_src
-* Modules
+* Common configs
 ** Nix
+Enable nix flakes(flakes is still a experimental feature.)
+Add ~@wheel~ to Nix allowed/trusted users. So you can use nix, run ~nixos-rebuild~, use cachix without root.
+
+#+begin_src nix :tangle modules/common/nix.nix
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  nix.package = pkgs.nixFlakes;
+
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+    builders-use-substitutes = true
+  '';
+  nix.allowedUsers = [ "@wheel" ];
+  nix.trustedUsers = [ "root" "@wheel" ];
+}
+#+end_src
+
+** doas
+The *doas* utility is a program originally written for OpenBSD, that can be used as alternative for *sudo*
+The following code disables *sudo*, enables *doas*, permits ~@wheel~ group users to use doas with password.
+~keepEnv~ makes retain the environment variables when creating the environment for the new process.
+~persist~ means it literally. After running doas successfully, do not ask password again for some time.
+#+begin_src nix :tangle modules/common/doas.nix
+# This file is generated from "README.org"
+{
+  security.sudo.enable = false;
+  security.doas = {
+    enable = true;
+    wheelNeedsPassword = true;
+    extraRules = [
+      { groups = [ "wheel" ]; noPass = false; keepEnv = true; persist = true; }
+    ];
+  };
+}
+#+end_src
+
+** Console
+This module configures console(tty).
+[[#console-colors][Colors]]
+[[#console-font][Font]]
+[[#dvorak][Layout]]
+
+#+begin_src  nix :tangle modules/common/console.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  console = {
+    <<consolecolors>>
+    <<consoleearlysetup>>
+    <<consolefont>>
+    <<consolekeymap>>
+  };
+}
+#+end_src
+
+*** Early Setup
+Load console configurations early at initrd
+#+name: consoleearlysetup
+#+begin_src nix
+earlySetup = true;
+#+end_src
+** Bluetooth
+This module configures bluetooth for all machines.
+#+begin_src nix :tangle modules/common/bluetooth.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  hardware.bluetooth = {
+    <<bluetooth-enable>>
+    <<bluetooth-package>>
+    <<bluetooth-config>>
+  };
+}
+#+end_src
+*** Enable Bluetooth
+#+name: bluetooth-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Bluetooth package
+bluezFull enables all bluez plugins. It's needed for many devices.
+#+name: bluetooth-package
+#+begin_src nix
+package = pkgs.bluezFull;
+#+end_src
+*** Bluetooth config
+Setting controller mode to ~"bredr"~ (disabling Bluetooth LE) is a workaround to fix airpods.
+#+name: bluetooth-config
+#+begin_src nix
+config = {
+    General = {
+        ControllerMode = "bredr";
+    };
+};
+#+end_src
+** X server
+This module configures common stuff of xserver and displaymanager.
+Change layout [[#dvorak][here]] and repeat rate [[#xorg-repeat-rate][here]]
+
+Enable xserver
+#+name: xserver-enable
+#+begin_src nix
+enable = true;
+#+end_src
+
+Auto start xserver
+#+name: xserver-autorun
+#+begin_src nix
+autorun = true;
+#+end_src
+
+Xorg dpi
+#+name: xserver-dpi
+#+begin_src nix
+dpi = 96;
+#+end_src
+
+Following code goes to ~xserver.nix~ file
+#+begin_src  nix :tangle modules/common/xserver.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, config, ... }:
+{
+  services.xserver = {
+    <<xserver-enable>>
+    <<xserver-autorun>>
+    <<xserver-keymap>>
+    <<xserver-autorepeat>>
+    <<xserver-dpi>>
+    desktopManager.session = [
+      {
+        name = "home-manager";
+        start = ''
+          ${pkgs.runtimeShell} $HOME/.hm-xsession &
+          waitPID=$!
+        '';
+      }
+    ];
+    <<xserver-lightdm>>
+  };
+}
+#+end_src
+
+And this is for laptop
+#+begin_src  nix :tangle modules/common/xserverlaptop.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, config, ... }:
+{
+  services.xserver = {
+    <<xserver-enable>>
+    <<xserver-autorun>>
+    <<xserver-keymap>>
+    <<xserver-autorepeat>>
+    <<xserver-dpi>>
+    desktopManager.session = [
+      {
+        name = "home-manager";
+        start = ''
+          ${pkgs.runtimeShell} $HOME/.hm-xsession &
+          waitPID=$!
+        '';
+      }
+    ];
+    <<xserver-lightdm-laptop>>
+  };
+}
+#+end_src
+** LightDM
+The following code configures lightdm with mini greeter.
+I use LightDM because mini greeter is minimal, and it's easy to use as lockscreen with ~light-locker~.
+[[#lightdm-colors][Colors]]
+[[#lock-screen][Wallpaper]]
+#+name: xserver-lightdm
+#+begin_src nix :noweb no-export
+displayManager = {
+    lightdm = {
+    enable = true;
+    greeters.mini = {
+        enable = true;
+        extraConfig = ''
+        [greeter]
+        show-password-label = false
+        [greeter-theme]
+        <<lightdm-greeter-colors>>
+        border-width = 6px
+        <<lightdm-wallpaper>>
+        '';
+    };
+    };
+};
+#+end_src
+
+laptop config
+#+name: xserver-lightdm-laptop
+#+begin_src nix :noweb no-export
+displayManager = {
+    lightdm = {
+    enable = true;
+    greeters.mini = {
+        enable = true;
+        extraConfig = ''
+        [greeter]
+        show-password-label = false
+        [greeter-theme]
+        <<lightdm-greeter-colors>>
+        border-width = 6px
+        <<lightdm-fhd-wallpaper>>
+        '';
+    };
+    };
+};
+#+end_src
+** /etc files
+This module symlinks files that belongs in /etc.
+I like to use this path to store icons and wallpapers because this directory */etc* is not machine dependent like user's home folder.
+That makes possible to share same config that uses these files for more than one machines.
+#+begin_src nix :tangle modules/common/etcfiles.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  environment.etc = {
+    <<etc-wallpaper-files>>
+    # icons
+    "icons/cpu.xpm".source = ../../icons/cpu.xpm;
+    "icons/ram.xpm".source = ../../icons/ram.xpm;
+    "icons/battery.xpm".source = ../../icons/battery.xpm;
+    "icons/battery-charging.xpm".source = ../../icons/battery-charging.xpm;
+    "icons/calendar.xpm".source = ../../icons/calendar.xpm;
+    "icons/volume.xpm".source = ../../icons/volume.xpm;
+    "icons/volume-mute.xpm".source = ../../icons/volume-mute.xpm;
+    "icons/clock.xpm".source = ../../icons/clock.xpm;
+    # misc
+    ".jislayoutremap.xkb".source = ../../configs/jislayoutremap.xkb;
+    "x230key.xkb".source = ../../configs/thinkpadlayout.xkb;
+    # emojis
+    "UnicodeData.txt".source = ../../textfiles/UnicodeData.txt;
+  };
+}
+#+end_src
+
+** Locale
+Module to config locale related stuff
+mozc is a Japanese input method editor.
+#+begin_src nix :tangle modules/common/globallocale.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, config, ... }:
+
+{
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  i18n.inputMethod.enabled = "fcitx";
+  i18n.inputMethod.fcitx.engines = with pkgs.fcitx-engines; [ mozc ];
+}
+#+end_src
+** XDG
+Configure XDG(X Desktop Group) stuff.
+This module is imported from home-manager
+#+begin_src nix :tangle modules/common/xdg.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+
+{
+  <<xdg-enable>>
+  <<xdg-userdirs>>
+  <<xdg-mime-enable>>
+  <<xdg-mimeapps>>
+  configFile = import ./xdg-configfiles.nix { inherit pkgs; };
+}
+#+end_src
+
+*** Enable XDG module
+#+name: xdg-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Enable XDG user dirs
+XDG user dirs is a tool to manager "well known" user directories like the Desktop folder, Pictures folder, and the Music folder.
+These directories are created by enabling this.
+#+name: xdg-userdirs
+#+begin_src nix
+userDirs.enable = true;
+#+end_src
+*** Enable XDG mime
+Install files to support the XDG Shared MIME-info specification and the XDG MIME Applications specification.
+#+name: xdg-mime-enable
+#+begin_src nix
+mime.enable = true;
+#+end_src
+*** XDG mimeapps
+Configure default applications/associations of applications with mimetypes
+#+name: xdg-mimeapps
+#+begin_src nix
+mimeApps = {
+enable = true;
+defaultApplications = {
+    "text/html" = "org.qutebrowser.qutebrowser.desktop";
+    "x-scheme-handler/http" = "org.qutebrowser.qutebrowser.desktop";
+    "x-scheme-handler/https" = "org.qutebrowser.qutebrowser.desktop";
+    "x-scheme-handler/about" = "org.qutebrowser.qutebrowser.desktop";
+    "x-scheme-handler/unknown" = "org.qutebrowser.qutebrowser.desktop";
+};
+};
+#+end_src
+** ~/.config files
+Specify files to symlink into $HOME/.config here.
+Usable for programs that Nix options doesn't exist.
+#+begin_src nix :tangle modules/common/xdg-configfiles.nix
+# This file is generated from "README.org"
+{ pkgs, ... }:
+
+{
+  "nvim/coc-settings.json".source = ../../configs/coc-settings.json;
+  "neofetch/config.conf".source = ../../configs/neofetch.conf;
+  "ncpamixer.conf".source = ../../configs/ncpamixer.conf;
+
+  "fontconfig/conf.d/10-prefer-emoji.conf".source = ../../configs/fontconfig/10-prefer-emoji.conf;
+  "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
+  "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
+
+
+  # keynav{{{
+  "keynav/keynavrc".text = ''
+    super+semicolon start
+    s warp
+    m click 6
+    w click 5
+    v click 4
+    z click 7
+  '';
+  # }}}
+
+  # flashfocus
+  "flashfocus/flashfocus.yml".source = ../../configs/flashfocus.yml;
+
+  # nixpkgs{{{
+  "nixpkgs/config.nix".text = ''
+    { allowUnfree = true; }
+  '';
+  # }}}
+
+  "vifm/vifmrc".source = ../../configs/vifmrc.vim;
+
+  "PulseEffects/output/Perfect EQ.json".source = pkgs.fetchurl {
+    url = "https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/Perfect%20EQ.json";
+    name = "perfecteq.json";
+    sha256 = "04mjqsiajqdzp43fn16j6sfz3972yfpqq6s2vw0cnim5bp9a642b";
+  };
+}
+#+end_src
+* Input
+** Keyboard
+*** Xorg repeat rate
+Default repeat rate is too slow. Change it
+#+name: xserver-autorepeat
+#+begin_src nix
+    autoRepeatDelay = 200;
+    autoRepeatInterval = 25;
+#+end_src
+*** Dvorak
+I use Dvorak layout on HHKB.
+[[https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/KB_United_States_Dvorak.svg/800px-KB_United_States_Dvorak.svg.png]]
+Dvorak layout is a ergonomic alternative for qwerty layout that requires less movement.
+My keybinds are configured with HHKB Dvorak usage in mind. I didn't remapped vim(or evil-mode) keys(hjkl) because it already feels natural as is.
+
+Console config
+#+name: consolekeymap
+#+begin_src nix
+keyMap = "dvorak";
+#+end_src
+
+Xorg config
+#+name: xserver-keymap
+#+begin_src nix
+layout = "us";
+xkbVariant = "dvorak";
+#+end_src
+* Look And Feel
+** Color Scheme
+I use material-palenight as colorscheme for everything from editor to browser.
+Color palette can be found [[https://www.material-theme.com/docs/reference/color-palette/][here]]
+*** Console colors
+The 16 colors palette used by TTY.
+Leave empty to use the default colors.
+Colors must be in hexademical format and listed in order from color 0 to color 15.
+#+name: consolecolors
+#+begin_src nix
+colors = [ "434759" "f07178" "c3e88d" "ffcb6b" "82aaff" "c792ea" "89ddff" "d0d0d0" "434758" "ff8b92" "ddffa7" "ffe585" "9cc4ff" "e1acff" "a3f7ff" "fefefe" ];
+#+end_src
+
+*** LightDM colors
+Configure center dialog colors
+#+name: lightdm-greeter-colors
+#+begin_src nix
+text-color = "#A6ACCD"
+error-color = "#F07178"
+window-color = "#202331"
+border-color = "#202331"
+password-color = "#A6ACCD"
+password-background-color = "#202331"
+password-border-color = "#202331"
+#+end_src
+** Fonts
+I use
+Apple Color Emoji for emojis,
+Gohu Font Nerd Font for nerdfont,
+Spleen as monospaced fixed-pitch font for editor, terminal, etc
+San Francisco as variable pitch font
+*** System Xorg font
+This nix module below configures fonts and sets default fonts.
+~allowBitmaps~ is needed to enable bitmap font(I think)
+~useEmbeddedBitmaps~ is necessary to be able to display emoji in some programs like emacs
+#+begin_src nix :tangle modules/common/fonts.nix
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  fonts = {
+    fontconfig = {
+      enable = true;
+      allowBitmaps = true;
+      useEmbeddedBitmaps = true;
+      defaultFonts = {
+        emoji = [ "Apple Color Emoji" ];
+        monospace = [ "Spleen" ];
+      };
+    };
+    enableFontDir = true;
+    enableGhostscriptFonts = true;
+    fonts = with pkgs; [
+      (nerdfonts.override { fonts = [ "Gohu" ]; })
+      unstable.dejavu_fonts
+      unstable.spleen
+      san-francisco-font
+      apple-color-emoji
+      noto-fonts-cjk
+      emacs-all-the-icons-fonts
+    ];
+  };
+}
+#+end_src
+*** Console font
+Console fonts needs to be installed here via ~console.packages~ to be able to set.
+#+name: consolefont
+#+begin_src nix
+packages = with pkgs; [ unstable.spleen ];
+font = "spleen-6x12";
+#+end_src
+*** fontconfig
+Font configs that can't be configured using nix options belongs here.
+**** 10-symbols.conf
+This allows to use nerdfont symbols while using Spleen as font. It's really useful on terminal.
+#+begin_src xml :tangle configs/fontconfig/10-symbols.conf
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+    <alias>
+        <family>Spleen</family>
+        <prefer>
+            <family>GohuFont Nerd Font</family>
+        </prefer>
+    </alias>
+</fontconfig>
+#+end_src
+**** 65-nonlatin.conf
+This configures Japanese font.
+This makes programs use *Noto Sans CJK JP* for Japanese automatically. Therefore no need to configure Japanese font as main font.
+#+begin_src xml :tangle configs/fontconfig/65-nonlatin.conf
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+    <!-- Default font for the ja_JP locale (no fc-match pattern) -->
+    <match>
+        <test compare="contains" name="lang">
+            <string>ja</string>
+        </test>
+        <edit mode="prepend" name="family">
+            <string>Noto Sans CJK JP</string>
+        </edit>
+    </match>
+    <alias>
+        <family>serif</family>
+        <prefer>
+            <family>Noto Sans CJK JP</family>
+        </prefer>
+    </alias>
+    <alias>
+        <family>sans-serif</family>
+        <prefer>
+            <family>Noto Sans CJK JP</family>
+        </prefer>
+    </alias>
+    <alias>
+        <family>monospace</family>
+        <prefer>
+            <family>Noto Sans CJK JP</family>
+        </prefer>
+    </alias>
+</fontconfig>
+#+end_src
+
+**** 10-prefer-emoji.conf
+Seems like this user-level config is needed to programs use Apple Color Emoji for every emojis.
+#+begin_src xml :tangle configs/fontconfig/10-prefer-emoji.conf
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+    <match>
+        <edit name="family" mode="prepend">
+            <string>Apple Color Emoji</string>
+        </edit>
+    </match>
+</fontconfig>
+#+end_src
+** Wallpaper
+*** Wallpaper files
+Put (symlink) files into /etc. It makes easy to set wallpapers from any machines.
+#+name: etc-wallpaper-files
+#+begin_src nix
+"wallpapers/wallpaper1.png".source = ../../pictures/wallpaper1.png;
+"wallpapers/wallpaper2.png".source = ../../pictures/wallpaper2.png;
+"wallpapers/wallpaper2-1080.png".source = ../../pictures/wallpaper2-1080.png;
+#+end_src
+*** Lock screen
+Set 1440p lock screen wallpaper
+#+name: lightdm-wallpaper
+#+begin_src nix
+background-image = "/etc/wallpapers/wallpaper2.png"
+#+end_src
+
+Set a 1080p equivalent
+#+name: lightdm-fhd-wallpaper
+#+begin_src nix
+background-image = "/etc/wallpapers/wallpaper2-1080.png"
+#+end_src
+* Services
+** PulseAudio
+PulseAudio is a general purpose sound server intended to run as a middleware between your applications and your hardware devices, either using ALSA or OSS.
+It's required by many programs to play sound nowadays.
+#+begin_src nix :tangle modules/services/pulseaudio.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs }:
+{
+  hardware.pulseaudio = {
+    <<pulseaudio-enable>>
+    <<pulseaudio-package>>
+    <<pulseaudio-support-32bit>>
+    <<pulseaudio-extramodules>>
+    <<pulseaudio-daemon-config>>
+  };
+}
+#+end_src
+*** Enable PulseAudio
+Whether to enable the PulseAudio sound server.
+#+name: pulseaudio-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** PulseAudio 32bit support
+Include 32-bit pulseaudio libraries in the system. It's needed by certain programs(like wine 32bit, mainly used for games)
+#+name: pulseaudio-support-32bit
+#+begin_src nix
+support32Bit = true;
+#+end_src
+*** PulseAudio package
+Select the PulseAudio derivation to use. This can be used to enable features (such as JACK support, Bluetooth) via the pulseaudioFull package
+#+name: pulseaudio-package
+#+begin_src nix
+package = pkgs.pulseaudioFull;
+#+end_src
+*** PulseAudio extra modules
+Extra PulseAudio modules to use. This is intended for out-of-tree pulseaudio modules like extra bluetooth codecs.
+#+name: pulseaudio-extramodules
+#+begin_src nix
+extraModules = [ pkgs.pulseaudio-modules-bt ];
+#+end_src
+*** PulseAudio daemon config
+idk, this config is supposed to improve audio quality
+#+name: pulseaudio-daemon-config
+#+begin_src nix
+daemon.config = {
+    default-sample-rate = "48000";
+    alternate-sample-rate = "44100";
+    default-sample-channels = "2";
+    default-channel-map = "front-left,front-right";
+    default-fragments = "2";
+    default-fragment-size-msec = "125";
+    enable-lfe-remixing = "no";
+    high-priority = "yes";
+    nice-level = "-11";
+    realtime-scheduling = "yes";
+    realtime-priority = "9";
+    rlimit-rtprio = "9";
+    resample-method = "soxr-vhq";
+    daemonize = "no";
+    default-sample-format = "float32le";
+};
+#+end_src
+** OpenSSH
+This module configures OpenSSH, a suite of secure networking utilities based on the Secure Shell (SSH) protocol, which provides a secure channel over an unsecured network in a client–server architecture.
+#+begin_src nix :tangle modules/services/openssh.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  services.openssh = {
+    <<ssh-enable>>
+    <<ssh-challenge-response-authentication>>
+    <<ssh-x11-forward>>
+    <<ssh-open-firewall>>
+    <<ssh-password-authentication>>
+    <<ssh-root-login>>
+  };
+}
+#+end_src
+*** Enable SSH
+#+name: ssh-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Challenge Response Authentication
+challenge response authentication uses a cryptographic protocol that allows to prove that the user knows the password without revealing the password itself.
+thus, makes the authentication more secure.
+#+name: ssh-challenge-response-authentication
+#+begin_src nix
+challengeResponseAuthentication = true;
+#+end_src
+*** X11 forwarding
+X11 forwarding is a method to start a graphical apllication installed on a remote system and forward that application to the local system.
+#+name: ssh-x11-forward
+#+begin_src nix
+forwardX11 = false;
+#+end_src
+*** Open firewall
+Whether to automatically open the ssh ports in the firewall.
+#+name: ssh-open-firewall
+#+begin_src nix
+openFirewall = true;
+#+end_src
+*** Password authentication
+Disable this to use Public Key Authentication
+#+name: ssh-password-authentication
+#+begin_src nix
+passwordAuthentication = false;
+#+end_src
+*** Root login
+Whether the root user can login using ssh.
+#+name: ssh-root-login
+#+begin_src nix
+permitRootLogin = "no";
+#+end_src
+* Machines
+** Default system configs
+This belongs to each machine configurations.
+#+name: machine-configuration-defaults
+#+begin_src nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, fetchgit, ... }:
+{
+
+  <<machine-configuration-defaultimports>>
+#+end_src
+
+*** imports
+import files that differs to machine and is stored inside machine directory.
+Files that are used in all machines is better to import from [[#defaults][flakes]]
+#+name: machine-configuration-defaultimports
+#+begin_src nix
+imports =
+[
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    # import usersettings
+    ./usersettings.nix
+];
+#+end_src
+** Desktop
+*** System
+** Laptop
+*** System
+** Server
+*** System
 * Credits
 
 - [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in lock screen wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]

@@ -1,21 +1,26 @@
-{ pkgs }:
+# This file is generated from "README.org"
+{ pkgs, ... }:
 {
-  fontconfig = {
-    enable = true;
-    allowBitmaps = true;
-    useEmbeddedBitmaps = true; # THIS NEED TO BE ENABLED TO DISPLAY EMOJI
+  fonts = {
+    fontconfig = {
+      enable = true;
+      allowBitmaps = true;
+      useEmbeddedBitmaps = true;
+      defaultFonts = {
+        emoji = [ "Apple Color Emoji" ];
+        monospace = [ "Spleen" ];
+      };
+    };
+    enableFontDir = true;
+    enableGhostscriptFonts = true;
+    fonts = with pkgs; [
+      (nerdfonts.override { fonts = [ "Gohu" ]; })
+      unstable.dejavu_fonts
+      unstable.spleen
+      san-francisco-font
+      apple-color-emoji
+      noto-fonts-cjk
+      emacs-all-the-icons-fonts
+    ];
   };
-  enableFontDir = true;
-  enableGhostscriptFonts = true;
-  fonts = with pkgs; [
-    (nerdfonts.override { fonts = [ "Gohu" ]; })
-    unstable.dejavu_fonts
-    unstable.tamzen
-    unstable.spleen
-    #(tamzen-nerdfont.override { size = "10x20";})
-    san-francisco-font
-    apple-color-emoji
-    noto-fonts-cjk
-    emacs-all-the-icons-fonts
-  ];
 }

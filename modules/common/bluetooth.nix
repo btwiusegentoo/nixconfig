@@ -1,10 +1,13 @@
-{ pkgs }:
+# This file is generated from "README.org"
+{ pkgs, ... }:
 {
-  enable = true;
-  package = pkgs.bluezFull;
-  config = {
-    General = {
-      ControllerMode = "bredr";
+  hardware.bluetooth = {
+    enable = true;
+    package = pkgs.bluezFull;
+    config = {
+        General = {
+            ControllerMode = "bredr";
+        };
     };
   };
 }

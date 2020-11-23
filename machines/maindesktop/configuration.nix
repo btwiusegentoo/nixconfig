@@ -7,10 +7,6 @@
       ./hardware-configuration.nix
       # import user settings
       ./usersettings.nix
-      # import system packages
-      ../../modules/common/systempackages.nix
-      # import locale configs
-      ../../modules/common/globallocale.nix
     ];
 
   # Boot{{{
@@ -34,8 +30,6 @@
 
   # Hardware{{{
   hardware = {
-    pulseaudio = (import ../../modules/services/pulseaudio.nix) { inherit pkgs; };
-    bluetooth = (import ../../modules/common/bluetooth.nix) { inherit pkgs; };
     opengl.enable = true;
     opengl.driSupport = true;
     opengl.driSupport32Bit = true;
@@ -72,15 +66,12 @@
   };
   #}}}
 
-  fonts = (import ../../modules/common/fonts.nix) { inherit pkgs; };
-
   environment.variables = (import ../../modules/common/globalvars.nix);
 
   services = {
     fstrim.enable = true; # Trim ssd
     blueman.enable = true; # Used for bluetooth
     earlyoom.enable = true;
-    openssh = import (../../modules/common/openssh.nix);
   };
 
   virtualisation = import (../../modules/virtualisation/default.nix);
@@ -88,12 +79,8 @@
   # enable sound
   sound.enable = true;
 
-  services.xserver.layout = "us";
-  services.xserver.xkbVariant = "dvorak";
   services.xserver.videoDrivers = [ "amdgpu" ];
   services.xserver.wacom.enable = true;
-
-  environment.etc = import ../../modules/common/etcfiles.nix;
 
   nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 

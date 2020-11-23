@@ -7,10 +7,6 @@
       ./hardware-configuration.nix
       # import user settings
       ./usersettings.nix
-      # import system packages
-      ../../modules/common/systempackages.nix
-      # import locale configs
-      ../../modules/common/globallocale.nix
     ];
 
   # Boot{{{
@@ -27,8 +23,6 @@
 
   # Hardware{{{
   hardware = {
-    pulseaudio = (import ../../modules/services/pulseaudio.nix) { inherit pkgs; };
-    bluetooth = (import ../../modules/common/bluetooth.nix) { inherit pkgs; };
     opengl.enable = true;
     opengl.driSupport = true;
     cpu.intel.updateMicrocode = true;
@@ -61,13 +55,10 @@
   services = {
     blueman.enable = true; # Used for bluetooth
     earlyoom.enable = true;
-    openssh = import (../../modules/common/openssh.nix);
   };
 
   # enable sound
   sound.enable = true;
-
-  environment.etc = import ../../modules/common/etcfiles.nix;
 
   nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 

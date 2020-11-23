@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 { pkgs, ... }:
 {
   nix.package = pkgs.nixFlakes;

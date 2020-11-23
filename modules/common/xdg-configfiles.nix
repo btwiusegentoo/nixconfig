@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 { pkgs, ... }:
 
 {
@@ -37,7 +38,4 @@
     name = "perfecteq.json";
     sha256 = "04mjqsiajqdzp43fn16j6sfz3972yfpqq6s2vw0cnim5bp9a642b";
   };
-
-  ## for local testing purposes
-  #"qutebrowser/css/palenight-all-sites.css".source = ../../projects/palenight-everything-css/palenight-all-sites.css;
 }

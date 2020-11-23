@@ -35,6 +35,12 @@
                 ./modules/common/nix.nix
                 ./modules/common/doas.nix
                 ./modules/common/console.nix
+                ./modules/common/bluetooth.nix
+                ./modules/common/etcfiles.nix
+                ./modules/common/systempackages.nix
+                ./modules/common/globallocale.nix
+                ./modules/services/pulseaudio.nix
+                ./modules/services/openssh.nix
               ];
             };
     in
@@ -77,6 +83,7 @@
                       defaults
                       ./machines/maindesktop/configuration.nix
                       ./modules/common/xserver.nix
+                      ./modules/common/fonts.nix
                       home-manager.nixosModules.home-manager
                       ({
                         home-manager.useGlobalPkgs = true;
@@ -96,7 +103,8 @@
                     [
                       defaults
                       ./machines/mainlaptop/configuration.nix
-                      ./modules/common/xserverfhd.nix
+                      ./modules/common/xserverlaptop.nix
+                      ./modules/common/fonts.nix
                       home-manager.nixosModules.home-manager
                       ({
                         home-manager.useGlobalPkgs = true;
