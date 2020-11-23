@@ -68,5 +68,4 @@
 
 ;; misc
 ;; (package! elcord)                  ; Discord rpc
-(package! fast-scroll)
 (package! gcmh)

@@ -198,15 +198,6 @@
  ;; (setq lsp-log-io t)
 )
 
-(require 'fast-scroll)
-(add-hook 'fast-scroll-start-hook (lambda () (flycheck-mode -1)))
-(add-hook 'fast-scroll-end-hook (lambda () (flycheck-mode 1)))
-(add-hook 'fast-scroll-start-hook (lambda () (display-line-numbers-mode -1)))
-(add-hook 'fast-scroll-end-hook (lambda () (display-line-numbers-mode 1)))
-(fast-scroll-config)
-(fast-scroll-mode 1)
-(setq fast-scroll-throttle 0.2)
-
 ;; opacity
 ;; (set-frame-parameter (selected-frame) 'alpha '(85 . 60))
 ;; (add-to-list 'default-frame-alist '(alpha . (85 . 60)))
