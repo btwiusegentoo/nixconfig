@@ -1,7 +1,7 @@
 #+TITLE: My NixOS configuration
 #+LANGUAGE: en
 #+STARTUP: inlineimages
-#+PROPERTY: header-args :tangle yes :cache yes :results silent
+#+PROPERTY: header-args :tangle yes :noweb yes :cache yes :results silent
 
 [[https://builtwithnix.org/badge.svg]] [[https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg]]
 
@@ -10,15 +10,239 @@
 [[file:pictures/screenshot1.png]] [[file:pictures/screenshot2.png]] [[file:pictures/wallpaper2.png]]
 
 
-** Introduction
+* Introduction
 Hi! This is my repo that contains my configuration files for my machines (aka dotfiles)
 This repository contains configuration for three hosts currently
-- Main ryzen desktop
+- Main Ryzen desktop
 - My portable laptop
 - My lowspec server
-All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix Flakes]]
+All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix Flakes]].
+[[https://github.com/nix-community/home-manager][home-manager]] is used to manage user environment. I try to install programs/services in user level as much as possible.
+I use [[https://xmonad.org/][xmonad]] as window manager for Desktop and Laptop, while server is headless.
+My English is not good, but I will try to document this just for fun.
+To generate actual files, open this file in emacs, and execute ~M-x org-babel-tangle~.
+You can install this config running this command at repository root ~nixos-rebuild switch --flake .~
+Note that you need [[#nix][flakes to be enabled]].
 
-** Credits
+* Table of Contents :TOC_3_gh:
+- [[#introduction][Introduction]]
+- [[#flake][Flake]]
+  - [[#flake-inputs][Flake inputs]]
+  - [[#defaults][defaults]]
+  - [[#nixpkgs-config][nixpkgs config]]
+  - [[#overlays][overlays]]
+  - [[#machines][Machines]]
+    - [[#desktop][Desktop]]
+    - [[#laptop][Laptop]]
+    - [[#server][Server]]
+- [[#modules][Modules]]
+  - [[#nix][Nix]]
+- [[#credits][Credits]]
+
+* Flake
+A flake is (usually) a Git repository that contains a file named ~flake.nix~ at root.
+This repository is compatible with nix flakes.
+The following code is the base code of  ~flake.nix~ file.
+#+begin_src nix :tangle flake.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  description = "NixOS configuration for all machines";
+
+  <<flake-inputs>>
+
+  outputs = inputs@{ self, home-manager, nur, nixpkgs, ... }:
+    let
+      inherit (builtins) listToAttrs attrValues attrNames readDir;
+      inherit (nixpkgs) lib;
+      inherit (lib) removeSuffix;
+
+      <<nixpkgs-config>>
+
+      <<flake-defaults>>
+    in
+    {
+      <<flake-overlays>>
+
+      nixosConfigurations = {
+        <<desktop1>>
+        <<laptop1>>
+        <<server1>>
+      };
+    };
+}
+#+end_src
+** Flake inputs
+Flakes provides a better approach than channel to manage nixpkgs and overlays. 
+It's called ~inputs~.
+Channels aren't pinned in the config. When updating nixpkgs, you have to run this command ~nix-channel --update~ *locally* everytime.
+Therefore, nixpkgs revision differs from machine to machine, making not fully reproducible.
+Using nix flakes, All inputs are automatically pinned at specific revision in ~flake.lock~ file at repository root to guarantee reproducibility.
+This can also be achieved by manually pinning nixpkgs at specific revision using overlays.
+But flakes does it automatically, without having to update rev and sha256 manually everytime.
+You can update inputs easily like this: ~nix flake --update-input nixpkgs~
+
+Currently, I have *home-manager*, *NUR* (nix user repository), *emacs pgtk nativecomp overlay*, and *nixpkgs* 20.09,unstable,master as inputs:
+#+name: flake-inputs
+#+begin_src nix
+  inputs = {
+    home-manager = {
+      url = "github:rycee/home-manager";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
+    nur.url = "github:nix-community/NUR";
+    emacs.url = "github:berbiche/emacs-pgtk-nativecomp-overlay";
+
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
+    unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    master.url = "github:nixos/nixpkgs/master";
+  };
+#+end_src
+
+** defaults
+Import default modules(that every machine uses)
+#+name: flake-defaults
+#+begin_src nix
+      defaults = { pkgs, ... }: {
+        imports = [
+          ./cachix.nix
+          ./modules/common/nix.nix
+          ./modules/common/doas.nix
+          ./modules/common/console.nix
+        ];
+      };
+#+end_src
+
+** nixpkgs config
+This configuration is for default nixpkgs.
+Set system arch to x86_64, Allow installation for non-free software(also known as proprietary software), and import overlays from [[#overlays][here]]
+#+name: nixpkgs-config
+#+begin_src nix
+      pkgs = (import nixpkgs) {
+        system = "x86_64-linux";
+        config = { allowUnfree = true; };
+        overlays = attrValues self.overlays;
+      };
+#+end_src
+
+** overlays
+This code searchs ~./overlays~ directory for nix files and automatically imports the files.
+NUR, nixos-unstable, nixpkgs master are imported as package set of pkgs here. Packages from these package sets can be referred like ~pkgs.unstable.fish~ ~pkgs.master.discord~ ~pkgs.nur.repos.rycee.firefox-addons~
+This have a benefit than just importing the same way as pkgs like ~{pkgs, unstable, master, ... }:~. If you import unstable just like pkgs, idk why, but it can't be imported from overlays.
+So it can't be used to override packages of home-manager modules.
+Importing as package set makes it possible and it's more convenient.
+#+name: flake-overlays
+#+begin_src nix
+      overlays =
+        let
+          overlayFiles = listToAttrs (map
+            (name: {
+              name = removeSuffix ".nix" name;
+              value = import (./overlays + "/${name}");
+            })
+            (attrNames (readDir ./overlays)));
+        in
+        overlayFiles // {
+          nur = final: prev: {
+            nur = import inputs.nur { nurpkgs = final; pkgs = final; };
+          };
+          emacsPgtk = final: prev: {
+            emacsGccPgtk = inputs.emacs.packages.${final.system}.emacsGccPgtk;
+          };
+          unstable = final: prev: {
+            unstable = import inputs.unstable {
+              system = final.system;
+              config.allowUnfree = true;
+            };
+          };
+          master = final: prev: {
+            master = import inputs.master {
+              system = final.system;
+              config.allowUnfree = true;
+            };
+          };
+        };
+#+end_src
+** Machines
+These are the codes that evaluates a NixOS configuration for tools like ~nixos-rebuild~ for each machines.
+It imports modules (that contains configuration for) for each machines.
+*** Desktop
+#+name: desktop1
+#+begin_src nix
+        desktop1 = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules =
+            [
+              defaults
+              ./machines/maindesktop/configuration.nix
+              ./modules/common/xserver.nix
+              home-manager.nixosModules.home-manager
+              ({
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users.btw = { ... }: {
+                  imports = [
+                    ./machines/maindesktop/home.nix
+                  ];
+                };
+              })
+            ];
+          inherit pkgs;
+        };
+#+end_src
+
+*** Laptop
+#+name: laptop1
+#+begin_src nix
+        laptop1 = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules =
+            [
+              defaults
+              ./machines/mainlaptop/configuration.nix
+              ./modules/common/xserverfhd.nix
+              home-manager.nixosModules.home-manager
+              ({
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users.x230 = { ... }: {
+                  imports = [
+                    ./machines/mainlaptop/home.nix
+                  ];
+                };
+              })
+            ];
+          inherit pkgs;
+        };
+#+end_src
+
+*** Server
+#+name: server1
+#+begin_src nix
+        server1 = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules =
+            [
+              defaults
+              ./machines/mainserver/configuration.nix
+              home-manager.nixosModules.home-manager
+              ({
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users.hac = { ... }: {
+                  imports = [
+                    ./machines/mainserver/home.nix
+                  ];
+                };
+              })
+            ];
+          inherit pkgs;
+        };
+#+end_src
+* Modules
+** Nix
+* Credits
 
 - [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in lock screen wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]
 - [[https://wallhaven.cc/w/45xkj1][Wallpaper]]
