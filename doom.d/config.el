@@ -124,7 +124,9 @@
   (lsp-register-client
    (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
                     :major-modes '(nix-mode)
-                    :server-id 'nix)))
+                    :server-id 'nix))
+  (setq lsp-ui-sideline-enable nil
+        lsp-modeline-diagnostics-enable nil))
 
 ; Add projects to projectile
 (projectile-add-known-project "~/.nixconfig")
