@@ -1,0 +1,22 @@
+#+TITLE: My NixOS configuration
+#+LANGUAGE: en
+#+STARTUP: inlineimages
+#+PROPERTY: header-args :tangle yes :cache yes :results silent
+
+[[https://builtwithnix.org][https://builtwithnix.org/badge.svg]]
+[[https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg]]
+
+#+ATTR_HTML: :width 600
+#+ATTR_ORG: :width 600
+file:pictures/screenshot1.png
+file:pictures/screenshot2.png
+file:pictures/wallpaper2.png
+
+
+** Introduction
+
+** Credits
+
+- [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]
+- [[https://wallhaven.cc/w/45xkj1][Wallpaper]]
+- Icons from [[https://remixicon.com][Remix Icon]]
