@@ -3,20 +3,23 @@
 #+STARTUP: inlineimages
 #+PROPERTY: header-args :tangle yes :cache yes :results silent
 
-[[https://builtwithnix.org][https://builtwithnix.org/badge.svg]]
-[[https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg]]
+[[https://builtwithnix.org/badge.svg]] [[https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg]]
 
 #+ATTR_HTML: :width 600
 #+ATTR_ORG: :width 600
-file:pictures/screenshot1.png
-file:pictures/screenshot2.png
-file:pictures/wallpaper2.png
+[[file:pictures/screenshot1.png]] [[file:pictures/screenshot2.png]] [[file:pictures/wallpaper2.png]]
 
 
 ** Introduction
+Hi! This is my repo that contains my configuration files for my machines (aka dotfiles)
+This repository contains configuration for three hosts currently
+- Main ryzen desktop
+- My portable laptop
+- My lowspec server
+All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix Flakes]]
 
 ** Credits
 
-- [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]
+- [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in lock screen wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]
 - [[https://wallhaven.cc/w/45xkj1][Wallpaper]]
 - Icons from [[https://remixicon.com][Remix Icon]]
