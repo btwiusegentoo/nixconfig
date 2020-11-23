@@ -26,7 +26,6 @@
 ;; with the `:disable' property:
 ;(package! builtin-package :disable t)
 (package! nose :disable t)         ; Moved from emacsmirror to mecsattic
-(package! org-yt :disable t)
 
 ;; You can override the recipe of a built in package without having to specify
 ;; all the properties for `:recipe'. These will inherit the rest of its recipe
@@ -59,6 +58,9 @@
 (package! centaur-tabs
   :recipe(:host github :repo "MoritzMaxeiner/centaur-tabs" :branch "daemon"))
 (package! magit-delta)             ; magit syntax highlight
+
+;; org-mode
+(package! org-variable-pitch)
 
 ;; company(autocompletion) packages
 ;; (package! company-tabnine)

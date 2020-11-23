@@ -15,10 +15,11 @@
 
 (setq emojify-display-style 'unicode)                  ; Use unicode emoji
 
-;; doom-modeline font
+;; custom font set faces
 (custom-set-faces!
   '(mode-line :family "SFNS Display" :height 120)
-  '(mode-line-inactive :family "SFNS Display" :height 120))
+  '(mode-line-inactive :family "SFNS Display" :height 120)
+  '(variable-pitch :family "SFNS Display" :height 140))
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -137,6 +138,7 @@
 
 ;; org mode
 (setq org-startup-with-inline-images t)
+(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
 
 ;; Evil mode
 ;; disable evil-escape (jk -> escape)
