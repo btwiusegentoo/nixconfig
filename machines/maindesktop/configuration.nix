@@ -38,8 +38,6 @@
   };
   # }}}
 
-  zramSwap = (import ../../modules/services/zram.nix);
-
   programs = {
     dconf.enable = true;
     adb.enable = true;

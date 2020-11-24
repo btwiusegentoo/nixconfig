@@ -29,8 +29,6 @@
   };
   # }}}
 
-  zramSwap = (import ../../modules/services/zram.nix);
-
   # Networking{{{
   networking.hostName = "server1"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.

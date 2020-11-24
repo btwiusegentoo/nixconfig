@@ -41,6 +41,7 @@
                 ./modules/common/globallocale.nix
                 ./modules/services/pulseaudio.nix
                 ./modules/services/openssh.nix
+                ./modules/services/zram.nix
               ];
             };
     in
@@ -91,6 +92,8 @@
                         home-manager.users.btw = { ... }: {
                           imports = [
                             ./machines/maindesktop/home.nix
+                            ./modules/services/dunst.nix
+                            ./modules/services/picom.nix
                           ];
                         };
                       })
@@ -112,6 +115,8 @@
                         home-manager.users.x230 = { ... }: {
                           imports = [
                             ./machines/mainlaptop/home.nix
+                            ./modules/services/dunst.nix
+                            ./modules/services/picom.nix
                           ];
                         };
                       })

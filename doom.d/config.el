@@ -139,6 +139,7 @@
 ;; org mode
 (setq org-startup-with-inline-images t)
 (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
+(add-hook 'org-mode-hook 'rainbow-mode)
 
 ;; Evil mode
 ;; disable evil-escape (jk -> escape)

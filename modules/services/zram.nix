@@ -1,5 +1,8 @@
+# This file is generated from "README.org"
 {
-  enable = true;
-  algorithm = "lz4";
-  memoryPercent = 100;
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 100;
+  };
 }

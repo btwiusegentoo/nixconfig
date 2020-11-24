@@ -117,9 +117,7 @@ in
   # services {{{
   services = {
 
-    dunst = (import ../../modules/services/dunst.nix);
     gpg-agent = (import ../../modules/services/gpg-agent.nix);
-    picom = (import ../../modules/services/picom.nix) { inherit pkgs; };
     emacs = (import ../../modules/services/emacsdaemon.nix);
     keynav.enable = true;
     lorri.enable = true;

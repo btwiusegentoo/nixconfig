@@ -1,5 +1,5 @@
 # This file is generated from "README.org"
-{ pkgs }:
+{ pkgs, ... }:
 {
   hardware.pulseaudio = {
     enable = true;
