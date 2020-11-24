@@ -34,9 +34,9 @@
           "class_g = 'keynav'",
       ];
       round-borders = 1;
-            round-borders-exclude = [
-                "class_g = 'keynav'"
-            ];
+      round-borders-exclude = [
+          "class_g = 'keynav'"
+      ];
     '';
   };
 }

@@ -38,8 +38,12 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#color-scheme][Color Scheme]]
   - [[#fonts][Fonts]]
   - [[#wallpaper][Wallpaper]]
+  - [[#icons][Icons]]
+  - [[#cursors][Cursors]]
   - [[#opacity][Opacity]]
   - [[#border][Border]]
+- [[#terminal][Terminal]]
+  - [[#alacritty][Alacritty]]
 - [[#common-configs][Common configs]]
   - [[#nix][Nix]]
   - [[#doas][doas]]
@@ -224,6 +228,7 @@ It imports modules (that contains configuration for) for each machines.
                     ./machines/maindesktop/home.nix
                     ./modules/services/dunst.nix
                     ./modules/services/picom.nix
+                    ./modules/terminal/alacritty.nix
                   ];
                 };
               })
@@ -252,6 +257,7 @@ It imports modules (that contains configuration for) for each machines.
                     ./machines/mainlaptop/home.nix
                     ./modules/services/dunst.nix
                     ./modules/services/picom.nix
+                    ./modules/terminal/alacritty.nix
                   ];
                 };
               })
@@ -317,7 +323,7 @@ I use material-palenight as colorscheme for everything from editor to browser.
 #+ATTR_ORG: :width 600
 [[file:pictures/material-palenight-palette.png]]
 Color palette picture taken from [[https://www.material-theme.com/docs/reference/color-palette/][here]]
-*** Console colors
+*** Console Colors
 The 16 colors palette used by TTY.
 Leave empty to use the default colors.
 Colors must be in hexademical format and listed in order from color 0 to color 15.
@@ -326,7 +332,7 @@ Colors must be in hexademical format and listed in order from color 0 to color 1
 colors = [ "434759" "f07178" "c3e88d" "ffcb6b" "82aaff" "c792ea" "89ddff" "d0d0d0" "434758" "ff8b92" "ddffa7" "ffe585" "9cc4ff" "e1acff" "a3f7ff" "fefefe" ];
 #+end_src
 
-*** LightDM colors
+*** LightDM Colors
 Configure center dialog colors
 #+name: lightdm-greeter-colors
 #+begin_src nix
@@ -338,7 +344,7 @@ password-color = "#A6ACCD"
 password-background-color = "#202331"
 password-border-color = "#202331"
 #+end_src
-*** Notification colors
+*** Notification Colors
 #+name: dunst-colors
 #+begin_src nix
 global = {
@@ -358,6 +364,75 @@ urgency_critical = {
     foreground = "#959DCB";
 };
 #+end_src
+*** Alacritty Colors
+Enable custom cursor colors
+#+name: alacritty-custom-cursor-colors
+#+begin_src nix
+custom_cursor_colors = true;
+#+end_src
+Color codes taken from [[https://github.com/aaron-williamson/base16-alacritty/blob/master/colors/base16-material-palenight-256.yml][here]]
+#+name: alacritty-colors
+#+begin_src nix
+colors = {
+  # Default colors
+  primary = {
+    background = "0x292d3e";
+    foreground = "0x959dcb";
+  };
+  cursor = {
+    text = "0x202331";
+    cursor = "0xc792ea";
+  };
+  # Normal colors
+  normal = {
+    black = "0x292d3e";
+    red = "0xf07178";
+    green = "0xc3e88d";
+    yellow = "0xffcb6b";
+    blue = "0x82aaff";
+    magenta = "0xc792ea";
+    cyan = "0x89ddff";
+    white = "0x959dcb";
+  };
+  # Bright colors
+  bright = {
+    black = "0x676e95";
+    red = "0xf07178";
+    green = "0xc3e88d";
+    yellow = "0xffcb6b";
+    blue = "0x82aaff";
+    magenta = "0xc792ea";
+    cyan = "0x89ddff";
+    white = "0xffffff";
+  };
+  indexed_colors = [
+    {
+      index = 16;
+      color = "0xf78c6c";
+    }
+    {
+      index = 17;
+      color = "0xff5370";
+    }
+    {
+      index = 18;
+      color = "0x444267";
+    }
+    {
+      index = 19;
+      color = "0x32374d";
+    }
+    {
+      index = 20;
+      color = "0x8796b0";
+    }
+    {
+      index = 21;
+      color = "0x959dcb";
+    }
+  ];
+};
+#+end_src
 ** Fonts
 I use
 Apple Color Emoji for emojis (can be tested [[https://getemoji.com/][here]])
@@ -366,26 +441,18 @@ Gohu Font Nerd Font for nerdfont
 [[file:pictures/screenshot-nerdfont.png]]
 Spleen as monospaced fixed-pitch font for editor, terminal, etc
 San Francisco as variable pitch font
-*** System Xorg font
-This nix module below configures fonts and sets default fonts.
-~allowBitmaps~ is needed to enable bitmap font(I think)
-~useEmbeddedBitmaps~ is necessary to be able to display emoji in some programs like emacs
+All The Icons is a nerdfont equivalent for emacs.
+Noto Fonts CJK is used as Japanese font.
+
+Install fonts:
 #+begin_src nix :tangle modules/common/fonts.nix
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
   fonts = {
-    fontconfig = {
-      enable = true;
-      allowBitmaps = true;
-      useEmbeddedBitmaps = true;
-      defaultFonts = {
-        emoji = [ "Apple Color Emoji" ];
-        monospace = [ "Spleen" ];
-      };
-    };
-    enableFontDir = true;
-    enableGhostscriptFonts = true;
+    <<system-font-config>>
+    <<enable-font-dir>>
+    <<enable-ghostscript-fonts>>
     fonts = with pkgs; [
       (nerdfonts.override { fonts = [ "Gohu" ]; })
       unstable.dejavu_fonts
@@ -398,12 +465,83 @@ This nix module below configures fonts and sets default fonts.
   };
 }
 #+end_src
-*** Console font
+*** System font config
+Set system-wide monospace/emoji font below. Note that setting emoji here is not sufficient to show emoji properly.
+#+name: system-font-config
+#+begin_src nix :noweb no-export
+    fontconfig = {
+      <<fontconfig-enable>>
+      <<fontconfig-allowbitmaps>>
+      <<use-embedded-bitmaps>>
+      defaultFonts = {
+        emoji = [ "Apple Color Emoji" ];
+        monospace = [ "Spleen" ];
+      };
+    };
+#+end_src
+**** Enable fontconfig
+If enabled, a fontconfig file will be built pointing to a set of default fonts.
+#+name: fontconfig-enable
+#+begin_src nix
+enable = true;
+#+end_src
+**** Allow bitmaps
+This option is needed to allow usage of bitmap fonts. Like Spleen I use.
+#+name: fontconfig-allowbitmaps
+#+begin_src nix
+allowBitmaps = true;
+#+end_src
+**** Use embedded bitmaps
+This option is necessary to make emacs show unicode emojis properly.
+#+name: use-embedded-bitmaps
+#+begin_src nix
+useEmbeddedBitmaps = true;
+#+end_src
+**** Enable Font Dir
+Create a directory with links to all fonts in ~/run/current-system/sw/share/X11-fonts~
+#+name: enable-font-dir
+#+begin_src nix
+enableFontDir = true;
+#+end_src
+**** Enable ghost script fonts
+Add the fonts provided by Ghostscript to the list of system fonts.
+#+name: enable-ghostscript-fonts
+#+begin_src nix
+enableGhostscriptFonts = true;
+#+end_src
+*** TTY Font
 Console fonts needs to be installed here via ~console.packages~ to be able to set.
 #+name: consolefont
 #+begin_src nix
 packages = with pkgs; [ unstable.spleen ];
 font = "spleen-6x12";
+#+end_src
+*** Alacritty Fonts
+#+name: alacritty-font
+#+begin_src nix
+font = {
+  normal = {
+    family = "Spleen";
+    style = "Regular";
+  };
+  bold = {
+    family = "Spleen";
+    style = "Bold";
+  };
+  italic = {
+    family = "Spleen";
+    style = "Regular";
+  };
+  size = 12;
+  offset = {
+    x = 0;
+    y = 0;
+  };
+  glyph_offset = {
+    x = 0;
+    y = 0;
+  };
+};
 #+end_src
 *** fontconfig
 Font configs that can't be configured using nix options belongs here.
@@ -503,6 +641,15 @@ Set a 1080p equivalent
 #+begin_src nix
 background-image = "/etc/wallpapers/wallpaper2-1080.png"
 #+end_src
+** Icons
+** Cursors
+*** Alacritty cursor
+#+name: alacritty-cursor
+#+begin_src nix
+cursor = {
+style = "Beam";
+};
+#+end_src
 ** Opacity
 #+ATTR_HTML: :width 300
 #+ATTR_ORG: :width 300
@@ -541,6 +688,14 @@ blur-background-exclude = [
     "class_g = 'keynav'"
 ];
 #+end_src
+*** Alacritty opacity
+Set Alacritty opacity.
+Window opacity as a floating point number from ~0.0~ to ~1.0~
+The value ~0.0~ is completely transparent and ~1.0~ is opaque.
+#+name: alacritty-opacity
+#+begin_src nix
+background_opacity = 0.8;
+#+end_src
 ** Border
 [[file:pictures/screenshot-border.png]]
 *** Enable rounded borders
@@ -574,6 +729,125 @@ Exclude keynav because it's not intended to be recognized as window and it becom
 round-borders-exclude = [
     "class_g = 'keynav'"
 ];
+#+end_src
+* Terminal
+** Alacritty
+Alacritty is a GPU-accelerated terminal emulator, written in Rust.
+I use as default terminal.
+#+ATTR_ORG :width 200
+#+ATTR_HTML :width 200
+[[https://raw.githubusercontent.com/alacritty/alacritty/master/extra/logo/alacritty-term%2Bscanlines.svg]]
++ [[Alacritty Colors][Colors]]
++ [[Alacritty Fonts][Fonts]]
+#+begin_src nix :tangle modules/terminal/alacritty.nix :noweb no-export
+{
+  programs.alacritty = {
+    <<alacritty-enable>>
+    settings = {
+      <<alacritty-enable-true-color>>
+      <<alacritty-window-padding>>
+      <<alacritty-window-dynamicpadding>>
+      <<alacritty-window-decorations>>
+      <<alacritty-window-startup-mode>>
+      <<alacritty-scrolling>>
+      <<alacritty-font>>
+      <<alacritty-boldtext-bright-colors>>
+      <<alacritty-opacity>>
+      <<alacritty-keybinds>>
+      <<alacritty-custom-cursor-colors>>
+      <<alacritty-cursor>>
+      <<alacritty-colors>>
+    };
+  };
+}
+#+end_src
+*** Install Alacritty
+Whether to enable Alacritty
+#+name: alacritty-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Enable true color
+xterm-256color describes Xterm with support for 256 colors enabled.
+set TERM environment variable.
+#+name: alacritty-enable-true-color
+#+begin_src nix
+env.TERM = "xterm-256color";
+#+end_src
+*** Alacritty padding
+Blank space added around the window in pixels.
+#+name: alacritty-window-padding
+#+begin_src nix
+window.padding = {
+    x = 12;
+    y = 0;
+};
+#+end_src
+Dynamic padding
+#+name: alacritty-window-dynamicpadding
+#+begin_src nix
+window.dynamic_padding = false;
+#+end_src
+*** Window decorations
+- full : Borders and title bar
+- none: Neither borders nor title bar
+#+name: alacritty-window-decorations
+#+begin_src nix
+window.decorations = "none";
+#+end_src
+*** Window startup mode
+- Windowed
+- Maximized
+- Fullscreen
+#+name: alacritty-window-startup-mode
+#+begin_src nix
+window.startup_mode = "Windowed";
+#+end_src
+*** Scrolling
+History sets maximum number of lines in the scrollback buffer.
+Multiplier sets scrolling distance multiplier.
+#+name: alacritty-scrolling
+#+begin_src nix
+scrolling = {
+    history = 10000;
+    multiplier = 3;
+};
+#+end_src
+*** Draw bold text with bright colors
+If ~true~, bold text is drawn using the bright color variants.
+Maybe usable for bitmap fonts?
+#+name: alacritty-boldtext-bright-colors
+#+begin_src nix
+draw_bold_text_with_bright_colors = true;
+#+end_src
+*** Key bindings
+~C-S-c~ to copy, ~C-S-v~ to paste
+~C-S-Up~ to scroll upwards.
+~C-S-Down~ to scroll downwards.
+#+name: alacritty-keybinds
+#+begin_src nix
+      key_bindings = [
+        {
+          key = "V";
+          mods = "Control|Shift";
+          action = "Paste";
+        }
+        {
+          key = "C";
+          mods = "Control|Shift";
+          action = "Copy";
+        }
+        {
+          key = "Up";
+          mods = "Control|Shift";
+          action = "ScrollPageUp";
+        }
+        {
+          key = "Down";
+          mods = "Control|Shift";
+          action = "ScrollPageDown";
+        }
+      ];
 #+end_src
 * Common configs
 ** Nix
@@ -616,9 +890,9 @@ The following code disables *sudo*, enables *doas*, permits ~@wheel~ group users
 
 ** Console
 This module configures console(tty).
-[[#console-colors][Colors]]
-[[#console-font][Font]]
-[[#dvorak][Layout]]
++ [[Console Colors][Colors]]
++ [[TTY Font][Font]]
++ [[Dvorak][Layout]]
 
 #+begin_src  nix :tangle modules/common/console.nix :noweb no-export
 # This file is generated from "README.org"
@@ -1074,6 +1348,7 @@ memoryPercent = 100;
 ** Dunst
 Dunst is a minimal notification daemon. Mostly used by WM users.
 This module is imported from home-manager
++ [[Notification Colors][Colors]]
 #+begin_src nix :tangle modules/services/dunst.nix :noweb no-export
 # This file is generated from "README.org"
 {

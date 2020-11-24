@@ -94,6 +94,7 @@
                             ./machines/maindesktop/home.nix
                             ./modules/services/dunst.nix
                             ./modules/services/picom.nix
+                            ./modules/terminal/alacritty.nix
                           ];
                         };
                       })
@@ -117,6 +118,7 @@
                             ./machines/mainlaptop/home.nix
                             ./modules/services/dunst.nix
                             ./modules/services/picom.nix
+                            ./modules/terminal/alacritty.nix
                           ];
                         };
                       })

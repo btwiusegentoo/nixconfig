@@ -129,14 +129,12 @@ in
   programs = {
 
     home-manager.enable = true;
-
     neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; };
     emacs = {
       enable = true;
       package = pkgs.emacsGccPgtk;
       extraPackages = (epkgs: [ epkgs.vterm ]);
     };
-    alacritty = (import ../../modules/terminal/alacritty.nix);
     git = (import ../../modules/terminal/gitemacs.nix) { inherit pkgs; };
     fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
     tmux = (import ../../modules/terminal/tmux.nix) { inherit pkgs; };

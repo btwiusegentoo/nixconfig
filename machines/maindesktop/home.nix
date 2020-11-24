@@ -161,7 +161,6 @@ in
       package = pkgs.emacsGccPgtk;
       extraPackages = (epkgs: [ epkgs.vterm ]);
     };
-    alacritty = (import ../../modules/terminal/alacritty.nix);
     git = (import ../../modules/terminal/gitemacs.nix) { inherit pkgs; };
     fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
     tmux = (import ../../modules/terminal/tmux.nix) { inherit pkgs; };

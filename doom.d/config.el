@@ -19,7 +19,7 @@
 (custom-set-faces!
   '(mode-line :family "SFNS Display" :height 120)
   '(mode-line-inactive :family "SFNS Display" :height 120)
-  '(variable-pitch :family "SFNS Display" :height 140))
+  '(variable-pitch :family "SFNS Display" :height 120))
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.

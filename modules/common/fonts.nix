@@ -2,15 +2,15 @@
 { pkgs, ... }:
 {
   fonts = {
-    fontconfig = {
-      enable = true;
-      allowBitmaps = true;
-      useEmbeddedBitmaps = true;
-      defaultFonts = {
-        emoji = [ "Apple Color Emoji" ];
-        monospace = [ "Spleen" ];
-      };
-    };
+        fontconfig = {
+          enable = true;
+          allowBitmaps = true;
+          useEmbeddedBitmaps = true;
+          defaultFonts = {
+            emoji = [ "Apple Color Emoji" ];
+            monospace = [ "Spleen" ];
+          };
+        };
     enableFontDir = true;
     enableGhostscriptFonts = true;
     fonts = with pkgs; [
