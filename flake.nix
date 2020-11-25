@@ -95,6 +95,14 @@
                             ./modules/services/dunst.nix
                             ./modules/services/picom.nix
                             ./modules/terminal/alacritty.nix
+                            ./modules/gui/qutebrowser.nix
+                            ./modules/gui/firefox.nix
+                            ./modules/gui/mpv.nix
+                            ./modules/terminal/git.nix
+                            ./modules/terminal/bat.nix
+                            ./modules/terminal/fzf.nix
+                            ./modules/terminal/lsd.nix
+                            ./modules/terminal/starship.nix
                           ];
                         };
                       })
@@ -119,6 +127,14 @@
                             ./modules/services/dunst.nix
                             ./modules/services/picom.nix
                             ./modules/terminal/alacritty.nix
+                            ./modules/gui/qutebrowser.nix
+                            ./modules/gui/firefox.nix
+                            ./modules/gui/mpv.nix
+                            ./modules/terminal/git.nix
+                            ./modules/terminal/bat.nix
+                            ./modules/terminal/fzf.nix
+                            ./modules/terminal/lsd.nix
+                            ./modules/terminal/starship.nix
                           ];
                         };
                       })
@@ -138,6 +154,11 @@
                         home-manager.users.hac = { ... }: {
                           imports = [
                             ./machines/mainserver/home.nix
+                            ./modules/terminal/git.nix
+                            ./modules/terminal/bat.nix
+                            ./modules/terminal/fzf.nix
+                            ./modules/terminal/lsd.nix
+                            ./modules/terminal/starship.nix
                           ];
                         };
                       })

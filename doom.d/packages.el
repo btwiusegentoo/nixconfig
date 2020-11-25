@@ -62,6 +62,9 @@
 ;; org-mode
 (package! org-variable-pitch)
 
+;; Filetypes
+(package! vimrc-mode)
+
 ;; company(autocompletion) packages
 ;; (package! company-tabnine)
 ;; (package! company-emoji)

@@ -28,12 +28,17 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
 * Table of Contents :TOC_2_gh:
 - [[#flake][Flake]]
   - [[#flake-inputs][Flake inputs]]
-  - [[#defaults][defaults]]
+  - [[#default-imports][default imports]]
+  - [[#x11-imports][X11 imports]]
+  - [[#home-manager-imports][home-manager imports]]
+  - [[#home-manager-x11-imports][home-manager X11 imports]]
   - [[#nixpkgs-config][nixpkgs config]]
   - [[#import-overlays][import overlays]]
   - [[#machines][Machines]]
 - [[#input][Input]]
   - [[#keyboard][Keyboard]]
+- [[#output][Output]]
+- [[#other-hardwares][Other Hardwares]]
 - [[#look-and-feel][Look And Feel]]
   - [[#color-scheme][Color Scheme]]
   - [[#fonts][Fonts]]
@@ -42,12 +47,24 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#cursors][Cursors]]
   - [[#opacity][Opacity]]
   - [[#border][Border]]
-- [[#terminal][Terminal]]
+- [[#terminalshell][Terminal/Shell]]
   - [[#alacritty][Alacritty]]
+  - [[#tty][TTY]]
+  - [[#starship][starship]]
+  - [[#git][Git]]
+  - [[#bat][bat]]
+  - [[#fzf][fzf]]
+  - [[#lsd][lsd]]
+- [[#web-browser][Web Browser]]
+  - [[#qutebrowser][qutebrowser]]
+  - [[#firefox][Firefox]]
+- [[#multimedia][Multimedia]]
+  - [[#pulseaudio][PulseAudio]]
+  - [[#mpv][mpv]]
+  - [[#zathura][zathura]]
 - [[#common-configs][Common configs]]
   - [[#nix][Nix]]
   - [[#doas][doas]]
-  - [[#console][Console]]
   - [[#bluetooth][Bluetooth]]
   - [[#x-server][X server]]
   - [[#lightdm][LightDM]]
@@ -56,7 +73,6 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#xdg][XDG]]
   - [[#config-files][~/.config files]]
 - [[#services][Services]]
-  - [[#pulseaudio][PulseAudio]]
   - [[#openssh][OpenSSH]]
   - [[#zram][ZRAM]]
   - [[#dunst][Dunst]]
@@ -134,8 +150,8 @@ Currently, I have *home-manager*, *NUR* (nix user repository), *emacs pgtk nativ
   };
 #+end_src
 
-** defaults
-Import default modules(that every machine uses)
+** default imports
+Import default modules
 #+name: flake-defaults
 #+begin_src nix
       defaults = { pkgs, ... }: {
@@ -155,6 +171,33 @@ Import default modules(that every machine uses)
       };
 #+end_src
 
+** X11 imports
+List default modules that *requires X11* here
+#+name: x11-defaults
+#+begin_src nix
+./modules/common/fonts.nix
+#+end_src
+** home-manager imports
+List default modules for home-manager that *doesn't require X11* here
+#+name: home-manager-defaults
+#+begin_src nix
+./modules/terminal/git.nix
+./modules/terminal/bat.nix
+./modules/terminal/fzf.nix
+./modules/terminal/lsd.nix
+./modules/terminal/starship.nix
+#+end_src
+** home-manager X11 imports
+List default modules for home-manager that *requires X11* here
+#+name: home-manager-x11-defaults
+#+begin_src nix
+./modules/services/dunst.nix
+./modules/services/picom.nix
+./modules/terminal/alacritty.nix
+./modules/gui/qutebrowser.nix
+./modules/gui/firefox.nix
+./modules/gui/mpv.nix
+#+end_src
 ** nixpkgs config
 This configuration is for default nixpkgs.
 Set system arch to x86_64, Allow installation for non-free software(also known as proprietary software), and import overlays from [[#overlays][here]]
@@ -218,7 +261,7 @@ It imports modules (that contains configuration for) for each machines.
               defaults
               ./machines/maindesktop/configuration.nix
               ./modules/common/xserver.nix
-              ./modules/common/fonts.nix
+              <<x11-defaults>>
               home-manager.nixosModules.home-manager
               ({
                 home-manager.useGlobalPkgs = true;
@@ -226,9 +269,8 @@ It imports modules (that contains configuration for) for each machines.
                 home-manager.users.btw = { ... }: {
                   imports = [
                     ./machines/maindesktop/home.nix
-                    ./modules/services/dunst.nix
-                    ./modules/services/picom.nix
-                    ./modules/terminal/alacritty.nix
+                    <<home-manager-x11-defaults>>
+                    <<home-manager-defaults>>
                   ];
                 };
               })
@@ -247,7 +289,7 @@ It imports modules (that contains configuration for) for each machines.
               defaults
               ./machines/mainlaptop/configuration.nix
               ./modules/common/xserverlaptop.nix
-              ./modules/common/fonts.nix
+              <<x11-defaults>>
               home-manager.nixosModules.home-manager
               ({
                 home-manager.useGlobalPkgs = true;
@@ -255,9 +297,8 @@ It imports modules (that contains configuration for) for each machines.
                 home-manager.users.x230 = { ... }: {
                   imports = [
                     ./machines/mainlaptop/home.nix
-                    ./modules/services/dunst.nix
-                    ./modules/services/picom.nix
-                    ./modules/terminal/alacritty.nix
+                    <<home-manager-x11-defaults>>
+                    <<home-manager-defaults>>
                   ];
                 };
               })
@@ -282,6 +323,7 @@ It imports modules (that contains configuration for) for each machines.
                 home-manager.users.hac = { ... }: {
                   imports = [
                     ./machines/mainserver/home.nix
+                    <<home-manager-defaults>>
                   ];
                 };
               })
@@ -316,9 +358,12 @@ Xorg config
 layout = "us";
 xkbVariant = "dvorak";
 #+end_src
+* Output
+* Other Hardwares
 * Look And Feel
 ** Color Scheme
 I use material-palenight as colorscheme for everything from editor to browser.
+*** Color palette preview
 #+ATTR_HTML: :width 600
 #+ATTR_ORG: :width 600
 [[file:pictures/material-palenight-palette.png]]
@@ -433,6 +478,244 @@ colors = {
   ];
 };
 #+end_src
+*** qutebrowser Colors
+
+Enable darkmode
+#+name: qutebrowser-darkmode
+#+begin_src nix
+settings.colors.webpage.darkmode.enabled = true;
+#+end_src
+
+Colors from base16-qutebrowser (https://github.com/theova/base16-qutebrowser)
+Base16 qutebrowser template by theova
+Material Palenight scheme by Nate Peterson
+#+name: qutebrowser-colors
+#+begin_src nix
+settings.colors = {
+  completion = {
+    fg = "#959DCB";
+    odd.bg = "#292D3E";
+    even.bg = "#292D3E";
+    category = {
+      fg = "#FFCB6B";
+      bg = "#292D3E";
+      border.top = "#292D3E";
+      border.bottom = "#292D3E";
+    };
+    item = {
+      selected.fg = "#444267";
+      selected.bg = "#FFCB6B";
+      selected.border.top = "#FFCB6B";
+      selected.border.bottom = "#FFCB6B";
+      selected.match.fg = "#F07178";
+    };
+    match.fg = "#C3E88D";
+    scrollbar = {
+      fg = "#959DCB";
+      bg = "#292D3E";
+    };
+  };
+  contextmenu = {
+    menu = {
+      bg = "#292D3E";
+      fg = "#959DCB";
+    };
+    selected = {
+      bg = "#FFCB6B";
+      fg = "#444267";
+    };
+  };
+  downloads = {
+    bar.bg = "#292D3E";
+    start = {
+      fg = "#292D3E";
+      bg = "#82AAFF";
+    };
+    stop = {
+      fg = "#292D3E";
+      bg = "#89DDFF";
+    };
+    error.fg = "#F07178";
+  };
+  hints = {
+    fg = "#292D3E";
+    bg = "#FFCB6B";
+    match.fg = "#959DCB";
+  };
+  keyhint = {
+    fg = "#959DCB";
+    suffix.fg = "#959DCB";
+    bg = "#292D3E";
+  };
+  messages = {
+    error = {
+      fg = "#292D3E";
+      bg = "#F07178";
+      border = "#F07178";
+    };
+    warning = {
+      fg = "#292D3E";
+      bg = "#C792EA";
+      border = "#C792EA";
+    };
+    info = {
+      fg = "#959DCB";
+      bg = "#292D3E";
+      border = "#292D3E";
+    };
+  };
+  prompts = {
+    fg = "#959DCB";
+    border = "#292D3E";
+    bg = "#292D3E";
+    selected.bg = "#FFCB6B";
+  };
+  statusbar = {
+    normal = {
+      fg = "#C3E88D";
+      bg = "#292D3E";
+    };
+    insert = {
+      fg = "#292D3E";
+      bg = "#82AAFF";
+    };
+    passthrough = {
+      fg = "#292D3E";
+      bg = "#89DDFF";
+    };
+    private = {
+      fg = "#292D3E";
+      bg = "#676E95";
+    };
+    command = {
+      fg = "#959DCB";
+      bg = "#292D3E";
+      private = {
+        fg = "#959DCB";
+        bg = "#292D3E";
+      };
+    };
+    caret = {
+      fg = "#292D3E";
+      bg = "#C792EA";
+      selection = {
+        fg = "#292D3E";
+        bg = "#82AAFF";
+      };
+    };
+    progress.bg = "#82AAFF";
+    url = {
+      fg = "#959DCB";
+      error.fg = "#F07178";
+      hover.fg = "#959DCB";
+      success = {
+        http.fg = "#89DDFF";
+        https.fg = "#C3E88D";
+      };
+      warn.fg = "#C792EA";
+    };
+  };
+  tabs = {
+    bar.bg = "#292D3E";
+    indicator = {
+      start = "#82AAFF";
+      stop = "#89DDFF";
+      error = "#F07178";
+    };
+    odd = {
+      fg = "#959DCB";
+      bg = "#292D3E";
+    };
+    even = {
+      fg = "#959DCB";
+      bg = "#292D3E";
+    };
+    pinned = {
+      even = {
+        bg = "#292D3E";
+        fg = "#959DCB";
+      };
+      odd = {
+        bg = "#292D3E";
+        fg = "#959DCB";
+      };
+      selected = {
+        even = {
+          bg = "#292D3E";
+          fg = "#959DCB";
+        };
+        odd = {
+          bg = "#292D3E";
+          fg = "#959DCB";
+        };
+      };
+    };
+    selected = {
+      odd = {
+        fg = "#FFFFFF";
+        bg = "#959DCB";
+      };
+      even = {
+        fg = "#FFFFFF";
+        bg = "#959DCB";
+      };
+    };
+  };
+}; # }}}
+#+end_src
+*** mpv background color
+Set mpv background color, color used to draw parts of the mpv window not covered by video.
+#+name: mpv-background-color
+#+begin_src nix
+config.background = "#292D3E";
+#+end_src
+*** zathura colors
+Set zathura interface colors
+#+name: zathura-colors
+#+begin_src nix
+default-bg = "#292D3E";
+default-fg = "#A6ACCD";
+statusbar-bg = "#202331";
+statusbar-fg = "#A6ACCD";
+inputbar-bg = "#202331";
+inputbar-fg = "#A6ACCD";
+highlight-color = "#444267";
+highlight-active-color = "#82aaff";
+#+end_src
+Set colors to recolor the document
+#+name: zathura-recolor-colors
+#+begin_src nix
+recolor-lightcolor = "#292D3E";
+recolor-darkcolor = "#A6ACCD";
+#+end_src
+*** bat theme
+Set theme name
+#+name: bat-theme-config
+#+begin_src nix
+config.theme = "palenight";
+#+end_src
+
+[[bat]] can use Sublime Text 3 themes.
+Download theme:
+#+name: bat-theme-fetch
+#+begin_src nix
+themes = {
+    palenight = builtins.readFile (
+    pkgs.fetchgit
+        {
+        url = "https://github.com/equinusocio/material-theme";
+        rev = "614b7e8bc7369c32e852297d42253643ebf90d55";
+        sha256 = "1gjfisksvqa2d08na0yln7yxny4i16wrmvlfnwllbqrgwh26v94g";
+        } + "/schemes/Material-Theme-Palenight.tmTheme"
+    );
+};
+#+end_src
+*** fzf colors
+material-palenight applied to [[fzf]]
+#+name: fzf-colors
+#+begin_src nix
+"--color=bg+:0,bg:#292D3E,spinner:#89DDFF,hl:#82AAFF,fg:#8796B0,header:#82AAFF,info:#FFCB6B,pointer:#89DDFF,marker:#89DDFF,fg+:#959DCB,prompt:#c792ea,hl+:#82AAFF"
+#+end_src
 ** Fonts
 I use
 Apple Color Emoji for emojis (can be tested [[https://getemoji.com/][here]])
@@ -517,6 +800,8 @@ packages = with pkgs; [ unstable.spleen ];
 font = "spleen-6x12";
 #+end_src
 *** Alacritty Fonts
+I use Spleen font for Alacritty.
+The size is in point(pt)
 #+name: alacritty-font
 #+begin_src nix
 font = {
@@ -541,6 +826,40 @@ font = {
     x = 0;
     y = 0;
   };
+};
+#+end_src
+*** qutebrowser Fonts
+I use Spleen for browser itself's appearance and web fixed font,
+San Francisco for most web contents.
+The size is in point(pt)
+#+name: qutebrowser-fonts
+#+begin_src nix
+settings.fonts = {
+  default_family = "SFNS Display";
+  web.family.standard = "SFNS Display";
+  web.family.serif = "SFNS Display";
+  web.family.sans_serif = "SFNS Display";
+  web.family.fixed = "Spleen";
+  completion = {
+    category = "12pt Spleen";
+    entry = "12pt Spleen";
+  };
+  contextmenu = "12pt Spleen";
+  debug_console = "12pt Spleen";
+  default_size = "12pt";
+  downloads = "12pt Spleen";
+  hints = "12pt Spleen";
+  keyhint = "12pt Spleen";
+  messages = {
+    error = "12pt Spleen";
+    info = "12pt Spleen";
+    warning = "12pt Spleen";
+  };
+  prompts = "12pt Spleen";
+  statusbar = "12pt Spleen";
+  tabs.selected = "12pt Spleen";
+  tabs.unselected = "12pt Spleen";
+  #tabs = "12pt Spleen";
 };
 #+end_src
 *** fontconfig
@@ -730,7 +1049,7 @@ round-borders-exclude = [
     "class_g = 'keynav'"
 ];
 #+end_src
-* Terminal
+* Terminal/Shell
 ** Alacritty
 Alacritty is a GPU-accelerated terminal emulator, written in Rust.
 I use as default terminal.
@@ -740,6 +1059,7 @@ I use as default terminal.
 + [[Alacritty Colors][Colors]]
 + [[Alacritty Fonts][Fonts]]
 #+begin_src nix :tangle modules/terminal/alacritty.nix :noweb no-export
+# This file is generated from "README.org"
 {
   programs.alacritty = {
     <<alacritty-enable>>
@@ -849,6 +1169,557 @@ draw_bold_text_with_bright_colors = true;
         }
       ];
 #+end_src
+** TTY
+Configure TTY console.
++ [[Console Colors][Colors]]
++ [[TTY Font][Font]]
++ [[Dvorak][Layout]]
+
+#+begin_src  nix :tangle modules/common/console.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  console = {
+    <<consolecolors>>
+    <<consoleearlysetup>>
+    <<consolefont>>
+    <<consolekeymap>>
+  };
+}
+#+end_src
+
+*** Early Setup
+Load console configurations early at initrd
+#+name: consoleearlysetup
+#+begin_src nix
+earlySetup = true;
+#+end_src
+** starship
+starship is a minimal, blazing fast, and infinitely customizable prompt for any shell
+#+begin_src nix :tangle modules/terminal/starship.nix :noweb no-export
+{ pkgs, ... }:
+{
+  programs.starship = {
+    <<starship-enable>>
+    enableFishIntegration = true;
+    package = pkgs.unstable.starship;
+    settings = {
+      add_newline = true;
+
+      character = {
+        success_symbol = "[𝝺](#c792ea)";
+        vicmd_symbol = "[ ](bold green)";
+        error_symbol = "[☓ ](bold red)";
+      };
+
+      directory = {
+        style = "bold cyan";
+      };
+
+      nix_shell = {
+        disabled = false;
+        symbol = " ";
+      };
+
+    };
+  };
+}
+#+end_src
+*** Enable starship
+Turn on to install starship
+#+name: starship-enable
+#+begin_src nix
+enable = true;
+#+end_src
+** Git
+This directory is a git repository, nixpkgs is a git repository, Emacs, Linux is developed in git repository, most free(as in freedom) softwares uses Git nowadays.
+Git is a free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
+#+begin_src nix :tangle modules/terminal/git.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  programs.git = {
+    <<git-enable>>
+    <<git-package>>
+    <<git-default-branch>>
+    <<git-push-ssh>>
+    <<git-name-mail>>
+  };
+}
+#+end_src
+*** Enable Git
+Turn on to install Git
+#+name: git-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Git Package
+I use Git from nixos-unstable
+#+name: git-package
+#+begin_src nix
+package = pkgs.unstable.git;
+#+end_src
+*** Git Default Branch
+Many communities are renaming Default Git Branch from ~master~ to ~main~ to remove racially-charged language from software.
+[[https://github.com/github/renaming][github/renaming]]
+[[https://www.zdnet.com/article/github-to-replace-master-with-alternative-term-to-avoid-slavery-references/][Github to replace "master" with alternative term to avoid slavery references]]
+It's very easy to do that on user-level. Why not start using main from today? There aren't any reason to not start using ~main~ for new personal projects.
+#+name: git-default-branch
+#+begin_src nix
+extraConfig.init.defaultBranch = "main";
+#+end_src
+*** Use SSH only when pushing
+I use SSH to push into Git repository.
+This config Git default to SSH to push.
+Note that it is ~pushinsteadOf~
+If you use just ~insteadOf~, it will ask SSH key even when cloning.
+
+#+name: git-push-ssh
+#+begin_src nix
+extraConfig.url."git@github.com:" = {
+    pushinsteadOf = "https://github.com/";
+};
+#+end_src
+*** User name,Email
+Git uses email to identify your commits, and associate commits with your accounts e.g. GitHub GitLab
+Email and User Name will be visible in any your commits.
+If you want to keep your real name private, use any text like GitHub user name.
+To GitHub/GitLab be able to associate your commits with your accounts, you have to either:
+- Use your real mail address register on GitHub/GitLab
+- Use noreply mail addres
+I'm still not ready to migrate to GitLab, so I use GitHub noreply mail address
+#+name: git-name-mail
+#+begin_src nix
+userName = "btwiusegentoo";
+userEmail = "66811008+btwiusegentoo@users.noreply.github.com";
+#+end_src
+** bat
+A cat Linux command clone with syntax highlighting and Git integration
++ [[bat theme][Theme]]
+#+begin_src nix :tangle modules/terminal/bat.nix
+# This file is generated from "README.org"
+{ pkgs, ... }:
+
+{
+  programs.bat = {
+    <<bat-enable>>
+    <<bat-italic-text>>
+    <<bat-theme-config>>
+    <<bat-theme-fetch>>
+  };
+}
+#+end_src
+*** Enable bat
+Turn on to install bat
+#+name: bat-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Use italic text on the terminal
+(Note, it isn't supported on all terminals)
+#+name: bat-italic-text
+#+begin_src nix
+config.italic-text = "always";
+#+end_src
+*** Customize bat style
+Show line numbers, Git modifications and file header
+#+name: bat-style
+#+begin_src nix
+config.style = "numbers,changes,header";
+#+end_src
+** fzf
+fzf is a general-purpose command line fuzzy finder.
++ [[fzf colors][Colors]]
+#+begin_src nix :tangle modules/terminal/fzf.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  programs.fzf = {
+    <<fzf-enable>>
+    <<fzf-fish-integration>>
+    <<fzf-use-fd>>
+
+    defaultOptions = [
+      <<fzf-colors>>
+    ];
+
+  };
+}
+#+end_src
+*** Enable fzf
+Turn on to install fzf
+#+name: fzf-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Fish shell integration
+Turn on to enable fish shell integration.
+Most usable one is <C-t> to search current directory.
+#+name: fzf-fish-integration
+#+begin_src nix
+enableFishIntegration = true;
+#+end_src
+*** Use fd instead of default find
+Requires fd installed.
+It is faster than default find
+#+name: fzf-use-fd
+#+begin_src nix
+defaultCommand = "fd --type f";
+#+end_src
+** lsd
+Simply put, lsd is a better ~ls~ command with colors, nerdfont icons, written in Rust
+#+begin_src nix :tangle modules/terminal/lsd.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  programs.lsd = {
+    <<lsd-enable>>
+    <<lsd-aliases>>
+  };
+}
+#+end_src
+*** Enable lsd
+Enable to install lsd
+#+name: lsd-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** lsd aliases
+Turn on to enable lsd aliases.
+I want to use my own aliases, so I disable it.
+#+name: lsd-aliases
+#+begin_src nix
+enableAliases = false;
+#+end_src
+* Web Browser
+** qutebrowser
+[[https://raw.githubusercontent.com/qutebrowser/qutebrowser/master/icons/qutebrowser-64x64.png]]
+I use qutebrowser as main browser.
+qutebrowser is a keyboard-focused(Vim-style key bindings) browser with a minimal GUI based on Chromium(qtwebengine).
++ [[qutebrowser Colors][Colors]]
++ [[qutebrowser Fonts][Fonts]]
+#+begin_src nix :tangle modules/gui/qutebrowser.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  programs.qutebrowser = {
+    <<qutebrowser-enable>>
+    <<qutebrowser-searchengine>>
+    <<qutebrowser-gpu-acceleration>>
+    <<qutebrowser-mpv>>
+    <<qutebrowser-mpv-hint>>
+    <<qutebrowser-start-page>>
+    <<qutebrowser-default-zoom>>
+    <<qutebrowser-fonts>>
+    <<qutebrowser-darkmode>>
+    <<qutebrowser-colors>>
+    <<qutebrowser-history-max-completion>>
+    extraConfig = ''
+      <<qutebrowser-emacs-editor>>
+    '';
+
+  };
+}
+#+end_src
+*** Install qutebrowser
+Turn on this option to install qutebrowser
+#+name: qutebrowser-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Search engine
+While the default option (DuckDuckGo) is great, I'm still not ready to switch to it.
+So, I choose to use Google as default search engine
+qutebrowser can set multiple search engines, but I don't use it.
+#+name: qutebrowser-searchengine
+#+begin_src nix
+searchEngines = {
+    DEFAULT = "https://google.com/search?q={}";
+};
+#+end_src
+*** GPU acceleration
+Idk why, these gpu acceleration flags are disabled in qtwebengine by default (See [[https://github.com/qutebrowser/qutebrowser/issues/5378][Issue 5378]])
+These flags makes a significant difference in perfomance, CPU usage, and battery life. Especially usable for laptop. Enable it.
+#+name: qutebrowser-gpu-acceleration
+#+begin_src nix
+settings.qt.args = [ "enable-native-gpu-memory-buffers" "enable-gpu-rasterization" "use-gl=egl" "ignore-gpu-blacklist" "num-raster-threads=4" ];
+#+end_src
+*** Youtube playback with mpv
+Youtube video uses vp9 codec nowadays, that can't be playbacked in Linux with GPU acceleration.
+That can be workaronuded by using Plugin to force h264 in Firefox.
+But, qutebrowser can't. So, just play the video in mpv as alternative workaround.
+Press ~yd~ to open current youtube video URL in mpv
+#+name: qutebrowser-mpv
+#+begin_src nix
+keyBindings.normal."yd" = "spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' {url}";
+#+end_src
+Or, ~yf~ use hints to select and open youtube video in mpv
+#+name: qutebrowser-mpv-hint
+#+begin_src nix
+keyBindings.normal."yf" = "hint links spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' --force-window yes {hint-url}";
+#+end_src
+*** Qutebrowser start page
+Set my own start page
+#+name: qutebrowser-start-page
+#+begin_src nix
+settings.url.start_pages = [ "https://btwiusegentoo.github.io/start.html" ];
+settings.url.default_page = "https://btwiusegentoo.github.io/start.html";
+#+end_src
+*** Max completion history items
+Set qutebrowser max completion items from history to 30
+#+name: qutebrowser-history-max-completion
+#+begin_src nix
+settings.completion.web_history.max_items = 30;
+#+end_src
+*** Default zoom
+Even with 1080p xrandr scale in laptop or 1440p xrandr scale in desktop, I feel everything is too big(possibly I'm weird)
+So I have to set default zoom to 90%
+#+name: qutebrowser-default-zoom
+#+begin_src nix
+settings.zoom.default = "90%";
+#+end_src
+*** Edit text on qutebrowser using emacs
+You can write text in qutebrowser using emacs.
+This is really useful when using Reddit, or writing GitHub issue,etc.
+Emacs daemon have to be running.
+#+name: qutebrowser-emacs-editor
+#+begin_src python :tangle no
+c.editor.command = ["emacsclient", "-c", "--eval", "(find-file \"{}\")", "(org-mode)"]
+#+end_src
+** Firefox
+[[https://3u26hb1g25wn1xwo8g186fnd-wpengine.netdna-ssl.com/files/2019/10/logo-firefox.svg]]
+Firefox is my backup browser.
+I Use for certain websites that qutebrowser can't access(like widevine websites in NixOS), or games, etc.
+#+begin_src nix :tangle modules/gui/firefox.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  programs.firefox = {
+    <<firefox-enable>>
+    <<firefox-package>>
+    <<firefox-extensions>>
+    profiles = {
+      default = {
+        isDefault = true;
+        name = "Default";
+        settings = {
+          <<firefox-startpage>>
+          <<firefox-search-isus>>
+        };
+      };
+    };
+  };
+}
+#+end_src
+*** Install Firefox
+Turn on to install Firefox
+#+name: firefox-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Firefox package
+I like to use Firefox from nixpkgs-unstable
+#+name: firefox-package
+#+begin_src nix
+package = pkgs.unstable.firefox;
+#+end_src
+*** Extensions
+Extensions to install goes here:
+#+name: firefox-extensions
+#+begin_src nix :noweb no-export
+extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+  <<firefox-tridactyl-install>>
+  ublock-origin
+];
+#+end_src
+*** Tridactyl
+[[https://raw.githubusercontent.com/tridactyl/tridactyl/master/src/static/logo/Tridactyl_64px.png]]
+Tridactyl is a Firefox plugin that provides Vim key bindings. Makes Firefox usable.
+Replaces Firefox’s control mechanism with one modelled on Vim.
+
+Let's install it:
+#+name: firefox-tridactyl-install
+#+begin_src nix
+tridactyl
+#+end_src
+
+**** TODO Configuration
+Idk why, file based configuration doesn't work now.
+#+name: tridactylrc
+#+begin_src vimrc :tangle no
+
+" Remove local config
+sanitise tridactyllocal tridactylsync
+
+" Adjust scroll speed
+bind j scrollline -2
+bind k scrollline 2
+" Set tab move direction same as qutebrowser
+bind J tabnext
+bind K tabprev
+" Use qutebrowser like behavior for new tab :open
+bind O fillcmdline tabopen
+#+end_src
+Install tridactyl configuration into ~$HOME/.config/tridactyl/tridactylrc~
+#+name: tridactylrc-symlink
+#+begin_src nix
+"tridactyl/tridactylrc".text = ''
+    <<tridactylrc>>
+'';
+#+end_src
+
+*** Start page
+Set my own startpage
+#+name: firefox-startpage
+#+begin_src nix
+"browser.startup.homepage" = "https://btwiusegentoo.github.io/start.html";
+#+end_src
+*** Use US google search engine
+#+name: firefox-search-isus
+#+begin_src nix
+"browser.search.isUS" = true;
+#+end_src
+* Multimedia
+** PulseAudio
+[[https://www.freedesktop.org/software/pulseaudio/logo.png]]
+PulseAudio is a general purpose sound server intended to run as a middleware between your applications and your hardware devices, either using ALSA or OSS.
+It's required by many programs to play sound nowadays.
+#+begin_src nix :tangle modules/services/pulseaudio.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  hardware.pulseaudio = {
+    <<pulseaudio-enable>>
+    <<pulseaudio-package>>
+    <<pulseaudio-support-32bit>>
+    <<pulseaudio-extramodules>>
+    <<pulseaudio-daemon-config>>
+  };
+}
+#+end_src
+*** Enable PulseAudio
+Whether to enable the PulseAudio sound server.
+#+name: pulseaudio-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** PulseAudio 32bit support
+Include 32-bit pulseaudio libraries in the system. It's needed by certain programs(like wine 32bit, mainly used for games)
+#+name: pulseaudio-support-32bit
+#+begin_src nix
+support32Bit = true;
+#+end_src
+*** PulseAudio package
+Select the PulseAudio derivation to use. This can be used to enable features (such as JACK support, Bluetooth) via the pulseaudioFull package
+#+name: pulseaudio-package
+#+begin_src nix
+package = pkgs.pulseaudioFull;
+#+end_src
+*** PulseAudio extra modules
+Extra PulseAudio modules to use. This is intended for out-of-tree pulseaudio modules like extra bluetooth codecs.
+#+name: pulseaudio-extramodules
+#+begin_src nix
+extraModules = [ pkgs.pulseaudio-modules-bt ];
+#+end_src
+*** PulseAudio daemon config
+idk, this config is supposed to improve audio quality
+#+name: pulseaudio-daemon-config
+#+begin_src nix
+daemon.config = {
+    default-sample-rate = "48000";
+    alternate-sample-rate = "44100";
+    default-sample-channels = "2";
+    default-channel-map = "front-left,front-right";
+    default-fragments = "2";
+    default-fragment-size-msec = "125";
+    enable-lfe-remixing = "no";
+    high-priority = "yes";
+    nice-level = "-11";
+    realtime-scheduling = "yes";
+    realtime-priority = "9";
+    rlimit-rtprio = "9";
+    resample-method = "soxr-vhq";
+    daemonize = "no";
+    default-sample-format = "float32le";
+};
+#+end_src
+** mpv
+[[https://raw.githubusercontent.com/mpv-player/mpv.io/master/source/images/mpv-logo-128.png]]
+mpv is a FOSS, lightweight command line media player. It supports a wide variety of media file formats.
+I mostly use it to play Youtube videos [[Youtube playback with mpv][spawning from qutebrowser]] , Thanks to [[ https://github.com/ytdl-org/youtube-dl][youtube-dl]]
++ [[mpv background color][Background Color]]
+#+begin_src nix :tangle modules/gui/mpv.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  programs.mpv = {
+    <<mpv-install>>
+    <<mpv-background-color>>
+    <<mpv-hardware-decoding>>
+    <<mpv-bindings>>
+  };
+}
+#+end_src
+*** Install mpv
+Turn on to install mpv
+#+name: mpv-install
+#+begin_src nix
+enable = true;
+#+end_src
+*** Enable hardware decoding
+Hardware decoding is not enabled by default because it's likely to cause issues like tearing, stutter, etc on Low Power GPUs
+My GPUs are totally fine. Enable it:
+#+name: mpv-hardware-decoding
+#+begin_src nix
+config.hwdec = "auto";
+config.hwdec-codecs = "all";
+#+end_src
+*** mpv default volume
+Set the startup volume. 0 means silence, 100 means no volume reduction or ampififacion.
+Negative values can be passed for compatibility, but are treated as 0.
+#+name: mpv-default-volume
+#+begin_src nix
+config.volume = 80;
+#+end_src
+*** mpv key bindings
+Even though I use [[Dvorak]], I'm vim keybinding user.
+*hjkl* feels much better than arrow key.
+It's a great idea to control volume and seek video/music with *hjkl*
+*l* already have set to ab-loop for default. So I have to change it.
+#+name: mpv-bindings
+#+begin_src nix
+bindings = {
+    h = "seek -10";
+    j = "add volume -2";
+    k = "add volume 2";
+    l = "seek 10";
+    "Ctrl+l" = "ab-loop";
+};
+#+end_src
+** zathura
+zathura is a highly customizable and functional document viewer based on the girara user interface library and several document libraries.
++ [[zathura colors][Colors]]
+#+begin_src nix :tangle modules/gui/zathura.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  programs.zathura = {
+    <<zathura-enable>>
+    options = {
+      <<zathura-recolor>>
+      <<zathura-recolor-colors>>
+      <<zathura-colors>>
+    };
+  };
+}
+#+end_src
+*** Enable zathura
+Turn on to install zathura
+#+name: zathura-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Recolor
+Turn on to recolor the document
+#+name: zathura-recolor
+#+begin_src nix
+recolor = "true";
+#+end_src
 * Common configs
 ** Nix
 Enable nix flakes(flakes is still a experimental feature.)
@@ -888,31 +1759,6 @@ The following code disables *sudo*, enables *doas*, permits ~@wheel~ group users
 }
 #+end_src
 
-** Console
-This module configures console(tty).
-+ [[Console Colors][Colors]]
-+ [[TTY Font][Font]]
-+ [[Dvorak][Layout]]
-
-#+begin_src  nix :tangle modules/common/console.nix :noweb no-export
-# This file is generated from "README.org"
-{ pkgs, ... }:
-{
-  console = {
-    <<consolecolors>>
-    <<consoleearlysetup>>
-    <<consolefont>>
-    <<consolekeymap>>
-  };
-}
-#+end_src
-
-*** Early Setup
-Load console configurations early at initrd
-#+name: consoleearlysetup
-#+begin_src nix
-earlySetup = true;
-#+end_src
 ** Bluetooth
 This module configures bluetooth for all machines.
 #+begin_src nix :tangle modules/common/bluetooth.nix :noweb no-export
@@ -1170,6 +2016,7 @@ This module is imported from home-manager
   "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
   "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
 
+  <<tridactylrc-symlink>>
 
   # keynav{{{
   "keynav/keynavrc".text = ''
@@ -1201,68 +2048,6 @@ This module is imported from home-manager
 }
 #+end_src
 * Services
-** PulseAudio
-PulseAudio is a general purpose sound server intended to run as a middleware between your applications and your hardware devices, either using ALSA or OSS.
-It's required by many programs to play sound nowadays.
-#+begin_src nix :tangle modules/services/pulseaudio.nix :noweb no-export
-# This file is generated from "README.org"
-{ pkgs, ... }:
-{
-  hardware.pulseaudio = {
-    <<pulseaudio-enable>>
-    <<pulseaudio-package>>
-    <<pulseaudio-support-32bit>>
-    <<pulseaudio-extramodules>>
-    <<pulseaudio-daemon-config>>
-  };
-}
-#+end_src
-*** Enable PulseAudio
-Whether to enable the PulseAudio sound server.
-#+name: pulseaudio-enable
-#+begin_src nix
-enable = true;
-#+end_src
-*** PulseAudio 32bit support
-Include 32-bit pulseaudio libraries in the system. It's needed by certain programs(like wine 32bit, mainly used for games)
-#+name: pulseaudio-support-32bit
-#+begin_src nix
-support32Bit = true;
-#+end_src
-*** PulseAudio package
-Select the PulseAudio derivation to use. This can be used to enable features (such as JACK support, Bluetooth) via the pulseaudioFull package
-#+name: pulseaudio-package
-#+begin_src nix
-package = pkgs.pulseaudioFull;
-#+end_src
-*** PulseAudio extra modules
-Extra PulseAudio modules to use. This is intended for out-of-tree pulseaudio modules like extra bluetooth codecs.
-#+name: pulseaudio-extramodules
-#+begin_src nix
-extraModules = [ pkgs.pulseaudio-modules-bt ];
-#+end_src
-*** PulseAudio daemon config
-idk, this config is supposed to improve audio quality
-#+name: pulseaudio-daemon-config
-#+begin_src nix
-daemon.config = {
-    default-sample-rate = "48000";
-    alternate-sample-rate = "44100";
-    default-sample-channels = "2";
-    default-channel-map = "front-left,front-right";
-    default-fragments = "2";
-    default-fragment-size-msec = "125";
-    enable-lfe-remixing = "no";
-    high-priority = "yes";
-    nice-level = "-11";
-    realtime-scheduling = "yes";
-    realtime-priority = "9";
-    rlimit-rtprio = "9";
-    resample-method = "soxr-vhq";
-    daemonize = "no";
-    default-sample-format = "float32le";
-};
-#+end_src
 ** OpenSSH
 This module configures OpenSSH, a suite of secure networking utilities based on the Secure Shell (SSH) protocol, which provides a secure channel over an unsecured network in a client–server architecture.
 #+begin_src nix :tangle modules/services/openssh.nix :noweb no-export

@@ -135,21 +135,10 @@ in
       package = pkgs.emacsGccPgtk;
       extraPackages = (epkgs: [ epkgs.vterm ]);
     };
-    git = (import ../../modules/terminal/gitemacs.nix) { inherit pkgs; };
     fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
     tmux = (import ../../modules/terminal/tmux.nix) { inherit pkgs; };
-    bat = (import ../../modules/terminal/bat.nix) { inherit pkgs; };
-    starship = (import ../../modules/terminal/starship.nix) { inherit pkgs; };
-    lsd = (import ../../modules/terminal/lsd.nix);
-    fzf = (import ../../modules/terminal/fzf.nix);
-    firefox = (import ../../modules/gui/firefox.nix) { inherit pkgs; };
 
     gpg.enable = true;
-
-    mpv = (import ../../modules/gui/mpvintel.nix);
-    qutebrowser = (import ../../modules/gui/qutebrowser.nix);
-    #firefox = (import ../../modules/gui/firefox.nix) { inherit pkgs; };
-    zathura = (import ../../modules/gui/zathura.nix);
   };
   #}}}
 

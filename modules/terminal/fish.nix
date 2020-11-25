@@ -3,7 +3,6 @@
 {
   enable = true;
 
-  # Abbreviation. similar to alias{{{
   shellAbbrs = {
     #Common commands
     "c" = "clear";

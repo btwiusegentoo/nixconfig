@@ -1,30 +1,21 @@
+# This file is generated from "README.org"
 {
-  enable = true;
-
-  searchEngines = {
-    DEFAULT = "https://google.com/search?q={}";
-  };
-
-  keyBindings = {
-    normal = {
-      "yd" = "spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' {url}";
-      "yf" = "hint links spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' --force-window yes {hint-url}";
+  programs.qutebrowser = {
+    enable = true;
+    searchEngines = {
+        DEFAULT = "https://google.com/search?q={}";
     };
-  };
-
-  # settings{{{
-  settings = {
-
-    qt.args = [ "enable-native-gpu-memory-buffers" "enable-gpu-rasterization" "use-gl=egl" "ignore-gpu-blacklist" "num-raster-threads=4" ];
-    url.start_pages = [ "https://btwiusegentoo.github.io/start.html" ];
-    url.default_page = "https://btwiusegentoo.github.io/start.html";
-
-    completion.web_history.max_items = 30;
-
-    zoom.default = "90%";
-
-    fonts = {
+    settings.qt.args = [ "enable-native-gpu-memory-buffers" "enable-gpu-rasterization" "use-gl=egl" "ignore-gpu-blacklist" "num-raster-threads=4" ];
+    keyBindings.normal."yd" = "spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' {url}";
+    keyBindings.normal."yf" = "hint links spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' --force-window yes {hint-url}";
+    settings.url.start_pages = [ "https://btwiusegentoo.github.io/start.html" ];
+    settings.url.default_page = "https://btwiusegentoo.github.io/start.html";
+    settings.zoom.default = "90%";
+    settings.fonts = {
       default_family = "SFNS Display";
+      web.family.standard = "SFNS Display";
+      web.family.serif = "SFNS Display";
+      web.family.sans_serif = "SFNS Display";
       web.family.fixed = "Spleen";
       completion = {
         category = "12pt Spleen";
@@ -47,12 +38,8 @@
       tabs.unselected = "12pt Spleen";
       #tabs = "12pt Spleen";
     };
-
-    # colors{{{
-    # base16-qutebrowser (https://github.com/theova/base16-qutebrowser)
-    # Base16 qutebrowser template by theova
-    # Material Palenight scheme by Nate Peterson
-    colors = {
+    settings.colors.webpage.darkmode.enabled = true;
+    settings.colors = {
       completion = {
         fg = "#959DCB";
         odd.bg = "#292D3E";
@@ -223,11 +210,10 @@
         };
       };
     }; # }}}
+    settings.completion.web_history.max_items = 30;
+    extraConfig = ''
+      c.editor.command = ["emacsclient", "-c", "--eval", "(find-file \"{}\")", "(org-mode)"]
+    '';
+
   };
-  # }}}
-
-  extraConfig = ''
-    c.editor.command = ["emacsclient", "-c", "--eval", "(find-file \"{}\")", "(org-mode)"]
-  '';
-
 }

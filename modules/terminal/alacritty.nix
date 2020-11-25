@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 {
   programs.alacritty = {
     enable = true;

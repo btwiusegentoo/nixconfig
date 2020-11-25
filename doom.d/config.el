@@ -19,7 +19,10 @@
 (custom-set-faces!
   '(mode-line :family "SFNS Display" :height 120)
   '(mode-line-inactive :family "SFNS Display" :height 120)
-  '(variable-pitch :family "SFNS Display" :height 120))
+  '(variable-pitch :family "SFNS Display" :height 110))
+(set-face-attribute 'default nil :font "Spleen")
+(set-face-attribute 'fixed-pitch nil :font "Spleen")
+(set-face-attribute 'variable-pitch nil :font "SFNS Display")
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -53,7 +56,7 @@
  doom-themes-enable-bold t
  doom-themes-enable-italic t
  doom-themes-treemacs-theme "doom-colors"
- display-line-numbers-type 'relative                   ; Set vim-like relative number
+ display-line-numbers-type nil                         ; Disable line numbers
  org-directory "~/org/"                                ; Set org mode files directory
  projectile-project-search-path '("~/code")            ; Set directory to search projects
  auto-save-default t                                   ; Enable autosaving
@@ -67,6 +70,9 @@
   standard-indent 4
   indent-tabs-mode nil
   )
+
+;; Disable line highlight
+(remove-hook! doom-first-buffer #'global-hl-line-mode)
 
 ; Centaur tabline
 (use-package! centaur-tabs
@@ -138,7 +144,8 @@
 
 ;; org mode
 (setq org-startup-with-inline-images t)
-(add-hook 'org-mode-hook (lambda () (display-line-numbers-mode -1)))
+(add-hook 'after-init-hook #'org-variable-pitch-setup)
+(add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
 (add-hook 'org-mode-hook 'rainbow-mode)
 
 ;; Evil mode
