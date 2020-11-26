@@ -20,9 +20,6 @@
   '(mode-line :family "SFNS Display" :height 120)
   '(mode-line-inactive :family "SFNS Display" :height 120)
   '(variable-pitch :family "SFNS Display" :height 110))
-(set-face-attribute 'default nil :font "Spleen")
-(set-face-attribute 'fixed-pitch nil :font "Spleen")
-(set-face-attribute 'variable-pitch nil :font "SFNS Display")
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -106,9 +103,6 @@
   (setq company-idle-delay 0
         company-minimum-prefix-length 1)
   (setq company-show-numbers t)
-  (add-hook 'evil-normal-state-entry-hook #'company-abort)
-  (define-key company-active-map (kbd "C-p") #'company-select-previous-or-abort)
-  (define-key company-active-map (kbd "C-n") #'company-select-next-or-abort)
   )
 
 (set-company-backend! '(c-mode
@@ -144,9 +138,12 @@
 
 ;; org mode
 (setq org-startup-with-inline-images t)
-(add-hook 'after-init-hook #'org-variable-pitch-setup)
-(add-hook 'org-mode-hook 'org-variable-pitch-minor-mode)
 (add-hook 'org-mode-hook 'rainbow-mode)
+;; Set variable pitch font
+(use-package! mixed-pitch
+  :hook
+  (org-mode . mixed-pitch-mode))
+;; company-mode becomes zig zag in org-mode. Use company-box(childframe) as workaround
 
 ;; Evil mode
 ;; disable evil-escape (jk -> escape)
