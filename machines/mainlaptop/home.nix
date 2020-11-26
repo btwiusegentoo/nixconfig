@@ -116,12 +116,9 @@ in
 
   # services {{{
   services = {
-
-    gpg-agent = (import ../../modules/services/gpg-agent.nix);
     emacs = (import ../../modules/services/emacsdaemon.nix);
     keynav.enable = true;
     lorri.enable = true;
-
   };
   #}}}
 
@@ -135,10 +132,6 @@ in
       package = pkgs.emacsGccPgtk;
       extraPackages = (epkgs: [ epkgs.vterm ]);
     };
-    fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
-    tmux = (import ../../modules/terminal/tmux.nix) { inherit pkgs; };
-
-    gpg.enable = true;
   };
   #}}}
 

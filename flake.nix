@@ -40,6 +40,7 @@
                 ./modules/common/systempackages.nix
                 ./modules/common/globallocale.nix
                 ./modules/services/pulseaudio.nix
+                ./modules/services/clamav.nix
                 ./modules/services/openssh.nix
                 ./modules/services/zram.nix
               ];
@@ -98,11 +99,14 @@
                             ./modules/gui/qutebrowser.nix
                             ./modules/gui/firefox.nix
                             ./modules/gui/mpv.nix
+                            ./modules/terminal/fish.nix
                             ./modules/terminal/git.nix
                             ./modules/terminal/bat.nix
                             ./modules/terminal/fzf.nix
                             ./modules/terminal/lsd.nix
                             ./modules/terminal/starship.nix
+                            ./modules/terminal/tmux.nix
+                            ./modules/services/gpg.nix
                           ];
                         };
                       })
@@ -116,6 +120,8 @@
                       defaults
                       ./machines/mainlaptop/configuration.nix
                       ./modules/common/xserverlaptop.nix
+                      ./modules/services/tlp.nix
+                      ./modules/services/thinkfan.nix
                       ./modules/common/fonts.nix
                       home-manager.nixosModules.home-manager
                       ({
@@ -130,11 +136,14 @@
                             ./modules/gui/qutebrowser.nix
                             ./modules/gui/firefox.nix
                             ./modules/gui/mpv.nix
+                            ./modules/terminal/fish.nix
                             ./modules/terminal/git.nix
                             ./modules/terminal/bat.nix
                             ./modules/terminal/fzf.nix
                             ./modules/terminal/lsd.nix
                             ./modules/terminal/starship.nix
+                            ./modules/terminal/tmux.nix
+                            ./modules/services/gpg.nix
                           ];
                         };
                       })
@@ -154,11 +163,14 @@
                         home-manager.users.hac = { ... }: {
                           imports = [
                             ./machines/mainserver/home.nix
+                            ./modules/terminal/fish.nix
                             ./modules/terminal/git.nix
                             ./modules/terminal/bat.nix
                             ./modules/terminal/fzf.nix
                             ./modules/terminal/lsd.nix
                             ./modules/terminal/starship.nix
+                            ./modules/terminal/tmux.nix
+                            ./modules/services/gpg.nix
                           ];
                         };
                       })

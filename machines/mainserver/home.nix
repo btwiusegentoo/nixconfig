@@ -44,10 +44,7 @@
 
   # services {{{
   services = {
-
     lorri.enable = true;
-    gpg-agent = (import ../../modules/services/gpg-agent-curses.nix);
-
   };
   #}}}
 
@@ -57,10 +54,6 @@
     home-manager.enable = true;
 
     neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; }; # don't compile
-
-    fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
-    tmux = (import ../../modules/terminal/tmux.nix) { inherit pkgs; };
-    gpg.enable = true;
   };
   #}}}
 

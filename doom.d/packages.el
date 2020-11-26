@@ -60,10 +60,11 @@
 (package! magit-delta)             ; magit syntax highlight
 
 ;; org-mode
-(package! org-variable-pitch)
+(package! mixed-pitch)
 
 ;; Filetypes
 (package! vimrc-mode)
+(package! fish-mode)
 
 ;; company(autocompletion) packages
 ;; (package! company-tabnine)

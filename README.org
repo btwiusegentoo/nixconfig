@@ -35,10 +35,19 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#nixpkgs-config][nixpkgs config]]
   - [[#import-overlays][import overlays]]
   - [[#machines][Machines]]
+- [[#nix][Nix]]
+  - [[#enable-flakes][Enable flakes]]
+  - [[#allowed-users][Allowed users]]
+  - [[#trusted-users][Trusted users]]
+  - [[#integrate-lorri-direnv-with-fish-shell][Integrate lorri direnv with fish shell]]
 - [[#input][Input]]
   - [[#keyboard][Keyboard]]
 - [[#output][Output]]
 - [[#other-hardwares][Other Hardwares]]
+  - [[#bluetooth][Bluetooth]]
+  - [[#tlp][TLP]]
+  - [[#thinkfan][Thinkfan]]
+  - [[#zram][ZRAM]]
 - [[#look-and-feel][Look And Feel]]
   - [[#color-scheme][Color Scheme]]
   - [[#fonts][Fonts]]
@@ -50,11 +59,13 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
 - [[#terminalshell][Terminal/Shell]]
   - [[#alacritty][Alacritty]]
   - [[#tty][TTY]]
+  - [[#fish-shell][fish shell]]
   - [[#starship][starship]]
   - [[#git][Git]]
   - [[#bat][bat]]
   - [[#fzf][fzf]]
   - [[#lsd][lsd]]
+  - [[#tmux][tmux]]
 - [[#web-browser][Web Browser]]
   - [[#qutebrowser][qutebrowser]]
   - [[#firefox][Firefox]]
@@ -62,19 +73,19 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#pulseaudio][PulseAudio]]
   - [[#mpv][mpv]]
   - [[#zathura][zathura]]
-- [[#common-configs][Common configs]]
-  - [[#nix][Nix]]
+- [[#neovim][neovim]]
+  - [[#open-lazygit-commit-window-inside-neovim][Open lazygit commit window inside neovim]]
+- [[#security][Security]]
   - [[#doas][doas]]
-  - [[#bluetooth][Bluetooth]]
+  - [[#clamav][ClamAV]]
+  - [[#gnupg][GnuPG]]
+- [[#common-configs][Common configs]]
   - [[#x-server][X server]]
   - [[#lightdm][LightDM]]
-  - [[#etc-files][/etc files]]
   - [[#locale][Locale]]
   - [[#xdg][XDG]]
-  - [[#config-files][~/.config files]]
 - [[#services][Services]]
   - [[#openssh][OpenSSH]]
-  - [[#zram][ZRAM]]
   - [[#dunst][Dunst]]
   - [[#picom][Picom]]
 - [[#machines-1][Machines]]
@@ -82,6 +93,9 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#desktop][Desktop]]
   - [[#laptop][Laptop]]
   - [[#server][Server]]
+- [[#symlinks][Symlinks]]
+  - [[#etc-files][/etc files]]
+  - [[#config-files][~/.config files]]
 - [[#credits][Credits]]
 
 * [0/4] Tasks :noexport:
@@ -165,6 +179,7 @@ Import default modules
           ./modules/common/systempackages.nix
           ./modules/common/globallocale.nix
           ./modules/services/pulseaudio.nix
+          ./modules/services/clamav.nix
           ./modules/services/openssh.nix
           ./modules/services/zram.nix
         ];
@@ -181,11 +196,14 @@ List default modules that *requires X11* here
 List default modules for home-manager that *doesn't require X11* here
 #+name: home-manager-defaults
 #+begin_src nix
+./modules/terminal/fish.nix
 ./modules/terminal/git.nix
 ./modules/terminal/bat.nix
 ./modules/terminal/fzf.nix
 ./modules/terminal/lsd.nix
 ./modules/terminal/starship.nix
+./modules/terminal/tmux.nix
+./modules/services/gpg.nix
 #+end_src
 ** home-manager X11 imports
 List default modules for home-manager that *requires X11* here
@@ -289,6 +307,8 @@ It imports modules (that contains configuration for) for each machines.
               defaults
               ./machines/mainlaptop/configuration.nix
               ./modules/common/xserverlaptop.nix
+              ./modules/services/tlp.nix
+              ./modules/services/thinkfan.nix
               <<x11-defaults>>
               home-manager.nixosModules.home-manager
               ({
@@ -331,6 +351,53 @@ It imports modules (that contains configuration for) for each machines.
           inherit pkgs;
         };
 #+end_src
+* Nix
+Configure Nix package manager
+#+begin_src nix :tangle modules/common/nix.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  <<nix-package>>
+
+  nix.extraOptions = ''
+    <<nix-enable-flakes>>
+    builders-use-substitutes = true
+  '';
+  <<nix-allowed-users>>
+  <<nix-trusted-users>>
+}
+#+end_src
+** Enable flakes
+Select Nix package that contains flakes
+#+name: nix-package
+#+begin_src nix
+nix.package = pkgs.nixFlakes;
+#+end_src
+Enable nix flakes(flakes is still a experimental feature.)
+#+name: nix-enable-flakes
+#+begin_src nix
+experimental-features = nix-command flakes
+#+end_src
+** Allowed users
+A list of names of users that are allowed to connect to the Nix daemon.
+#+name: nix-allowed-users
+#+begin_src nix
+nix.allowedUsers = [ "@wheel" ];
+#+end_src
+** Trusted users
+A list of names of users that have additional rights when connecting to the Nix daemon.
+Add user here to use cachix and run ~nixos-rebuild~ from that user.
+#+name: nix-trusted-users
+#+begin_src nix
+nix.trustedUsers = [ "root" "@wheel" ];
+#+end_src
+** Integrate lorri direnv with fish shell
+For direnv to work properly it needs to be hooked into the shell.
+Once the hook is configured, restart your shell for direnv to be activated.
+#+name: fish-direnv
+#+begin_src fish
+eval (direnv hook fish)
+#+end_src
 * Input
 ** Keyboard
 *** Xorg repeat rate
@@ -358,8 +425,186 @@ Xorg config
 layout = "us";
 xkbVariant = "dvorak";
 #+end_src
+*** IME
+Install Japanese IME
+#+name: japanese-ime
+#+begin_src nix
+i18n.inputMethod.enabled = "fcitx";
+i18n.inputMethod.fcitx.engines = with pkgs.fcitx-engines; [ mozc ];
+#+end_src
 * Output
 * Other Hardwares
+** Bluetooth
+This module configures bluetooth for all machines.
+#+begin_src nix :tangle modules/common/bluetooth.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  hardware.bluetooth = {
+    <<bluetooth-enable>>
+    <<bluetooth-package>>
+    <<bluetooth-config>>
+  };
+}
+#+end_src
+*** Enable Bluetooth
+#+name: bluetooth-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Bluetooth package
+bluezFull enables all bluez plugins. It's needed for many devices.
+#+name: bluetooth-package
+#+begin_src nix
+package = pkgs.bluezFull;
+#+end_src
+*** Bluetooth config
+Setting controller mode to ~"bredr"~ (disabling Bluetooth LE) is a workaround to fix airpods.
+#+name: bluetooth-config
+#+begin_src nix
+config = {
+    General = {
+        ControllerMode = "bredr";
+    };
+};
+#+end_src
+** TLP
+TLP is a feature-rich command line utility for Linux, saving laptop battery power without the need to delve deeper into technical details.
+#+begin_src nix :tangle modules/services/tlp.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  services.tlp = {
+    <<tlp-enable>>
+    settings = {
+      <<tlp-settings>>
+    };
+  };
+}
+#+end_src
+*** Enable TLP
+#+name: tlp-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** TLP settings
+#+name: tlp-settings
+#+begin_src nix
+"SOUND_POWER_SAVE_ON_AC" = 0;
+"SOUND_POWER_SAVE_ON_BAT" = 1;
+"SOUND_POWER_SAVE_CONTROLLER" = "Y";
+"BAY_POWEROFF_ON_AC" = 0;
+"BAY_POWEROFF_ON_BAT" = 1;
+"DISK_APM_LEVEL_ON_AC" = "254 254";
+"DISK_APM_LEVEL_ON_BAT" = "128 128";
+"DISK_IOSCHED" = "none none";
+"SATA_LINKPWR_ON_AC" = "med_power_with_dipm max_performance";
+"SATA_LINKPWR_ON_BAT" = "min_power";
+"MAX_LOST_WORK_SECS_ON_AC" = 15;
+"MAX_LOST_WORK_SECS_ON_BAT" = 60;
+"NMI_WATCHDOG" = 0;
+"WIFI_PWR_ON_AC" = "off";
+"WIFI_PWR_ON_BAT" = "on";
+"WOL_DISABLE" = "Y";
+"CPU_SCALING_GOVERNOR_ON_AC" = "powersave";
+"CPU_SCALING_GOVERNOR_ON_BAT" = "powersave";
+"CPU_MIN_PERF_ON_AC" = 0;
+"CPU_MAX_PERF_ON_AC" = 100;
+"CPU_MIN_PERF_ON_BAT" = 0;
+"CPU_MAX_PERF_ON_BAT" = 50;
+"CPU_BOOST_ON_AC" = 1;
+"CPU_BOOST_ON_BAT" = 1;
+"SCHED_POWERSAVE_ON_AC" = 0;
+"SCHED_POWERSAVE_ON_BAT" = 1;
+"ENERGY_PERF_POLICY_ON_AC" = "performance";
+"ENERGY_PERF_POLICY_ON_BAT" = "power";
+"RESTORE_DEVICE_STATE_ON_STARTUP" = 0;
+"RUNTIME_PM_ON_AC" = "on";
+"RUNTIME_PM_ON_BAT" = "auto";
+"PCIE_ASPM_ON_AC" = "default";
+"PCIE_ASPM_ON_BAT" = "powersupersave";
+"USB_AUTOSUSPEND" = 1;
+#+end_src
+** Thinkfan
+Thinkfan is a simple, lightweight fan controler for IBM/Lenovo ThinkPads
+#+begin_src nix :tangle modules/services/thinkfan.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  services.thinkfan = {
+    <<thinkfan-enable>>
+    <<thinkfan-fan>>
+    levels = ''
+        <<thinkfan-levels>>
+    '';
+  };
+}
+#+end_src
+*** Enable Thinkfan
+#+name: thinkfan-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Select Fan
+Specify the fan to use.
+#+name: thinkfan-fan
+#+begin_src nix
+fan = "tp_fan /proc/acpi/ibm/fan";
+#+end_src
+*** Select sensors
+thinkfan can read temperatures from three possible sources:
+~/proc/acpi/ibm/thermal~ which is provided by thinkpad_acpi kernel module
+~/sys/class/humon/*/temp*_input~ which may be provided by any humon drivers
+S.M.A.R.T. which reads the temperature directly from the hard drive using libatasmart
+#+name: thinkfan-sensors
+#+begin_src nix
+sensors = ''
+    hwmon /sys/class/thermal/thermal_zone0/temp
+'';
+#+end_src
+*** Levels
+Configure fan speed
+#+name: thinkfan-levels
+#+begin_src nix
+(0, 0,  42)
+(1, 40, 47)
+(2, 45, 52)
+(3, 50, 57)
+(4, 55, 62)
+(5, 60, 72)
+(6, 65, 77)
+(7, 70, 80)
+(127, 75, 32767)
+#+end_src
+** ZRAM
+ZRAM is a linux kernel module that creates in-memory compressed devices and swap space. Literally download more RAM
+#+begin_src nix :tangle modules/services/zram.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  zramSwap = {
+    <<zram-enable>>
+    <<zram-algorithm>>
+    <<zram-memory-percent>>
+  };
+}
+#+end_src
+*** Enable ZRAM
+#+name: zram-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** ZRAM algorithm
+Compression algorithm. lzo has good compression, but is slow. lz4 has bad compression, but is fast.
+zstd is both good compression and fast, but requires newer kernel.
+#+name: zram-algorithm
+#+begin_src nix
+algorithm = "zstd";
+#+end_src
+*** ZRAM memory percent
+Maximum amount of memory that can be used by the zram swap devices.
+Defaults to 1/2 of total RAM.
+#+name: zram-memory-percent
+#+begin_src nix
+memoryPercent = 100;
+#+end_src
 * Look And Feel
 ** Color Scheme
 I use material-palenight as colorscheme for everything from editor to browser.
@@ -716,6 +961,36 @@ material-palenight applied to [[fzf]]
 #+begin_src nix
 "--color=bg+:0,bg:#292D3E,spinner:#89DDFF,hl:#82AAFF,fg:#8796B0,header:#82AAFF,info:#FFCB6B,pointer:#89DDFF,marker:#89DDFF,fg+:#959DCB,prompt:#c792ea,hl+:#82AAFF"
 #+end_src
+*** fish shell colors
+#+name: fish-colors
+#+begin_src fish
+set -U fish_color_autosuggestion 676e95
+set -U fish_color_cancel -r
+set -U fish_color_command green #white
+set -U fish_color_comment 32374D
+set -U fish_color_cwd green
+set -U fish_color_cwd_root red
+set -U fish_color_end brblack #blue
+set -U fish_color_error red
+set -U fish_color_escape yellow #green
+set -U fish_color_history_current --bold
+set -U fish_color_host normal
+set -U fish_color_match --background=brblue
+set -U fish_color_normal normal
+set -U fish_color_operator blue #green
+set -U fish_color_param 8796B0
+set -U fish_color_quote yellow #brblack
+set -U fish_color_redirection cyan
+set -U fish_color_search_match bryellow --background=32374D
+set -U fish_color_selection white --bold --background=32374D
+set -U fish_color_status red
+set -U fish_color_user brgreen
+set -U fish_color_valid_path --underline
+set -U fish_pager_color_completion normal
+set -U fish_pager_color_description yellow --dim
+set -U fish_pager_color_prefix white --bold #--underline
+set -U fish_pager_color_progress brwhite --background=cyan
+#+end_src
 ** Fonts
 I use
 Apple Color Emoji for emojis (can be tested [[https://getemoji.com/][here]])
@@ -1053,8 +1328,6 @@ round-borders-exclude = [
 ** Alacritty
 Alacritty is a GPU-accelerated terminal emulator, written in Rust.
 I use as default terminal.
-#+ATTR_ORG :width 200
-#+ATTR_HTML :width 200
 [[https://raw.githubusercontent.com/alacritty/alacritty/master/extra/logo/alacritty-term%2Bscanlines.svg]]
 + [[Alacritty Colors][Colors]]
 + [[Alacritty Fonts][Fonts]]
@@ -1194,9 +1467,259 @@ Load console configurations early at initrd
 #+begin_src nix
 earlySetup = true;
 #+end_src
+** fish shell
+fish is a Unix shell that attempts to be more interactive and user-friendly
+#+begin_src nix :tangle modules/terminal/fish.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+
+{
+  programs.fish = {
+    <<fish-enable>>
+
+    shellAbbrs = {
+      <<fish-common-abbrs>>
+      <<fish-lazygit>>
+      <<fish-sshadd-git>>
+      <<fish-git-abbrs>>
+      <<fish-screenshots>>
+      <<fish-programs>>
+      <<fish-nixos>>
+      <<fish-misc-commands>>
+    };
+
+    plugins =
+      [
+        <<fish-plugin-z>>
+        <<fish-plugin-ssh-agent>>
+      ];
+
+    interactiveShellInit = ''
+      <<fish-vi-binds>>
+      <<fish-greeting>>
+      <<fish-esc-delay>>
+      <<fish-colors>>
+      <<fish-lazygit-neovim>>
+      <<fish-direnv>>
+      # vifm image preview
+      alias vifm="bash -c 'vifmrun'"
+
+    '';
+  };
+
+}
+#+end_src
+*** Enable fish
+Turn on to install fish shell
+#+name: fish-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Abbreviations
+**** Common commands
+
+#+name: fish-common-abbrs
+#+begin_src nix :noweb no-export
+<<fish-clear>>
+<<fish-lsd>>
+<<fish-sudoedit>>
+<<fish-bat>>
+<<fish-diff>>
+<<fish-tar>>
+<<fish-uefi>>
+#+end_src
+
+clear the terminal with *c*
+#+name: fish-clear
+#+begin_src nix
+"c" = "clear";
+#+end_src
+
+As I use Dvorak, it's really painful to type *ls* with pinky everytime. I use *s* and equivalents instead.
+I use [[lsd]] instead of ls command
+#+name: fish-lsd
+#+begin_src nix
+"s" = "lsd";
+"sa" = "lsd -aF";
+"ss" = "lsd -alF";
+#+end_src
+
+sudoedit
+#+name: fish-sudoedit
+#+begin_src nix
+"suv" = "sudoedit";
+#+end_src
+
+Use [[bat]] instead of cat command
+#+name: fish-bat
+#+begin_src nix
+"cat" = "bat";
+#+end_src
+
+Use diff-so-fancy instead of diff command
+#+name: fish-diff
+#+begin_src nix
+"diff" = "diff-so-fancy";
+#+end_src
+
+Turn colorization on always for tree command
+#+name: fish-tree
+#+begin_src nix
+"tree" = "tree -C";
+#+end_src
+
+
+Extract tar easier
+#+name: fish-tar
+#+begin_src nix
+"untar" = "tar -xvzf";
+#+end_src
+
+Restart to uefi easier
+#+name: fish-uefi
+#+begin_src nix
+"uefi" = "systemctl reboot --firmware-setup";
+#+end_src
+
+**** Commands to launch programs
+#+name: fish-programs
+#+begin_src nix :noweb no-export
+<<fish-editors>>
+<<fish-btm>>
+<<fish-vifm>>
+<<fish-ncpamixer>>
+#+end_src
+
+Launch editors from terminal easier
+#+name: fish-editors
+#+begin_src nix
+"v" = "nvim";
+"em" = "emacsclient -c";
+#+end_src
+
+Use bottom instead of top
+#+name: fish-btm
+#+begin_src nix
+"top" = "btm";
+#+end_src
+
+vifm(filemanager)
+#+name: fish-vifm
+#+begin_src nix
+"vf" = "vifm";
+#+end_src
+
+ncpamixer(TUI pulseaudio mixer)
+#+name: fish-ncpamixer
+#+begin_src nix
+"ncpa" = "ncpamixer";
+#+end_src
+**** Git commands
+
+lazygit(terminal Git UI)
+#+name: fish-lazygit
+#+begin_src nix
+"lg" = "lazygit";
+#+end_src
+
+Add GitHub SSH key to SSH agent
+#+name: fish-sshadd-git
+#+begin_src nix
+"sshgit" = "ssh-add ~/.ssh/githubkey";
+#+end_src
+
+Typical command line Git abbrs
+#+name: fish-git-abbrs
+#+begin_src nix
+"g" = "git";
+"ga" = "git add";
+"gall" = "git add --all";
+"gc" = "git clone";
+"gmc" = "gitmoji -c";
+"gco" = "git commit";
+"gp" = "git push";
+"gb" = "git branch";
+"gd" = "git diff";
+"gdst" = "git diff --staged";
+"gst" = "git status";
+"gch" = "git checkout";
+"gf" = "git fetch";
+"gmv" = "git mv";
+"gl" = "git log --graph --color=always";
+"glo" = "git log --graph --color=always --oneline";
+#+end_src
+**** Screenshot commands
+Take screenshot and copy to clipboard
+#+name: fish-screenshots
+#+begin_src nix
+"scrotclipsel" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
+"scrotclip" = "scrot ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
+#+end_src
+**** NixOS commands
+Commands for Nix package manager
+
+#+name: fish-nixos
+#+begin_src nix
+"nixre" = "doas nixos-rebuild switch --flake";
+"nixrt" = "doas nixos-rebuild test --flake";
+"dnixtrash" = "doas nix-collect-garbage -d";
+"nixtrash" = "nix-collect-garbage -d";
+#+end_src
+**** Misc commands
+#+name: fish-misc-commands
+#+begin_src nix
+"tty-clock" = "tty-clock -C 1 -c";
+"rickroll" = "curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash";
+#+end_src
+*** Plugins
+Z is a replacement for cd that learns your habit, tracks the directories you visit to make you jump to the directory you frequently use easier
+#+name: fish-plugin-z
+#+begin_src nix
+{
+    name = "z";
+    src = pkgs.fetchFromGitHub {
+    owner = "jethrokuan";
+    repo = "z";
+    rev = "ddeb28a7b6a1f0ec6dae40c636e5ca4908ad160a";
+    sha256 = "0c5i7sdrsp0q3vbziqzdyqn4fmp235ax4mn4zslrswvn8g3fvdyh";
+    };
+}
+#+end_src
+
+Integrate SSH agent with fish shell
+#+name: fish-plugin-ssh-agent
+#+begin_src nix
+{
+    name = "fish-ssh-agent";
+    src = pkgs.fetchFromGitHub {
+    owner = "danhper";
+    repo = "fish-ssh-agent";
+    rev = "ce90d80aa9549c626f9c5fc5a964536de015a192";
+    sha256 = "03zj5g7dxkhqpp9lijxxlnyx4cc7nqpapj5iqfv7swavyximicyi";
+    };
+}
+#+end_src
+*** Enable vi key bindings
+#+name: fish-vi-binds
+#+begin_src fish
+fish_vi_key_bindings
+#+end_src
+*** Startup message
+Disable fish shell startup message
+#+name: fish-greeting
+#+begin_src fish
+set fish_greeting
+#+end_src
+*** Esc key delay
+Set esc key delay
+#+name: fish-esc-delay
+#+begin_src fish
+set -U fish_escape_delay_ms 10
+#+end_src
 ** starship
 starship is a minimal, blazing fast, and infinitely customizable prompt for any shell
 #+begin_src nix :tangle modules/terminal/starship.nix :noweb no-export
+# This file is generated from "README.org"
 { pkgs, ... }:
 {
   programs.starship = {
@@ -1388,6 +1911,30 @@ I want to use my own aliases, so I disable it.
 #+name: lsd-aliases
 #+begin_src nix
 enableAliases = false;
+#+end_src
+** TODO tmux
+#+begin_src nix :tangle modules/terminal/tmux.nix :noweb no-export
+{ pkgs, ... }:
+
+{
+  programs.tmux = {
+    enable = true;
+    plugins = with pkgs; [
+      tmuxPlugins.vim-tmux-navigator
+      tmuxPlugins.prefix-highlight
+    ];
+    keyMode = "vi";
+    extraConfig = ''
+      set-option -g default-terminal "screen-256color"
+      set -ga terminal-overrides ",*256col*:Tc"
+      set-option -g prefix C-Space
+      bind C-Space send-prefix
+      bind s split-window -h
+      bind v split-window -v
+      source-file ./.palenight-tmux
+    '';
+  };
+}
 #+end_src
 * Web Browser
 ** qutebrowser
@@ -1720,26 +2267,24 @@ Turn on to recolor the document
 #+begin_src nix
 recolor = "true";
 #+end_src
-* Common configs
-** Nix
-Enable nix flakes(flakes is still a experimental feature.)
-Add ~@wheel~ to Nix allowed/trusted users. So you can use nix, run ~nixos-rebuild~, use cachix without root.
+* neovim
+** Open lazygit commit window inside neovim
+#+name: fish-lazygit-neovim
+#+begin_src fish
+# Open lazygit commit window inside neovim
+if [ -n "$NVIM_LISTEN_ADDRESS" ];
+    alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+end
 
-#+begin_src nix :tangle modules/common/nix.nix
-# This file is generated from "README.org"
-{ pkgs, ... }:
-{
-  nix.package = pkgs.nixFlakes;
-
-  nix.extraOptions = ''
-    experimental-features = nix-command flakes
-    builders-use-substitutes = true
-  '';
-  nix.allowedUsers = [ "@wheel" ];
-  nix.trustedUsers = [ "root" "@wheel" ];
-}
+if [ -n "$NVIM_LISTEN_ADDRESS" ];
+    export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+    export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+else
+    export VISUAL="nvim"
+    export EDITOR="nvim"
+end
 #+end_src
-
+* Security
 ** doas
 The *doas* utility is a program originally written for OpenBSD, that can be used as alternative for *sudo*
 The following code disables *sudo*, enables *doas*, permits ~@wheel~ group users to use doas with password.
@@ -1759,40 +2304,115 @@ The following code disables *sudo*, enables *doas*, permits ~@wheel~ group users
 }
 #+end_src
 
-** Bluetooth
-This module configures bluetooth for all machines.
-#+begin_src nix :tangle modules/common/bluetooth.nix :noweb no-export
+** ClamAV
+Clam AntiVirus is a FOSS antivirus software toolkit able to detect many types of malicious software, including viruses.
+#+begin_src nix :tangle modules/services/clamav.nix :noweb no-export
 # This file is generated from "README.org"
-{ pkgs, ... }:
 {
-  hardware.bluetooth = {
-    <<bluetooth-enable>>
-    <<bluetooth-package>>
-    <<bluetooth-config>>
+  services.clamav.daemon = {
+    <<clamav-daemon-enable>>
+    <<clamav-daemon-config>>
+  };
+  services.clamav.updater = {
+    <<clamav-updater-enable>>
+    <<clamav-updater-frequency>>
+    <<clamav-updater-interval>>
+    <<clamav-updater-config>>
   };
 }
 #+end_src
-*** Enable Bluetooth
-#+name: bluetooth-enable
+*** Enable ClamAV daemon
+#+name:clamav-daemon-enable
 #+begin_src nix
 enable = true;
 #+end_src
-*** Bluetooth package
-bluezFull enables all bluez plugins. It's needed for many devices.
-#+name: bluetooth-package
+*** ClamAV daemon configs
+#+name: clamav-daemon-config
 #+begin_src nix
-package = pkgs.bluezFull;
+extraConfig = ''
+
+'';
 #+end_src
-*** Bluetooth config
-Setting controller mode to ~"bredr"~ (disabling Bluetooth LE) is a workaround to fix airpods.
-#+name: bluetooth-config
+*** Enable ClamAV updater
+Enable ClamAV freshclam updater
+#+name: clamav-updater-enable
 #+begin_src nix
-config = {
-    General = {
-        ControllerMode = "bredr";
-    };
+enable = true;
+#+end_src
+*** ClamAV update frequency
+Number of database checks per day
+#+name: clamav-updater-frequency
+#+begin_src nix
+frequency = 24;
+#+end_src
+*** ClamAV updater interval
+How often freshclam is invoked
+#+name: clamav-updater-interval
+#+begin_src nix
+interval = "hourly";
+#+end_src
+*** ClamAV updater configs
+#+name: clamav-updater-config
+#+begin_src nix
+extraConfig = ''
+
+'';
+#+end_src
+** GnuPG
+GnuPG is a complete and free implementation of the OpenPGP standard.
+GnuPG allows to encrypt and sign your data and communication, features a versatile key management system as well as access modules for all kinds of public key directories.
+#+begin_src nix :tangel modules/services/gpg.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  services.gpg-agent = {
+    <<gpg-agent-enable>>
+    <<gpg-agent-ssh>>
+    <<gpg-agent-grabkbmouse>>
+    <<gpg-agent-pinentry-flavor>>
+  };
+  programs.gpg = {
+    <<gpg-enable>>
+    <<gpg-settings>>
+  };
+}
+#+end_src
+*** Enable GPG
+Install GnuPG
+#+name: gpg-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** GPG settings
+#+name: gpg-settings
+#+begin_src nix
+settings = {
 };
 #+end_src
+*** Enable GPG agent
+whether to install GnuPG private key agent
+#+name: gpg-agent-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Enable SSH support
+Use GPG agent for SSH keys
+#+name: gpg-agent-ssh
+#+begin_src nix
+enableSshSupport = true;
+#+end_src
+*** Grab the keyboard and mouse
+Tell the pinentry to grab the keyboard and mouse. This option should in general be used to avoid X-sniffing attacks.
+#+name: gpg-agent-grabkbmouse
+#+begin_src nix
+grabKeyboardAndMouse = true;
+#+end_src
+*** Select pinentry interface
+Use "curses" to be able to use GPG-agent without X11
+#+name: gpg-agent-pinentry-flavor
+#+begin_src nix
+pinentryFlavor = "curses";
+#+end_src
+* Common configs
 ** X server
 This module configures common stuff of xserver and displaymanager.
 Change layout [[#dvorak][here]] and repeat rate [[#xorg-repeat-rate][here]]
@@ -1909,45 +2529,16 @@ displayManager = {
     };
 };
 #+end_src
-** /etc files
-This module symlinks files that belongs in /etc.
-I like to use this path to store icons and wallpapers because this directory */etc* is not machine dependent like user's home folder.
-That makes possible to share same config that uses these files for more than one machines.
-#+begin_src nix :tangle modules/common/etcfiles.nix :noweb no-export
-# This file is generated from "README.org"
-{
-  environment.etc = {
-    <<etc-wallpaper-files>>
-    # icons
-    "icons/cpu.xpm".source = ../../icons/cpu.xpm;
-    "icons/ram.xpm".source = ../../icons/ram.xpm;
-    "icons/battery.xpm".source = ../../icons/battery.xpm;
-    "icons/battery-charging.xpm".source = ../../icons/battery-charging.xpm;
-    "icons/calendar.xpm".source = ../../icons/calendar.xpm;
-    "icons/volume.xpm".source = ../../icons/volume.xpm;
-    "icons/volume-mute.xpm".source = ../../icons/volume-mute.xpm;
-    "icons/clock.xpm".source = ../../icons/clock.xpm;
-    # misc
-    ".jislayoutremap.xkb".source = ../../configs/jislayoutremap.xkb;
-    "x230key.xkb".source = ../../configs/thinkpadlayout.xkb;
-    # emojis
-    "UnicodeData.txt".source = ../../textfiles/UnicodeData.txt;
-  };
-}
-#+end_src
-
 ** Locale
 Module to config locale related stuff
-mozc is a Japanese input method editor.
++ [[IME]]
 #+begin_src nix :tangle modules/common/globallocale.nix :noweb no-export
 # This file is generated from "README.org"
 { pkgs, config, ... }:
 
 {
   i18n.defaultLocale = "en_US.UTF-8";
-
-  i18n.inputMethod.enabled = "fcitx";
-  i18n.inputMethod.fcitx.engines = with pkgs.fcitx-engines; [ mozc ];
+  <<japanase-ime>>
 }
 #+end_src
 ** XDG
@@ -1998,54 +2589,6 @@ defaultApplications = {
     "x-scheme-handler/unknown" = "org.qutebrowser.qutebrowser.desktop";
 };
 };
-#+end_src
-** ~/.config files
-Specify files to symlink into $HOME/.config here.
-Usable for programs that Nix options doesn't exist.
-This module is imported from home-manager
-#+begin_src nix :tangle modules/common/xdg-configfiles.nix
-# This file is generated from "README.org"
-{ pkgs, ... }:
-
-{
-  "nvim/coc-settings.json".source = ../../configs/coc-settings.json;
-  "neofetch/config.conf".source = ../../configs/neofetch.conf;
-  "ncpamixer.conf".source = ../../configs/ncpamixer.conf;
-
-  "fontconfig/conf.d/10-prefer-emoji.conf".source = ../../configs/fontconfig/10-prefer-emoji.conf;
-  "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
-  "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
-
-  <<tridactylrc-symlink>>
-
-  # keynav{{{
-  "keynav/keynavrc".text = ''
-    super+semicolon start
-    s warp
-    m click 6
-    w click 5
-    v click 4
-    z click 7
-  '';
-  # }}}
-
-  # flashfocus
-  "flashfocus/flashfocus.yml".source = ../../configs/flashfocus.yml;
-
-  # nixpkgs{{{
-  "nixpkgs/config.nix".text = ''
-    { allowUnfree = true; }
-  '';
-  # }}}
-
-  "vifm/vifmrc".source = ../../configs/vifmrc.vim;
-
-  "PulseEffects/output/Perfect EQ.json".source = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/Perfect%20EQ.json";
-    name = "perfecteq.json";
-    sha256 = "04mjqsiajqdzp43fn16j6sfz3972yfpqq6s2vw0cnim5bp9a642b";
-  };
-}
 #+end_src
 * Services
 ** OpenSSH
@@ -2098,37 +2641,6 @@ Whether the root user can login using ssh.
 #+name: ssh-root-login
 #+begin_src nix
 permitRootLogin = "no";
-#+end_src
-** ZRAM
-ZRAM is a linux kernel module that creates in-memory compressed devices and swap space. Literally download more RAM
-#+begin_src nix :tangle modules/services/zram.nix :noweb no-export
-# This file is generated from "README.org"
-{
-  zramSwap = {
-    <<zram-enable>>
-    <<zram-algorithm>>
-    <<zram-memory-percent>>
-  };
-}
-#+end_src
-*** Enable ZRAM
-#+name: zram-enable
-#+begin_src nix
-enable = true;
-#+end_src
-*** ZRAM algorithm
-Compression algorithm. lzo has good compression, but is slow. lz4 has bad compression, but is fast.
-zstd is both good compression and fast, but requires newer kernel.
-#+name: zram-algorithm
-#+begin_src nix
-algorithm = "zstd";
-#+end_src
-*** ZRAM memory percent
-Maximum amount of memory that can be used by the zram swap devices.
-Defaults to 1/2 of total RAM.
-#+name: zram-memory-percent
-#+begin_src nix
-memoryPercent = 100;
 #+end_src
 ** Dunst
 Dunst is a minimal notification daemon. Mostly used by WM users.
@@ -2265,6 +2777,83 @@ imports =
 *** System
 ** Server
 *** System
+* Symlinks
+Nix modules to symlink various files included config files
+** /etc files
+This module symlinks files that belongs in /etc.
+I like to use this path to store icons and wallpapers because this directory */etc* is not machine dependent like user's home folder.
+That makes possible to share same config that uses these files for more than one machines.
+#+begin_src nix :tangle modules/common/etcfiles.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  environment.etc = {
+    <<etc-wallpaper-files>>
+    # icons
+    "icons/cpu.xpm".source = ../../icons/cpu.xpm;
+    "icons/ram.xpm".source = ../../icons/ram.xpm;
+    "icons/battery.xpm".source = ../../icons/battery.xpm;
+    "icons/battery-charging.xpm".source = ../../icons/battery-charging.xpm;
+    "icons/calendar.xpm".source = ../../icons/calendar.xpm;
+    "icons/volume.xpm".source = ../../icons/volume.xpm;
+    "icons/volume-mute.xpm".source = ../../icons/volume-mute.xpm;
+    "icons/clock.xpm".source = ../../icons/clock.xpm;
+    # misc
+    ".jislayoutremap.xkb".source = ../../configs/jislayoutremap.xkb;
+    "x230key.xkb".source = ../../configs/thinkpadlayout.xkb;
+    # emojis
+    "UnicodeData.txt".source = ../../textfiles/UnicodeData.txt;
+  };
+}
+#+end_src
+
+** ~/.config files
+Specify files to symlink into $HOME/.config here.
+Usable for programs that Nix options doesn't exist.
+This module is imported from home-manager
+#+begin_src nix :tangle modules/common/xdg-configfiles.nix
+# This file is generated from "README.org"
+{ pkgs, ... }:
+
+{
+  "nvim/coc-settings.json".source = ../../configs/coc-settings.json;
+  "neofetch/config.conf".source = ../../configs/neofetch.conf;
+  "ncpamixer.conf".source = ../../configs/ncpamixer.conf;
+
+  "fontconfig/conf.d/10-prefer-emoji.conf".source = ../../configs/fontconfig/10-prefer-emoji.conf;
+  "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
+  "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
+
+  <<tridactylrc-symlink>>
+
+  # keynav{{{
+  "keynav/keynavrc".text = ''
+    super+semicolon start
+    s warp
+    m click 6
+    w click 5
+    v click 4
+    z click 7
+  '';
+  # }}}
+
+  # flashfocus
+  "flashfocus/flashfocus.yml".source = ../../configs/flashfocus.yml;
+
+  # nixpkgs{{{
+  "nixpkgs/config.nix".text = ''
+    { allowUnfree = true; }
+  '';
+  # }}}
+
+  "vifm/vifmrc".source = ../../configs/vifmrc.vim;
+
+  "PulseEffects/output/Perfect EQ.json".source = pkgs.fetchurl {
+    url = "https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/Perfect%20EQ.json";
+    name = "perfecteq.json";
+    sha256 = "04mjqsiajqdzp43fn16j6sfz3972yfpqq6s2vw0cnim5bp9a642b";
+  };
+}
+#+end_src
 * Credits
 
 - [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in lock screen wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]

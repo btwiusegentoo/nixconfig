@@ -58,6 +58,7 @@
  projectile-project-search-path '("~/code")            ; Set directory to search projects
  auto-save-default t                                   ; Enable autosaving
  doom-modeline-enable-word-count nil
+ posframe-gtk-resize-child-frames 'resize-mode
  )
 
 ;; Set tabs to space
@@ -102,7 +103,7 @@
 (after! company
   (setq company-idle-delay 0
         company-minimum-prefix-length 1)
-  (setq company-show-numbers t)
+  (setq company-show-numbers nil)
   )
 
 (set-company-backend! '(c-mode
