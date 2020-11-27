@@ -32,14 +32,14 @@ import qualified XMonad.StackSet               as W
 
 -- type declaration here
 myModMask :: KeyMask
-myTerminal :: [Char]
-myFont :: [Char]
-myEmojiFont :: [Char]
+myTerminal :: String
+myFont :: String
+myEmojiFont :: String
 myPromptHeight :: Dimension
 myBorderWidth :: Dimension
-myWorkspaces :: [[Char]]
-myNormalBorderColor :: [Char]
-myFocusedBorderColor :: [Char]
+myWorkspaces :: [String]
+myNormalBorderColor :: String
+myFocusedBorderColor :: String
 
 myModMask = mod4Mask
 myTerminal = "alacritty"
