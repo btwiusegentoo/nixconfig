@@ -23,11 +23,6 @@ let
 in
 {
 
-  imports = [
-    # import xmonad nix expression
-    ../../modules/common/xmonad.nix
-  ];
-
   # Packages to install{{{
   home.packages = with pkgs; [
     trash-cli
@@ -141,7 +136,6 @@ in
 
   # services {{{
   services = {
-    emacs = (import ../../modules/services/emacsdaemon.nix);
     keynav.enable = true;
     lorri.enable = true;
   };
@@ -153,11 +147,6 @@ in
     home-manager.enable = true;
 
     neovim = (import ../../modules/editors/neovim.nix) { inherit pkgs; };
-    emacs = {
-      enable = true;
-      package = pkgs.emacsGccPgtk;
-      extraPackages = (epkgs: [ epkgs.vterm ]);
-    };
   };
   #}}}
 

@@ -93,12 +93,14 @@
                         home-manager.users.btw = { ... }: {
                           imports = [
                             ./machines/maindesktop/home.nix
+                            ./modules/common/xmonad.nix
                             ./modules/services/dunst.nix
                             ./modules/services/picom.nix
                             ./modules/terminal/alacritty.nix
                             ./modules/gui/qutebrowser.nix
                             ./modules/gui/firefox.nix
                             ./modules/gui/mpv.nix
+                            ./modules/editors/emacs.nix
                             ./modules/terminal/fish.nix
                             ./modules/terminal/git.nix
                             ./modules/terminal/bat.nix
@@ -130,12 +132,14 @@
                         home-manager.users.x230 = { ... }: {
                           imports = [
                             ./machines/mainlaptop/home.nix
+                            ./modules/common/xmonad.nix
                             ./modules/services/dunst.nix
                             ./modules/services/picom.nix
                             ./modules/terminal/alacritty.nix
                             ./modules/gui/qutebrowser.nix
                             ./modules/gui/firefox.nix
                             ./modules/gui/mpv.nix
+                            ./modules/editors/emacs.nix
                             ./modules/terminal/fish.nix
                             ./modules/terminal/git.nix
                             ./modules/terminal/bat.nix
