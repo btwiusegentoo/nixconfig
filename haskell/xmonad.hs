@@ -1,36 +1,50 @@
-
--- imports{{{
 import           Control.Arrow                  ( first )
-import           System.Exit
-import           XMonad                  hiding ( (|||) )
-import           XMonad.Actions.Navigation2D
-import           XMonad.Hooks.DynamicLog
-import           XMonad.Hooks.EwmhDesktops
-import           XMonad.Hooks.ManageDocks
-import           XMonad.Hooks.ManageHelpers
-import           XMonad.Layout.BinarySpacePartition
-import           XMonad.Layout.LayoutCombinators
-import           XMonad.Layout.Spacing
-import           XMonad.Layout.Spiral
-import           XMonad.Layout.NoBorders        ( smartBorders )
-import           XMonad.Prompt
-import           XMonad.Prompt.ConfirmPrompt
-import           XMonad.Prompt.FuzzyMatch
-import           XMonad.Prompt.Man
-import           XMonad.Prompt.Shell
-import           XMonad.Prompt.Unicode
-import           XMonad.Util.NamedScratchpad
-import           XMonad.Util.Run
-import           XMonad.Util.SpawnOnce
-import           XMonad.Util.Cursor (setDefaultCursor)
-
 import qualified Data.Map                      as M
+import           System.Exit                    ( exitSuccess )
+import           XMonad                  hiding ( (|||) )
+import           XMonad.Actions.Navigation2D    ( Direction2D(L, R)
+                                                , windowGo
+                                                , withNavigation2DConfig
+                                                )
+import           XMonad.Hooks.DynamicLog
+import           XMonad.Hooks.EwmhDesktops      ( ewmh
+                                                , fullscreenEventHook
+                                                )
+import           XMonad.Hooks.ManageDocks       ( avoidStruts
+                                                , docks
+                                                )
+import           XMonad.Hooks.ManageHelpers     ( doFullFloat
+                                                , isFullscreen
+                                                )
+import           XMonad.Layout.BinarySpacePartition
+                                                ( emptyBSP
+                                                , Rotate(Rotate)
+                                                , Swap(Swap)
+                                                )
+import           XMonad.Layout.LayoutCombinators
+                                                ( (|||)
+                                                , JumpToLayout(JumpToLayout)
+                                                )
+import           XMonad.Layout.NoBorders        ( smartBorders )
+import           XMonad.Layout.Spacing          ( spacingRaw
+                                                , Border(Border)
+                                                )
+import           XMonad.Layout.Spiral           ( spiral )
+import           XMonad.Prompt
+import           XMonad.Prompt.ConfirmPrompt    ( confirmPrompt )
+import           XMonad.Prompt.FuzzyMatch       ( fuzzyMatch )
+import           XMonad.Prompt.Man              ( manPrompt )
+import           XMonad.Prompt.Shell            ( shellPrompt )
+import           XMonad.Prompt.Unicode          ( mkUnicodePrompt )
 import qualified XMonad.StackSet               as W
--- }}}
+import           XMonad.Util.Cursor             ( setDefaultCursor )
+import           XMonad.Util.NamedScratchpad
+import           XMonad.Util.Run                ( hPutStrLn
+                                                , spawnPipe
+                                                )
+import           XMonad.Util.SpawnOnce          ( spawnOnce )
 
--- variables{{{
 
--- type declaration here
 myModMask :: KeyMask
 myTerminal :: String
 myFont :: String
@@ -65,18 +79,14 @@ myWorkspaces =
 myNormalBorderColor = "#2b2a3e"
 myFocusedBorderColor = "#c792ea"
 myGaps = spacingRaw False (Border 4 4 4 4) True (Border 4 4 4 4) True
--- }}}
 
--- keybindings{{{
 myKeys conf@XConfig { XMonad.modMask = modm } =
   M.fromList
     $  [ ((modm, xK_Return), spawn $ XMonad.terminal conf)
        , ((modm, xK_v)     , spawn $ myTerminal ++ " -e nvim")
        , ((modm, xK_z)     , spawn "emacsclient -c -a emacs ~/")
        , ((modm, xK_w)     , spawn "emacsclient -c -a emacs")
-       , ( (modm, xK_d)
-         , shellPrompt myXPConfig
-         )                  -- use xmonad prompt instead of dmenu.
+       , ((modm, xK_d)     , shellPrompt myXPConfig)                  -- use xmonad prompt instead of dmenu.
        , ( (modm .|. controlMask, xK_t)
          , namedScratchpadAction myScratchPads "terminal"
          ) -- terminal scratchpad
@@ -89,39 +99,19 @@ myKeys conf@XConfig { XMonad.modMask = modm } =
        , ( (modm .|. controlMask, xK_n)
          , namedScratchpadAction myScratchPads "vifm"
          )   -- file manager scratchpad
-       , ( (modm .|. controlMask, xK_m)
-         , manPrompt myXPConfig
-         ) -- search manpage
+       , ((modm .|. controlMask, xK_m), manPrompt myXPConfig) -- search manpage
        , ( (modm .|. controlMask, xK_e)
          , mkUnicodePrompt "xsel" ["-b"] "/etc/UnicodeData.txt" myEmojiXPConfig
          ) -- emoji->clipboard
-       , ( (modm, xK_b)
-         , spawn "qutebrowser"
-         )                     -- launch qutebrowser
-       , ( (modm, xK_p)
-         , spawn "touch ~/.cache/pomodoro_session"
-         ) -- start pomodoro
-       , ( (modm .|. shiftMask, xK_p)
-         , spawn "rm ~/.cache/pomodoro_session"
-         )    -- stop pomodoro
-       , ( (modm, xK_e)
-         , spawn "~/.emacs_anywhere/bin/run"
-         ) -- launch emacs_anywhere
-       , ( (0, 0x1008ff11)
-         , spawn "amixer -q sset Master 2%-"
-         )       -- decrease volume fn+a(HHKB Dvorak)
-       , ( (0, 0x1008ff13)
-         , spawn "amixer -q sset Master 2%+"
-         )       -- increase volume fn+o(HHKB Dvorak)
-       , ( (0, 0x1008FF12)
-         , spawn "amixer set Master toggle"
-         )        -- mute/unmute sound fn+e(HHKB Dvorak)
-       , ( (0, 0x1008ff02)
-         , spawn "xbacklight -inc 5"
-         )        -- increase brightness
-       , ( (0, 0x1008ff03)
-         , spawn "xbacklight -dec 5"
-         )        -- increase brightness
+       , ((modm, xK_b)              , spawn "qutebrowser")                     -- launch qutebrowser
+       , ((modm, xK_p)              , spawn "touch ~/.cache/pomodoro_session") -- start pomodoro
+       , ((modm .|. shiftMask, xK_p), spawn "rm ~/.cache/pomodoro_session")    -- stop pomodoro
+       , ((modm, xK_e)              , spawn "~/.emacs_anywhere/bin/run") -- launch emacs_anywhere
+       , ((0, 0x1008ff11)           , spawn "amixer -q sset Master 2%-")       -- decrease volume fn+a(HHKB Dvorak)
+       , ((0, 0x1008ff13)           , spawn "amixer -q sset Master 2%+")       -- increase volume fn+o(HHKB Dvorak)
+       , ((0, 0x1008FF12)           , spawn "amixer set Master toggle")        -- mute/unmute sound fn+e(HHKB Dvorak)
+       , ((0, 0x1008ff02)           , spawn "xbacklight -inc 5")        -- increase brightness
+       , ((0, 0x1008ff03)           , spawn "xbacklight -dec 5")        -- increase brightness
        -- , ( (0, xK_Print)
        --   , spawn "scrot screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'"
        --   ) -- fn+c(HHKB Dvorak)
@@ -137,40 +127,28 @@ myKeys conf@XConfig { XMonad.modMask = modm } =
        -- , ( (modm, xK_F2)
        --   , spawn "setxkbmap us"
          ) -- Switch to qwerty layout
-       , ( (modm, xK_F3)
-         , spawn "xinput --disable 11"
-         ) -- Disable trackpad
-       , ( (modm, xK_F4)
-         , spawn "xinput --enable 11"
-         ) -- Enable trackpad
-       , ((modm .|. shiftMask, xK_c), kill)
-       , ((modm, xK_space)          , sendMessage NextLayout)
+       , ((modm, xK_F3)                 , spawn "xinput --disable 11") -- Disable trackpad
+       , ((modm, xK_F4)                 , spawn "xinput --enable 11") -- Enable trackpad
+       , ((modm .|. shiftMask, xK_c)    , kill)
+       , ((modm, xK_space)              , sendMessage NextLayout)
        , ((modm, xK_t), sendMessage $ JumpToLayout "Spacing Tall")
-       , ((modm, xK_f)              , sendMessage $ JumpToLayout "Full")
+       , ((modm, xK_f)                  , sendMessage $ JumpToLayout "Full")
        , ((modm, xK_m), sendMessage $ JumpToLayout "Mirror Spacing Tall")
        , ((modm, xK_n), sendMessage $ JumpToLayout "Spacing BSP")
        , ((modm, xK_s), sendMessage $ JumpToLayout "Spacing Spiral")
-       , ( (modm .|. shiftMask, xK_t)
-         , withFocused $ windows . W.sink
-         ) -- unfloat window
+       , ((modm .|. shiftMask, xK_t)    , withFocused $ windows . W.sink) -- unfloat window
        , ((modm .|. shiftMask, xK_space), setLayout $ XMonad.layoutHook conf)
        , ((modm, xK_r)                  , refresh)
-       , ( (modm, xK_h)
-         , windowGo L False
-         ) -- Focus horizontally like i3wm. it's useful in some layouts
-       , ( (modm, xK_l)
-         , windowGo R False
-         ) -- ⬆
-       , ((modm, xK_j)              , windows W.focusDown)
-       , ((modm, xK_k)              , windows W.focusUp)
-       , ((modm, xK_g)              , windows W.focusMaster)
-       , ((modm .|. shiftMask, xK_g), windows W.swapMaster)
-       , ((modm .|. shiftMask, xK_j), windows W.swapDown)
-       , ((modm .|. shiftMask, xK_k), windows W.swapUp)
-       , ((modm .|. shiftMask, xK_h), sendMessage Shrink)
-       , ( (modm .|. shiftMask, xK_l)
-         , sendMessage Expand
-         )
+       , ((modm, xK_h)                  , windowGo L False) -- Focus horizontally like i3wm. it's useful in some layouts
+       , ((modm, xK_l)                  , windowGo R False) -- ⬆
+       , ((modm, xK_j)                  , windows W.focusDown)
+       , ((modm, xK_k)                  , windows W.focusUp)
+       , ((modm, xK_g)                  , windows W.focusMaster)
+       , ((modm .|. shiftMask, xK_g)    , windows W.swapMaster)
+       , ((modm .|. shiftMask, xK_j)    , windows W.swapDown)
+       , ((modm .|. shiftMask, xK_k)    , windows W.swapUp)
+       , ((modm .|. shiftMask, xK_h)    , sendMessage Shrink)
+       , ((modm .|. shiftMask, xK_l)    , sendMessage Expand)
     --, ((modm              ,   xK_comma  ), sendMessage (IncMasterN 1))
     --, ((modm              ,   xK_period ), sendMessage (IncMasterN (-1)))
        , ( (modm, xK_comma)
@@ -197,9 +175,7 @@ myKeys conf@XConfig { XMonad.modMask = modm } =
        | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
        , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]
        ]
--- }}}
 
--- mouse bindings{{{
 myMouseBindings XConfig { XMonad.modMask = modm } = M.fromList
 
     -- mod-button1, Set the window to floating mode and move by dragging
@@ -208,9 +184,7 @@ myMouseBindings XConfig { XMonad.modMask = modm } = M.fromList
     )
 
     -- mod-button2, Raise the window to the top of the stack
-  , ( (modm, button2)
-    , \w -> focus w >> windows W.shiftMaster
-    )
+  , ((modm, button2), \w -> focus w >> windows W.shiftMaster)
 
     -- mod-button3, Set the window to floating mode and resize by dragging
   , ( (modm, button3)
@@ -219,9 +193,7 @@ myMouseBindings XConfig { XMonad.modMask = modm } = M.fromList
 
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
   ]
--- }}}
 
--- prompt keybindings{{{
 myXPKeymap =
   M.fromList
     $  map
@@ -237,9 +209,7 @@ myXPKeymap =
          , (xK_Escape   , quit)
          ]
     ++ map (first $ (,) controlMask) [(xK_v, pasteString)]
--- }}}
 
--- prompt config{{{
 myXPConfig = def { font              = myFont
                  , bgColor           = "#232635"
                  , fgColor           = "#A6ACCD"
@@ -269,9 +239,7 @@ myEmojiXPConfig = def { font              = myEmojiFont
                       , searchPredicate   = fuzzyMatch
                       , alwaysHighlight   = True
                       }
--- }}}
 
--- layout{{{
 myLayout = avoidStruts $ smartBorders
   (tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| Full)
  where
@@ -288,9 +256,7 @@ myLayout = avoidStruts $ smartBorders
 
   bspgaps    = myGaps emptyBSP
   spiralgaps = myGaps $ spiral (6 / 7)
--- }}}
 
--- scratchpads{{{
 myScratchPads =
   [ NS "terminal" spawnTerm   findTerm   manageTerm
   , NS "mixer"    spawnMixer  findMixer  manageMixer
@@ -327,9 +293,7 @@ myScratchPads =
   findvifm = title =? "vifmScratchpad"
   managevifm =
     customFloating $ W.RationalRect centrall centralt centralw centralh
--- }}}
 
--- managehook{{{
 myManageHook =
   composeAll
       [ className =? "Gimp" --> doFloat
@@ -337,9 +301,7 @@ myManageHook =
       , isFullscreen --> doFullFloat
       ]
     <+> namedScratchpadManageHook myScratchPads
--- }}}
 
--- loghook{{{
 myLogHook h = dynamicLogWithPP xmobarPP
   { ppOutput          = hPutStrLn h
   , ppSort            = fmap (namedScratchpadFilterOutWorkspace .) (ppSort def) -- hide nsp
@@ -351,9 +313,7 @@ myLogHook h = dynamicLogWithPP xmobarPP
   , ppSep             = "  |  "
   , ppTitle           = mempty
   }
--- }}}
 
--- startuphook{{{
 myStartupHook = do
     -- set default wallpaper
   spawnOnce "feh --bg-fill /etc/wallpapers/wallpaper1.png &"
@@ -367,43 +327,36 @@ myStartupHook = do
   spawnOnce "flashfocus &"
   -- set cursor
   setDefaultCursor xC_left_ptr
--- }}}
 
 myEventHook = handleEventHook def <+> fullscreenEventHook
-
--- functions {{{
 
 getActiveLayoutDescription :: X String
 getActiveLayoutDescription = do
   workspaces <- gets windowset
   return $ description . W.layout . W.workspace . W.current $ workspaces
 
--- }}}
-
 main :: IO ()
 main = do
   h <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
   xmonad $ docks $ withNavigation2DConfig def $ ewmh
-    def { handleEventHook = handleEventHook def <+> fullscreenEventHook } {
+    def { handleEventHook = handleEventHook def <+> fullscreenEventHook }
+      {
       -- simple stuff
-                                                                            terminal = myTerminal
-                                                                          , focusFollowsMouse = myFocusFollowsMouse
-                                                                          , clickJustFocuses = myClickJustFocuses
-                                                                          , borderWidth = myBorderWidth
-                                                                          , modMask = myModMask
-                                                                          , workspaces = myWorkspaces
-                                                                          , normalBorderColor = myNormalBorderColor
-                                                                          , focusedBorderColor = myFocusedBorderColor
+        terminal           = myTerminal
+      , focusFollowsMouse  = myFocusFollowsMouse
+      , clickJustFocuses   = myClickJustFocuses
+      , borderWidth        = myBorderWidth
+      , modMask            = myModMask
+      , workspaces         = myWorkspaces
+      , normalBorderColor  = myNormalBorderColor
+      , focusedBorderColor = myFocusedBorderColor
       -- key bindings
-                                                                          , keys = myKeys
-                                                                          , mouseBindings = myMouseBindings
+      , keys               = myKeys
+      , mouseBindings      = myMouseBindings
       -- hooks, layouts
-                                                                          , layoutHook = myLayout
-                                                                          , manageHook = myManageHook
-                                                                          , handleEventHook = myEventHook
-                                                                          , logHook = myLogHook
-                                                                            h
-                                                                          , startupHook = myStartupHook
-                                                                          }
-
--- vim: ft=haskell sw=4 fdm=marker:
+      , layoutHook         = myLayout
+      , manageHook         = myManageHook
+      , handleEventHook    = myEventHook
+      , logHook            = myLogHook h
+      , startupHook        = myStartupHook
+      }
