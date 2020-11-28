@@ -35,14 +35,15 @@
                 ./modules/common/nix.nix
                 ./modules/common/doas.nix
                 ./modules/common/console.nix
-                ./modules/common/bluetooth.nix
+                ./modules/hardware/bluetooth.nix
+                ./modules/hardware/zram.nix
+                ./modules/hardware/earlyoom.nix
                 ./modules/common/etcfiles.nix
                 ./modules/common/systempackages.nix
                 ./modules/common/globallocale.nix
                 ./modules/services/pulseaudio.nix
                 ./modules/services/clamav.nix
                 ./modules/services/openssh.nix
-                ./modules/services/zram.nix
               ];
             };
     in
@@ -85,7 +86,9 @@
                       defaults
                       ./machines/maindesktop/configuration.nix
                       ./modules/common/xserver.nix
-                      <<x11-defaults>>
+                      ./modules/hardware/fstrim.nix
+                      ./modules/common/fonts.nix
+                      ./modules/gui/blueman.nix
                       home-manager.nixosModules.home-manager
                       ({
                         home-manager.useGlobalPkgs = true;
@@ -93,8 +96,22 @@
                         home-manager.users.btw = { ... }: {
                           imports = [
                             ./machines/maindesktop/home.nix
-                            <<home-manager-x11-defaults>>
-                            <<home-manager-defaults>>
+                            ./modules/common/xmonad.nix
+                            ./modules/services/dunst.nix
+                            ./modules/services/picom.nix
+                            ./modules/terminal/alacritty.nix
+                            ./modules/gui/qutebrowser.nix
+                            ./modules/gui/firefox.nix
+                            ./modules/gui/mpv.nix
+                            ./modules/editors/emacs.nix
+                            ./modules/terminal/fish.nix
+                            ./modules/terminal/git.nix
+                            ./modules/terminal/bat.nix
+                            ./modules/terminal/fzf.nix
+                            ./modules/terminal/lsd.nix
+                            ./modules/terminal/starship.nix
+                            ./modules/terminal/tmux.nix
+                            ./modules/services/gpg.nix
                           ];
                         };
                       })
@@ -108,9 +125,12 @@
                       defaults
                       ./machines/mainlaptop/configuration.nix
                       ./modules/common/xserverlaptop.nix
-                      ./modules/services/tlp.nix
-                      ./modules/services/thinkfan.nix
-                      <<x11-defaults>>
+                      ./modules/hardware/fstrim.nix
+                      ./modules/hardware/tlp.nix
+                      ./modules/hardware/thinkfan.nix
+                      ./modules/hardware/libinput.nix
+                      ./modules/common/fonts.nix
+                      ./modules/gui/blueman.nix
                       home-manager.nixosModules.home-manager
                       ({
                         home-manager.useGlobalPkgs = true;
@@ -118,8 +138,22 @@
                         home-manager.users.x230 = { ... }: {
                           imports = [
                             ./machines/mainlaptop/home.nix
-                            <<home-manager-x11-defaults>>
-                            <<home-manager-defaults>>
+                            ./modules/common/xmonad.nix
+                            ./modules/services/dunst.nix
+                            ./modules/services/picom.nix
+                            ./modules/terminal/alacritty.nix
+                            ./modules/gui/qutebrowser.nix
+                            ./modules/gui/firefox.nix
+                            ./modules/gui/mpv.nix
+                            ./modules/editors/emacs.nix
+                            ./modules/terminal/fish.nix
+                            ./modules/terminal/git.nix
+                            ./modules/terminal/bat.nix
+                            ./modules/terminal/fzf.nix
+                            ./modules/terminal/lsd.nix
+                            ./modules/terminal/starship.nix
+                            ./modules/terminal/tmux.nix
+                            ./modules/services/gpg.nix
                           ];
                         };
                       })
@@ -139,7 +173,14 @@
                         home-manager.users.hac = { ... }: {
                           imports = [
                             ./machines/mainserver/home.nix
-                            <<home-manager-defaults>>
+                            ./modules/terminal/fish.nix
+                            ./modules/terminal/git.nix
+                            ./modules/terminal/bat.nix
+                            ./modules/terminal/fzf.nix
+                            ./modules/terminal/lsd.nix
+                            ./modules/terminal/starship.nix
+                            ./modules/terminal/tmux.nix
+                            ./modules/services/gpg.nix
                           ];
                         };
                       })

@@ -1,3 +1,4 @@
+-- This file is generated from "README.org"
 import           Control.Arrow                  ( first )
 import qualified Data.Map                      as M
 import           System.Exit                    ( exitSuccess )
@@ -44,13 +45,6 @@ import           XMonad.Util.Run                ( hPutStrLn
                                                 )
 import           XMonad.Util.SpawnOnce          ( spawnOnce )
 import           XMonad.Util.EZConfig           ( additionalKeysP )
-
-
-myPromptHeight :: Dimension
-myBorderWidth :: Dimension
-myNormalBorderColor :: String
-myFocusedBorderColor :: String
-
 myModMask :: KeyMask
 myModMask = mod4Mask
 myTerminal :: String
@@ -71,16 +65,15 @@ myWorkspaces =
   , "\8203\8203\8203\8203\8203\8203\8203\8203"
   , "\8203\8203\8203\8203\8203\8203\8203\8203\8203"
   ]
-myPromptHeight = 30
-myFocusFollowsMouse :: Bool
-myFocusFollowsMouse = True
-myClickJustFocuses :: Bool
-myClickJustFocuses = False
+myBorderWidth :: Dimension
 myBorderWidth = 2
+myPromptHeight :: Dimension
+myPromptHeight = 30
+myNormalBorderColor :: String
 myNormalBorderColor = "#2b2a3e"
+myFocusedBorderColor :: String
 myFocusedBorderColor = "#c792ea"
 myGaps = spacingRaw False (Border 4 4 4 4) True (Border 4 4 4 4) True
-
 myKeys :: [(String, X ())]
 myKeys =
   [
@@ -159,6 +152,53 @@ myKeys =
           _             -> sendMessage $ IncMasterN (-1)
     )
   ]
+myXPKeymap =
+  M.fromList
+    $  map
+         (first $ (,) 0)
+         [ (xK_Return   , setSuccess True >> setDone True)
+         , (xK_KP_Enter , setSuccess True >> setDone True)
+         , (xK_BackSpace, deleteString Prev)
+         , (xK_Delete   , deleteString Prev)
+         , (xK_Left     , moveCursor Prev)
+         , (xK_Right    , moveCursor Next)
+         , (xK_Down     , moveHistory W.focusUp')
+         , (xK_Up       , moveHistory W.focusDown')
+         , (xK_Escape   , quit)
+         ]
+    ++ map (first $ (,) controlMask) [(xK_v, pasteString)]
+myXPConfig = def { font              = myFont
+                 , bgColor           = "#232635"
+                 , fgColor           = "#A6ACCD"
+                 , bgHLight          = "#444267"
+                 , fgHLight          = "#A6ACCD"
+                 , borderColor       = "#2b2a3e"
+                 , promptKeymap      = myXPKeymap
+                 , promptBorderWidth = 0
+                 , position          = Top
+                 , height            = myPromptHeight
+                 , autoComplete      = Nothing
+                 , searchPredicate   = fuzzyMatch
+                 , alwaysHighlight   = True
+                 }
+myEmojiXPConfig = def { font              = myEmojiFont
+                      , bgColor           = "#232635"
+                      , fgColor           = "#A6ACCD"
+                      , bgHLight          = "#444267"
+                      , fgHLight          = "#A6ACCD"
+                      , borderColor       = "#2b2a3e"
+                      , promptKeymap      = myXPKeymap
+                      , promptBorderWidth = 0
+                      , position          = Top
+                      , height            = myPromptHeight
+                      , autoComplete      = Nothing
+                      , searchPredicate   = fuzzyMatch
+                      , alwaysHighlight   = True
+                      }
+myFocusFollowsMouse :: Bool
+myFocusFollowsMouse = True
+myClickJustFocuses :: Bool
+myClickJustFocuses = False
 
 myMouseBindings XConfig { XMonad.modMask = modm } = M.fromList
 
@@ -177,53 +217,6 @@ myMouseBindings XConfig { XMonad.modMask = modm } = M.fromList
 
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
   ]
-
-myXPKeymap =
-  M.fromList
-    $  map
-         (first $ (,) 0)
-         [ (xK_Return   , setSuccess True >> setDone True)
-         , (xK_KP_Enter , setSuccess True >> setDone True)
-         , (xK_BackSpace, deleteString Prev)
-         , (xK_Delete   , deleteString Prev)
-         , (xK_Left     , moveCursor Prev)
-         , (xK_Right    , moveCursor Next)
-         , (xK_Down     , moveHistory W.focusUp')
-         , (xK_Up       , moveHistory W.focusDown')
-         , (xK_Escape   , quit)
-         ]
-    ++ map (first $ (,) controlMask) [(xK_v, pasteString)]
-
-myXPConfig = def { font              = myFont
-                 , bgColor           = "#232635"
-                 , fgColor           = "#A6ACCD"
-                 , bgHLight          = "#444267"
-                 , fgHLight          = "#A6ACCD"
-                 , borderColor       = "#2b2a3e"
-                 , promptKeymap      = myXPKeymap
-                 , promptBorderWidth = 0
-                 , position          = Top
-                 , height            = myPromptHeight
-                 , autoComplete      = Nothing
-                 , searchPredicate   = fuzzyMatch
-                 , alwaysHighlight   = True
-                 }
-
-myEmojiXPConfig = def { font              = myEmojiFont
-                      , bgColor           = "#232635"
-                      , fgColor           = "#A6ACCD"
-                      , bgHLight          = "#444267"
-                      , fgHLight          = "#A6ACCD"
-                      , borderColor       = "#2b2a3e"
-                      , promptKeymap      = myXPKeymap
-                      , promptBorderWidth = 0
-                      , position          = Top
-                      , height            = myPromptHeight
-                      , autoComplete      = Nothing
-                      , searchPredicate   = fuzzyMatch
-                      , alwaysHighlight   = True
-                      }
-
 myLayout = avoidStruts $ smartBorders
   (tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| Full)
  where
@@ -240,7 +233,6 @@ myLayout = avoidStruts $ smartBorders
 
   bspgaps    = myGaps emptyBSP
   spiralgaps = myGaps $ spiral (6 / 7)
-
 myScratchPads =
   [ NS "terminal" spawnTerm   findTerm   manageTerm
   , NS "mixer"    spawnMixer  findMixer  manageMixer
@@ -277,7 +269,6 @@ myScratchPads =
   findvifm = title =? "vifmScratchpad"
   managevifm =
     customFloating $ W.RationalRect centrall centralt centralw centralh
-
 myManageHook =
   composeAll
       [ className =? "Gimp" --> doFloat
@@ -285,7 +276,16 @@ myManageHook =
       , isFullscreen --> doFullFloat
       ]
     <+> namedScratchpadManageHook myScratchPads
-
+myStartupHook = do
+  spawnOnce "feh --bg-fill /etc/wallpapers/wallpaper1.png &"
+  spawnOnce "nitrogen --restore &"
+  setDefaultCursor xC_left_ptr
+  -- spawn Japanese IME
+  spawnOnce "fcitx -d &"
+  -- start screen locker
+  spawnOnce "light-locker --lock-on-suspend &"
+  -- window animation
+  spawnOnce "flashfocus &"
 myLogHook h = dynamicLogWithPP xmobarPP
   { ppOutput          = hPutStrLn h
   , ppSort            = fmap (namedScratchpadFilterOutWorkspace .) (ppSort def) -- hide nsp
@@ -297,23 +297,7 @@ myLogHook h = dynamicLogWithPP xmobarPP
   , ppSep             = "  |  "
   , ppTitle           = mempty
   }
-
-myStartupHook = do
-    -- set default wallpaper
-  spawnOnce "feh --bg-fill /etc/wallpapers/wallpaper1.png &"
-  -- now set custom wallpaper if config exists
-  spawnOnce "nitrogen --restore &"
-  -- spawn Japanese IME
-  spawnOnce "fcitx -d &"
-  -- start screen locker
-  spawnOnce "light-locker --lock-on-suspend &"
-  -- window animation
-  spawnOnce "flashfocus &"
-  -- set cursor
-  setDefaultCursor xC_left_ptr
-
 myEventHook = handleEventHook def <+> fullscreenEventHook
-
 getActiveLayoutDescription :: X String
 getActiveLayoutDescription = do
   workspaces <- gets windowset

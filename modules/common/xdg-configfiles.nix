@@ -10,7 +10,9 @@
   "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
   "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
 
-  <<tridactylrc-symlink>>
+  "tridactyl/tridactylrc".text = ''
+      <<tridactylrc>>
+  '';
 
   # keynav{{{
   "keynav/keynavrc".text = ''

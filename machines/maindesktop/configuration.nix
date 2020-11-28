@@ -66,12 +66,6 @@
 
   environment.variables = (import ../../modules/common/globalvars.nix);
 
-  services = {
-    fstrim.enable = true; # Trim ssd
-    blueman.enable = true; # Used for bluetooth
-    earlyoom.enable = true;
-  };
-
   virtualisation = import (../../modules/virtualisation/default.nix);
 
   # enable sound

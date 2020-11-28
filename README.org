@@ -42,12 +42,15 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#integrate-lorri-direnv-with-fish-shell][Integrate lorri direnv with fish shell]]
 - [[#input][Input]]
   - [[#keyboard][Keyboard]]
+  - [[#trackpad][Trackpad]]
 - [[#output][Output]]
 - [[#other-hardwares][Other Hardwares]]
   - [[#bluetooth][Bluetooth]]
   - [[#tlp][TLP]]
   - [[#thinkfan][Thinkfan]]
   - [[#zram][ZRAM]]
+  - [[#ssd-trim][SSD trim]]
+  - [[#early-oom][Early oom]]
 - [[#look-and-feel][Look And Feel]]
   - [[#color-schemethemes][Color Scheme/Themes]]
   - [[#style][Style]]
@@ -65,11 +68,19 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#starship][starship]]
   - [[#shell-utilities][Shell utilities]]
 - [[#xmonad][xmonad]]
-  - [[#install-xmonad-set-config-file-pathxmonadhs][Install xmonad/ Set config file path(xmonad.hs)]]
+  - [[#install-xmonad-set-config-file-path][Install xmonad/ Set config file path]]
+  - [[#imports][imports]]
   - [[#workspaces][Workspaces]]
   - [[#xmonad-prompt][xmonad prompt]]
-  - [[#keybinds][keybinds]]
   - [[#set-default-terminal][Set default terminal]]
+  - [[#set-gaps][Set gaps]]
+  - [[#keybindings][Keybindings]]
+  - [[#layouts][Layouts]]
+  - [[#startupsautostart][Startups(autostart)]]
+  - [[#scratchpads][Scratchpads]]
+  - [[#managehook][ManageHook]]
+  - [[#mouse][Mouse]]
+  - [[#function-to-get-active-layout-description][Function to get active layout description]]
   - [[#xmonadhs-base-code][xmonad.hs base code]]
 - [[#emacs][Emacs]]
   - [[#install-emacs-nativecomp-pgtk][Install Emacs nativecomp pgtk]]
@@ -198,14 +209,15 @@ Import default modules
           ./modules/common/nix.nix
           ./modules/common/doas.nix
           ./modules/common/console.nix
-          ./modules/common/bluetooth.nix
+          ./modules/hardware/bluetooth.nix
+          ./modules/hardware/zram.nix
+          ./modules/hardware/earlyoom.nix
           ./modules/common/etcfiles.nix
           ./modules/common/systempackages.nix
           ./modules/common/globallocale.nix
           ./modules/services/pulseaudio.nix
           ./modules/services/clamav.nix
           ./modules/services/openssh.nix
-          ./modules/services/zram.nix
         ];
       };
 #+end_src
@@ -215,6 +227,7 @@ List default modules that *requires X11* here
 #+name: x11-defaults
 #+begin_src nix
 ./modules/common/fonts.nix
+./modules/gui/blueman.nix
 #+end_src
 ** home-manager imports
 List default modules for home-manager that *doesn't require X11* here
@@ -297,7 +310,7 @@ These are the codes that evaluates a NixOS configuration for tools like ~nixos-r
 It imports modules (that contains configuration for) for each machines.
 *** Desktop
 #+name: desktop1
-#+begin_src nix
+#+begin_src nix :noweb no-export
         desktop1 = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules =
@@ -305,6 +318,7 @@ It imports modules (that contains configuration for) for each machines.
               defaults
               ./machines/maindesktop/configuration.nix
               ./modules/common/xserver.nix
+              ./modules/hardware/fstrim.nix
               <<x11-defaults>>
               home-manager.nixosModules.home-manager
               ({
@@ -325,7 +339,7 @@ It imports modules (that contains configuration for) for each machines.
 
 *** Laptop
 #+name: laptop1
-#+begin_src nix
+#+begin_src nix :noweb no-export
         laptop1 = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules =
@@ -333,8 +347,10 @@ It imports modules (that contains configuration for) for each machines.
               defaults
               ./machines/mainlaptop/configuration.nix
               ./modules/common/xserverlaptop.nix
-              ./modules/services/tlp.nix
-              ./modules/services/thinkfan.nix
+              ./modules/hardware/fstrim.nix
+              ./modules/hardware/tlp.nix
+              ./modules/hardware/thinkfan.nix
+              ./modules/hardware/libinput.nix
               <<x11-defaults>>
               home-manager.nixosModules.home-manager
               ({
@@ -355,7 +371,7 @@ It imports modules (that contains configuration for) for each machines.
 
 *** Server
 #+name: server1
-#+begin_src nix
+#+begin_src nix :noweb no-export
         server1 = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules =
@@ -458,45 +474,63 @@ Install Japanese IME
 i18n.inputMethod.enabled = "fcitx";
 i18n.inputMethod.fcitx.engines = with pkgs.fcitx-engines; [ mozc ];
 #+end_src
+** Trackpad
+I use libinput because the better palm detection.
+It's a minimal config because trackpad is mostly disabled.
+#+begin_src nix :tangle modules/hardware/libinput.nix
+# This file is generated from "README.org"
+{
+  services.xserver.libinput.enable = true;
+  services.xserver.libinput.naturalScrolling = true;
+  services.xserver.libinput.disableWhileTyping = true;
+  services.xserver.libinput.accelSpeed = "1.000000";
+}
+#+end_src
 * Output
 * Other Hardwares
 ** Bluetooth
 This module configures bluetooth for all machines.
-#+begin_src nix :tangle modules/common/bluetooth.nix :noweb no-export
+#+begin_src nix :tangle modules/hardware/bluetooth.nix :noweb no-export
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
-  hardware.bluetooth = {
-    <<bluetooth-enable>>
-    <<bluetooth-package>>
-    <<bluetooth-config>>
-  };
+  <<bluetooth-enable>>
+  <<bluetooth-package>>
+  <<bluetooth-config>>
 }
 #+end_src
 *** Enable Bluetooth
 #+name: bluetooth-enable
 #+begin_src nix
-enable = true;
+hardware.bluetooth.enable = true;
 #+end_src
 *** Bluetooth package
 bluezFull enables all bluez plugins. It's needed for many devices.
 #+name: bluetooth-package
 #+begin_src nix
-package = pkgs.bluezFull;
+hardware.bluetooth.package = pkgs.bluezFull;
 #+end_src
 *** Bluetooth config
 Setting controller mode to ~"bredr"~ (disabling Bluetooth LE) is a workaround to fix airpods.
 #+name: bluetooth-config
 #+begin_src nix
-config = {
+hardware.bluetooth.config = {
     General = {
         ControllerMode = "bredr";
     };
 };
 #+end_src
+*** Enable blueman
+Blueman is a bluetooth manager written in GTK
+#+begin_src nix :tangle modules/gui/blueman.nix
+# This file is generated from "README.org"
+{
+  services.blueman.enable = true;
+}
+#+end_src
 ** TLP
 TLP is a feature-rich command line utility for Linux, saving laptop battery power without the need to delve deeper into technical details.
-#+begin_src nix :tangle modules/services/tlp.nix :noweb no-export
+#+begin_src nix :tangle modules/hardware/tlp.nix :noweb no-export
 # This file is generated from "README.org"
 {
   services.tlp = {
@@ -552,7 +586,7 @@ enable = true;
 #+end_src
 ** Thinkfan
 Thinkfan is a simple, lightweight fan controler for IBM/Lenovo ThinkPads
-#+begin_src nix :tangle modules/services/thinkfan.nix :noweb no-export
+#+begin_src nix :tangle modules/hardware/thinkfan.nix :noweb no-export
 # This file is generated from "README.org"
 {
   services.thinkfan = {
@@ -602,7 +636,7 @@ Configure fan speed
 #+end_src
 ** ZRAM
 ZRAM is a linux kernel module that creates in-memory compressed devices and swap space. Literally download more RAM
-#+begin_src nix :tangle modules/services/zram.nix :noweb no-export
+#+begin_src nix :tangle modules/hardware/zram.nix :noweb no-export
 # This file is generated from "README.org"
 {
   zramSwap = {
@@ -630,6 +664,24 @@ Defaults to 1/2 of total RAM.
 #+name: zram-memory-percent
 #+begin_src nix
 memoryPercent = 100;
+#+end_src
+** SSD trim
+Enable SSD trim.
+Make sure to only import for SSD devices.
+#+begin_src nix :tangle modules/hardware/fstrim.nix
+# This file is generated from "README.org"
+{
+  services.fstrim.enable = true;
+}
+#+end_src
+** Early oom
+Enable early out of memory killing
+This is useful to prevent hang for example, when compiling
+#+begin_src nix :tangle modules/hardware/earlyoom.nix
+# This file is generated from "README.org"
+{
+  services.earlyoom.enable = true;
+}
 #+end_src
 * Look And Feel
 ** Color Scheme/Themes
@@ -728,6 +780,16 @@ colors = {
     }
   ];
 };
+#+end_src
+*** xmonad prompt color
+Set xmonad prompt default bg/fg color, bg/fg when highlighted, and border color
+#+name: xmonad-prompt-color
+#+begin_src haskell
+, bgColor           = "#232635"
+, fgColor           = "#A6ACCD"
+, bgHLight          = "#444267"
+, fgHLight          = "#A6ACCD"
+, borderColor       = "#2b2a3e"
 #+end_src
 *** LightDM Colors
 Configure center dialog colors
@@ -1099,7 +1161,7 @@ All The Icons is a nerdfont equivalent for emacs.
 Noto Fonts CJK is used as Japanese font.
 
 Install fonts:
-#+begin_src nix :tangle modules/common/fonts.nix
+#+begin_src nix :tangle modules/common/fonts.nix :noweb no-export
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
@@ -1395,6 +1457,17 @@ Set a 1080p equivalent
 #+begin_src nix
 background-image = "/etc/wallpapers/wallpaper2-1080.png"
 #+end_src
+*** Set wallpaper
+First, set fallback wallpaper in case config isn't set
+#+name: xmonad-fallback-wallpaper
+#+begin_src haskell
+spawnOnce "feh --bg-fill /etc/wallpapers/wallpaper1.png &"
+#+end_src
+Then, apply nitrogen config
+#+name: xmonad-set-wallpaper
+#+begin_src haskell
+spawnOnce "nitrogen --restore &"
+#+end_src
 ** Icons
 ** Cursors
 *** Alacritty cursor
@@ -1403,6 +1476,18 @@ background-image = "/etc/wallpapers/wallpaper2-1080.png"
 cursor = {
 style = "Beam";
 };
+#+end_src
+*** Set x11 cursor
+First, import this module in [[xmonad]]
+#+name: xmonad-import-cursor
+#+begin_src haskell
+import           XMonad.Util.Cursor             ( setDefaultCursor )
+#+end_src
+
+Use that module to set cursor at startuphook
+#+name: xmonad-set-cursor
+#+begin_src haskell
+setDefaultCursor xC_left_ptr
 #+end_src
 ** Opacity
 #+ATTR_HTML: :width 300
@@ -1458,6 +1543,26 @@ Set to nil, let picom manage opacity because pure gtk emacs doesn't work great w
 #+end_src
 ** Border
 [[file:pictures/screenshot-border.png]]
+*** Border width
+Set the width of window border in px
+#+name: xmonad-border-width
+#+begin_src haskell
+myBorderWidth :: Dimension
+myBorderWidth = 2
+#+end_src
+*** Window border color
+Set border color for windows
+#+name: xmonad-normalborder-color
+#+begin_src haskell
+myNormalBorderColor :: String
+myNormalBorderColor = "#2b2a3e"
+#+end_src
+Set border color for focused window
+#+name: xmonad-focusedborder-color
+#+begin_src haskell
+myFocusedBorderColor :: String
+myFocusedBorderColor = "#c792ea"
+#+end_src
 *** Enable rounded borders
 Enable rounded borders in picom
 #+name: picom-enable-rounded-borders
@@ -1998,7 +2103,7 @@ userEmail = "66811008+btwiusegentoo@users.noreply.github.com";
 *** bat
 A cat Linux command clone with syntax highlighting and Git integration
 + [[bat theme][Theme]]
-#+begin_src nix :tangle modules/terminal/bat.nix
+#+begin_src nix :tangle modules/terminal/bat.nix :noweb no-export
 # This file is generated from "README.org"
 { pkgs, ... }:
 
@@ -2164,9 +2269,12 @@ bind s split-window -h
 bind v split-window -v
 #+end_src
 * xmonad
-** Install xmonad/ Set config file path(xmonad.hs)
+I use xmonad, the very hackable dynamically tiling window manager written/configured in Haskell
+Tiling window manager automates the window organization
+** Install xmonad/ Set config file path
 home-manager have a xmonad module. install it:
 #+begin_src nix :tangle modules/common/xmonad.nix
+# This file is generated from "README.org"
 {
   xsession.windowManager.xmonad = {
     enable = true;
@@ -2174,6 +2282,58 @@ home-manager have a xmonad module. install it:
     config = ../../haskell/xmonad.hs;
   };
 }
+#+end_src
+** imports
+These are the modules that I import so I can use that functionality later
+It's always a better practice to use explicit imports for Haskell
+#+name: xmonad-imports
+#+begin_src haskell :noweb no-export
+import           Control.Arrow                  ( first )
+import qualified Data.Map                      as M
+import           System.Exit                    ( exitSuccess )
+import           XMonad                  hiding ( (|||) )
+import           XMonad.Actions.Navigation2D    ( Direction2D(L, R)
+                                                , windowGo
+                                                , withNavigation2DConfig
+                                                )
+import           XMonad.Hooks.DynamicLog
+import           XMonad.Hooks.EwmhDesktops      ( ewmh
+                                                , fullscreenEventHook
+                                                )
+import           XMonad.Hooks.ManageDocks       ( avoidStruts
+                                                , docks
+                                                )
+import           XMonad.Hooks.ManageHelpers     ( doFullFloat
+                                                , isFullscreen
+                                                )
+import           XMonad.Layout.BinarySpacePartition
+                                                ( emptyBSP
+                                                , Rotate(Rotate)
+                                                , Swap(Swap)
+                                                )
+import           XMonad.Layout.LayoutCombinators
+                                                ( (|||)
+                                                , JumpToLayout(JumpToLayout)
+                                                )
+import           XMonad.Layout.NoBorders        ( smartBorders )
+import           XMonad.Layout.Spacing          ( spacingRaw
+                                                , Border(Border)
+                                                )
+import           XMonad.Layout.Spiral           ( spiral )
+import           XMonad.Prompt
+import           XMonad.Prompt.ConfirmPrompt    ( confirmPrompt )
+import           XMonad.Prompt.FuzzyMatch       ( fuzzyMatch )
+import           XMonad.Prompt.Man              ( manPrompt )
+import           XMonad.Prompt.Shell            ( shellPrompt )
+import           XMonad.Prompt.Unicode          ( mkUnicodePrompt )
+import qualified XMonad.StackSet               as W
+<<xmonad-import-cursor>>
+<<xmonad-import-scratchpads>>
+import           XMonad.Util.Run                ( hPutStrLn
+                                                , spawnPipe
+                                                )
+import           XMonad.Util.SpawnOnce          ( spawnOnce )
+<<xmonad-import-ezconfig>>
 #+end_src
 ** Workspaces
 Set workspace names to zero-width space.
@@ -2193,14 +2353,114 @@ myWorkspaces =
   , "\8203\8203\8203\8203\8203\8203\8203\8203\8203"
   ]
 #+end_src
+
+Show workspace names as purple/pink orb in xmobar
+#+name: xmonad-loghook
+#+begin_src haskell
+myLogHook h = dynamicLogWithPP xmobarPP
+  { ppOutput          = hPutStrLn h
+  , ppSort            = fmap (namedScratchpadFilterOutWorkspace .) (ppSort def) -- hide nsp
+  , ppCurrent         = xmobarColor "#c792ea" "" . wrap "\61713" " "  -- Current workspace
+  , ppVisible         = xmobarColor "#ab47bc" "" . wrap "\61842" " "
+  , ppHidden          = xmobarColor "#ab47bc" "" . wrap "\61842" " "
+  , ppHiddenNoWindows = xmobarColor "#FFFFFF" "" . wrap "\61915" " "
+  , ppLayout          = xmobarColor "#82aaff" ""
+  , ppSep             = "  |  "
+  , ppTitle           = mempty
+  }
+#+end_src
 ** xmonad prompt
-+  [[xmonad prompt fonts][Fonts]]
-** keybinds
+xmonad prompt is a prompt library like dmenu.
+Can be used to launch apps, search manpage, select emojis, etc
++ [[xmonad prompt fonts][Fonts]]
++ [[xmonad prompt color][Colors]]
+*** Set prompt height
+#+name: xmonad-prompt-height
+#+begin_src haskell
+myPromptHeight :: Dimension
+myPromptHeight = 30
+#+end_src
+*** keymap
+Very basic keymap
+#+name: xmonad-prompt-keymap
+#+begin_src haskell
+myXPKeymap =
+  M.fromList
+    $  map
+         (first $ (,) 0)
+         [ (xK_Return   , setSuccess True >> setDone True)
+         , (xK_KP_Enter , setSuccess True >> setDone True)
+         , (xK_BackSpace, deleteString Prev)
+         , (xK_Delete   , deleteString Prev)
+         , (xK_Left     , moveCursor Prev)
+         , (xK_Right    , moveCursor Next)
+         , (xK_Down     , moveHistory W.focusUp')
+         , (xK_Up       , moveHistory W.focusDown')
+         , (xK_Escape   , quit)
+         ]
+    ++ map (first $ (,) controlMask) [(xK_v, pasteString)]
+#+end_src
+*** Config
+Set xmonad prompt attributes
+See [[https://hackage.haskell.org/package/xmonad-contrib-0.16/docs/XMonad-Prompt.html#t:XPConfig][here]] for documentation
+
+#+name: xmonad-prompt-config
+#+begin_src haskell :noweb no-export
+myXPConfig = def { font              = myFont
+                 <<xmonad-prompt-color>>
+                 , promptKeymap      = myXPKeymap
+                 , promptBorderWidth = 0
+                 , position          = Top
+                 , height            = myPromptHeight
+                 , autoComplete      = Nothing
+                 , searchPredicate   = fuzzyMatch
+                 , alwaysHighlight   = True
+                 }
+#+end_src
+
+Same config as above, but with emoji font for unicode prompt
+#+name: xmonad-emojiprompt-config
+#+begin_src haskell :noweb no-export
+myEmojiXPConfig = def { font              = myEmojiFont
+                      <<xmonad-prompt-color>>
+                      , promptKeymap      = myXPKeymap
+                      , promptBorderWidth = 0
+                      , position          = Top
+                      , height            = myPromptHeight
+                      , autoComplete      = Nothing
+                      , searchPredicate   = fuzzyMatch
+                      , alwaysHighlight   = True
+                      }
+#+end_src
+** Set default terminal
+Set [[Alacritty]] as default terminal in xmonad
+#+name: xmonad-default-terminal
+#+begin_src haskell
+myTerminal :: String
+myTerminal = "alacritty"
+#+end_src
+** Set gaps
+Set the gap between windows.
+spacingRaw adds spacing to windows.
+This function needs to be applied to the layout at layoutHook.
+I don't apply it to Full screen layout
+#+name: xmonad-gaps-config
+#+begin_src haskell
+myGaps = spacingRaw False (Border 4 4 4 4) True (Border 4 4 4 4) True
+#+end_src
+** Keybindings
 Set Super key as xmonad mod key
 #+name: xmonad-mod-key
 #+begin_src haskell
 myModMask :: KeyMask
 myModMask = mod4Mask
+#+end_src
+
+I use EZConfig that allows simpler, emacs-style keybinding description
+See [[https://hackage.haskell.org/package/xmonad-contrib-0.16/docs/XMonad-Util-EZConfig.html#v:mkKeymap][here]] for further information
+#+name: xmonad-import-ezconfig
+#+begin_src haskell
+import           XMonad.Util.EZConfig           ( additionalKeysP )
 #+end_src
 
 #+name: xmonad-keybinds
@@ -2284,149 +2544,11 @@ myKeys =
     )
   ]
 #+end_src
-** Set default terminal
-Set [[Alacritty]] as default terminal in xmonad
-#+name: xmonad-default-terminal
+** Layouts
+Set the layouts avaliable to use.
+Make sure to apply gaps(spacingRaw) from [[Set gaps][here]]
+#+name: xmonad-layouts
 #+begin_src haskell
-myTerminal :: String
-myTerminal = "alacritty"
-#+end_src
-** xmonad.hs base code
-#+begin_src haskell :tangle haskell/xmonad.hs :noweb no-export
-import           Control.Arrow                  ( first )
-import qualified Data.Map                      as M
-import           System.Exit                    ( exitSuccess )
-import           XMonad                  hiding ( (|||) )
-import           XMonad.Actions.Navigation2D    ( Direction2D(L, R)
-                                                , windowGo
-                                                , withNavigation2DConfig
-                                                )
-import           XMonad.Hooks.DynamicLog
-import           XMonad.Hooks.EwmhDesktops      ( ewmh
-                                                , fullscreenEventHook
-                                                )
-import           XMonad.Hooks.ManageDocks       ( avoidStruts
-                                                , docks
-                                                )
-import           XMonad.Hooks.ManageHelpers     ( doFullFloat
-                                                , isFullscreen
-                                                )
-import           XMonad.Layout.BinarySpacePartition
-                                                ( emptyBSP
-                                                , Rotate(Rotate)
-                                                , Swap(Swap)
-                                                )
-import           XMonad.Layout.LayoutCombinators
-                                                ( (|||)
-                                                , JumpToLayout(JumpToLayout)
-                                                )
-import           XMonad.Layout.NoBorders        ( smartBorders )
-import           XMonad.Layout.Spacing          ( spacingRaw
-                                                , Border(Border)
-                                                )
-import           XMonad.Layout.Spiral           ( spiral )
-import           XMonad.Prompt
-import           XMonad.Prompt.ConfirmPrompt    ( confirmPrompt )
-import           XMonad.Prompt.FuzzyMatch       ( fuzzyMatch )
-import           XMonad.Prompt.Man              ( manPrompt )
-import           XMonad.Prompt.Shell            ( shellPrompt )
-import           XMonad.Prompt.Unicode          ( mkUnicodePrompt )
-import qualified XMonad.StackSet               as W
-import           XMonad.Util.Cursor             ( setDefaultCursor )
-import           XMonad.Util.NamedScratchpad
-import           XMonad.Util.Run                ( hPutStrLn
-                                                , spawnPipe
-                                                )
-import           XMonad.Util.SpawnOnce          ( spawnOnce )
-import           XMonad.Util.EZConfig           ( additionalKeysP )
-
-
-myPromptHeight :: Dimension
-myBorderWidth :: Dimension
-myNormalBorderColor :: String
-myFocusedBorderColor :: String
-
-<<xmonad-mod-key>>
-<<xmonad-default-terminal>>
-<<xmonad-prompt-font>>
-<<xmonad-prompt-emoji-font>>
-<<xmonad-workspaces-names>>
-myPromptHeight = 30
-myFocusFollowsMouse :: Bool
-myFocusFollowsMouse = True
-myClickJustFocuses :: Bool
-myClickJustFocuses = False
-myBorderWidth = 2
-myNormalBorderColor = "#2b2a3e"
-myFocusedBorderColor = "#c792ea"
-myGaps = spacingRaw False (Border 4 4 4 4) True (Border 4 4 4 4) True
-
-<<xmonad-keybinds>>
-
-myMouseBindings XConfig { XMonad.modMask = modm } = M.fromList
-
-    -- mod-button1, Set the window to floating mode and move by dragging
-  [ ( (modm, button1)
-    , \w -> focus w >> mouseMoveWindow w >> windows W.shiftMaster
-    )
-
-    -- mod-button2, Raise the window to the top of the stack
-  , ((modm, button2), \w -> focus w >> windows W.shiftMaster)
-
-    -- mod-button3, Set the window to floating mode and resize by dragging
-  , ( (modm, button3)
-    , \w -> focus w >> mouseResizeWindow w >> windows W.shiftMaster
-    )
-
-    -- you may also bind events to the mouse scroll wheel (button4 and button5)
-  ]
-
-myXPKeymap =
-  M.fromList
-    $  map
-         (first $ (,) 0)
-         [ (xK_Return   , setSuccess True >> setDone True)
-         , (xK_KP_Enter , setSuccess True >> setDone True)
-         , (xK_BackSpace, deleteString Prev)
-         , (xK_Delete   , deleteString Prev)
-         , (xK_Left     , moveCursor Prev)
-         , (xK_Right    , moveCursor Next)
-         , (xK_Down     , moveHistory W.focusUp')
-         , (xK_Up       , moveHistory W.focusDown')
-         , (xK_Escape   , quit)
-         ]
-    ++ map (first $ (,) controlMask) [(xK_v, pasteString)]
-
-myXPConfig = def { font              = myFont
-                 , bgColor           = "#232635"
-                 , fgColor           = "#A6ACCD"
-                 , bgHLight          = "#444267"
-                 , fgHLight          = "#A6ACCD"
-                 , borderColor       = "#2b2a3e"
-                 , promptKeymap      = myXPKeymap
-                 , promptBorderWidth = 0
-                 , position          = Top
-                 , height            = myPromptHeight
-                 , autoComplete      = Nothing
-                 , searchPredicate   = fuzzyMatch
-                 , alwaysHighlight   = True
-                 }
-
-myEmojiXPConfig = def { font              = myEmojiFont
-                      , bgColor           = "#232635"
-                      , fgColor           = "#A6ACCD"
-                      , bgHLight          = "#444267"
-                      , fgHLight          = "#A6ACCD"
-                      , borderColor       = "#2b2a3e"
-                      , promptKeymap      = myXPKeymap
-                      , promptBorderWidth = 0
-                      , position          = Top
-                      , height            = myPromptHeight
-                      , autoComplete      = Nothing
-                      , searchPredicate   = fuzzyMatch
-                      , alwaysHighlight   = True
-                      }
-
 myLayout = avoidStruts $ smartBorders
   (tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| Full)
  where
@@ -2443,7 +2565,34 @@ myLayout = avoidStruts $ smartBorders
 
   bspgaps    = myGaps emptyBSP
   spiralgaps = myGaps $ spiral (6 / 7)
+#+end_src
+** Startups(autostart)
+These are the commands that xmonad executes on startup. Set the wallpaper, cursor, etc here
+I run compositor(picom) and few programs like keynav as systemd service because home-manager module does that.
+But usually we start all these programs here
+#+name: xmonad-startuphook
+#+begin_src haskell :noweb no-export
+myStartupHook = do
+  <<xmonad-fallback-wallpaper>>
+  <<xmonad-set-wallpaper>>
+  <<xmonad-set-cursor>>
+  -- spawn Japanese IME
+  spawnOnce "fcitx -d &"
+  -- start screen locker
+  spawnOnce "light-locker --lock-on-suspend &"
+  -- window animation
+  spawnOnce "flashfocus &"
+#+end_src
+** Scratchpads
+Import scratchpad module
+#+name: xmonad-import-scratchpads
+#+begin_src haskell
+import           XMonad.Util.NamedScratchpad
+#+end_src
 
+This configures floating scratchpads for several programs:
+#+name: xmonad-scratchpads-config
+#+begin_src haskell
 myScratchPads =
   [ NS "terminal" spawnTerm   findTerm   manageTerm
   , NS "mixer"    spawnMixer  findMixer  manageMixer
@@ -2480,7 +2629,12 @@ myScratchPads =
   findvifm = title =? "vifmScratchpad"
   managevifm =
     customFloating $ W.RationalRect centrall centralt centralw centralh
-
+#+end_src
+** ManageHook
+Set rules for certain programs.
+e.g.Make certain program always appear at certain workspace, Force certain program(GIMP here) to always float
+#+name: xmonad-managehook
+#+begin_src haskell
 myManageHook =
   composeAll
       [ className =? "Gimp" --> doFloat
@@ -2488,39 +2642,70 @@ myManageHook =
       , isFullscreen --> doFullFloat
       ]
     <+> namedScratchpadManageHook myScratchPads
+#+end_src
+** Mouse
+Mouse configuration. I rarely use it, my mouse is mostly disabled so I won't document it.
+#+name: xmonad-mouse-config
+#+begin_src haskell
+myFocusFollowsMouse :: Bool
+myFocusFollowsMouse = True
+myClickJustFocuses :: Bool
+myClickJustFocuses = False
 
-myLogHook h = dynamicLogWithPP xmobarPP
-  { ppOutput          = hPutStrLn h
-  , ppSort            = fmap (namedScratchpadFilterOutWorkspace .) (ppSort def) -- hide nsp
-  , ppCurrent         = xmobarColor "#c792ea" "" . wrap "\61713" " "  -- Current workspace
-  , ppVisible         = xmobarColor "#ab47bc" "" . wrap "\61842" " "
-  , ppHidden          = xmobarColor "#ab47bc" "" . wrap "\61842" " "
-  , ppHiddenNoWindows = xmobarColor "#FFFFFF" "" . wrap "\61915" " "
-  , ppLayout          = xmobarColor "#82aaff" ""
-  , ppSep             = "  |  "
-  , ppTitle           = mempty
-  }
+myMouseBindings XConfig { XMonad.modMask = modm } = M.fromList
 
-myStartupHook = do
-    -- set default wallpaper
-  spawnOnce "feh --bg-fill /etc/wallpapers/wallpaper1.png &"
-  -- now set custom wallpaper if config exists
-  spawnOnce "nitrogen --restore &"
-  -- spawn Japanese IME
-  spawnOnce "fcitx -d &"
-  -- start screen locker
-  spawnOnce "light-locker --lock-on-suspend &"
-  -- window animation
-  spawnOnce "flashfocus &"
-  -- set cursor
-  setDefaultCursor xC_left_ptr
+    -- mod-button1, Set the window to floating mode and move by dragging
+  [ ( (modm, button1)
+    , \w -> focus w >> mouseMoveWindow w >> windows W.shiftMaster
+    )
 
-myEventHook = handleEventHook def <+> fullscreenEventHook
+    -- mod-button2, Raise the window to the top of the stack
+  , ((modm, button2), \w -> focus w >> windows W.shiftMaster)
 
+    -- mod-button3, Set the window to floating mode and resize by dragging
+  , ( (modm, button3)
+    , \w -> focus w >> mouseResizeWindow w >> windows W.shiftMaster
+    )
+
+    -- you may also bind events to the mouse scroll wheel (button4 and button5)
+  ]
+#+end_src
+** Function to get active layout description
+Get active layout.
+This used by ~M-.~ ~"M-,"~ keybind to determine if it's BSP layout or not.
+#+name: xmonad-getactivelayout
+#+begin_src haskell
 getActiveLayoutDescription :: X String
 getActiveLayoutDescription = do
   workspaces <- gets windowset
   return $ description . W.layout . W.workspace . W.current $ workspaces
+#+end_src
+** xmonad.hs base code
+#+begin_src haskell :tangle haskell/xmonad.hs :noweb no-export
+-- This file is generated from "README.org"
+<<xmonad-imports>>
+<<xmonad-mod-key>>
+<<xmonad-default-terminal>>
+<<xmonad-prompt-font>>
+<<xmonad-prompt-emoji-font>>
+<<xmonad-workspaces-names>>
+<<xmonad-border-width>>
+<<xmonad-prompt-height>>
+<<xmonad-normalborder-color>>
+<<xmonad-focusedborder-color>>
+<<xmonad-gaps-config>>
+<<xmonad-keybinds>>
+<<xmonad-prompt-keymap>>
+<<xmonad-prompt-config>>
+<<xmonad-emojiprompt-config>>
+<<xmonad-mouse-config>>
+<<xmonad-layouts>>
+<<xmonad-scratchpads-config>>
+<<xmonad-managehook>>
+<<xmonad-startuphook>>
+<<xmonad-loghook>>
+myEventHook = handleEventHook def <+> fullscreenEventHook
+<<xmonad-getactivelayout>>
 
 main :: IO ()
 main = do
@@ -4234,7 +4419,7 @@ That makes possible to share same config that uses these files for more than one
 Specify files to symlink into $HOME/.config here.
 Usable for programs that Nix options doesn't exist.
 This module is imported from home-manager
-#+begin_src nix :tangle modules/common/xdg-configfiles.nix
+#+begin_src nix :tangle modules/common/xdg-configfiles.nix :noweb no-export
 # This file is generated from "README.org"
 { pkgs, ... }:
 

@@ -100,12 +100,6 @@
 
   environment.variables = (import ../../modules/common/globalvars.nix);
 
-  services = {
-    fstrim.enable = true; # Trim ssd
-    blueman.enable = true; # Used for bluetooth
-    earlyoom.enable = true;
-  };
-
   virtualisation = import (../../modules/virtualisation/default.nix);
 
   systemd.user.services = {
@@ -126,41 +120,9 @@
   sound.enable = true;
 
   services.xserver.videoDrivers = [ "intel" ];
-  services.xserver.libinput.enable = true;
-  services.xserver.libinput.naturalScrolling = true;
-  services.xserver.libinput.disableWhileTyping = true;
   services.xserver.deviceSection = ''
     Option "TearFree" "true"
   '';
-  # services.xserver.inputClassSections = [
-  #   ''
-  #     Identifier "touchpad"
-  #     MatchProduct "SynPS/2 Synaptics TouchPad"
-  #     # MatchTag "lenovo_x230_all"
-  #     Driver "synaptics"
-  #     # fix touchpad resolution
-  #     Option "VertResolution" "100"
-  #     Option "HorizResolution" "65"
-  #     # disable synaptics driver pointer acceleration
-  #     Option "MinSpeed" "1"
-  #     Option "MaxSpeed" "1"
-  #     # tweak the X-server pointer acceleration
-  #     Option "AccelerationProfile" "2"
-  #     Option "AdaptiveDeceleration" "16"
-  #     Option "ConstantDeceleration" "16"
-  #     Option "VelocityScale" "20"
-  #     Option "AccelerationNumerator" "30"
-  #     Option "AccelerationDenominator" "10"
-  #     Option "AccelerationThreshold" "10"
-  #     # Disable two fingers right mouse click
-  #     Option "TapButton2" "0"
-  #     Option "HorizHysteresis" "100"
-  #     Option "VertHysteresis" "100"
-  #     # fix touchpad scroll speed
-  #     Option "VertScrollDelta" "500"
-  #     Option "HorizScrollDelta" "500"
-  #   ''
-  # ];
 
   nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
