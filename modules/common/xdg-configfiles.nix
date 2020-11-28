@@ -10,20 +10,7 @@
   "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
   "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
 
-  "tridactyl/tridactylrc".text = ''
-      
-      " Remove local config
-      sanitise tridactyllocal tridactylsync
-      
-      " Adjust scroll speed
-      bind j scrollline -2
-      bind k scrollline 2
-      " Set tab move direction same as qutebrowser
-      bind J tabnext
-      bind K tabprev
-      " Use qutebrowser like behavior for new tab :open
-      bind O fillcmdline tabopen
-  '';
+  <<tridactylrc-symlink>>
 
   # keynav{{{
   "keynav/keynavrc".text = ''

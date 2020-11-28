@@ -2,17 +2,9 @@
 { pkgs, ... }:
 {
   fonts = {
-        fontconfig = {
-          enable = true;
-          allowBitmaps = true;
-          useEmbeddedBitmaps = true;
-          defaultFonts = {
-            emoji = [ "Apple Color Emoji" ];
-            monospace = [ "Spleen" ];
-          };
-        };
-    enableFontDir = true;
-    enableGhostscriptFonts = true;
+    <<system-font-config>>
+    <<enable-font-dir>>
+    <<enable-ghostscript-fonts>>
     fonts = with pkgs; [
       (nerdfonts.override { fonts = [ "Gohu" ]; })
       unstable.dejavu_fonts

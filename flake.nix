@@ -85,7 +85,7 @@
                       defaults
                       ./machines/maindesktop/configuration.nix
                       ./modules/common/xserver.nix
-                      ./modules/common/fonts.nix
+                      <<x11-defaults>>
                       home-manager.nixosModules.home-manager
                       ({
                         home-manager.useGlobalPkgs = true;
@@ -93,22 +93,8 @@
                         home-manager.users.btw = { ... }: {
                           imports = [
                             ./machines/maindesktop/home.nix
-                            ./modules/common/xmonad.nix
-                            ./modules/services/dunst.nix
-                            ./modules/services/picom.nix
-                            ./modules/terminal/alacritty.nix
-                            ./modules/gui/qutebrowser.nix
-                            ./modules/gui/firefox.nix
-                            ./modules/gui/mpv.nix
-                            ./modules/editors/emacs.nix
-                            ./modules/terminal/fish.nix
-                            ./modules/terminal/git.nix
-                            ./modules/terminal/bat.nix
-                            ./modules/terminal/fzf.nix
-                            ./modules/terminal/lsd.nix
-                            ./modules/terminal/starship.nix
-                            ./modules/terminal/tmux.nix
-                            ./modules/services/gpg.nix
+                            <<home-manager-x11-defaults>>
+                            <<home-manager-defaults>>
                           ];
                         };
                       })
@@ -124,7 +110,7 @@
                       ./modules/common/xserverlaptop.nix
                       ./modules/services/tlp.nix
                       ./modules/services/thinkfan.nix
-                      ./modules/common/fonts.nix
+                      <<x11-defaults>>
                       home-manager.nixosModules.home-manager
                       ({
                         home-manager.useGlobalPkgs = true;
@@ -132,22 +118,8 @@
                         home-manager.users.x230 = { ... }: {
                           imports = [
                             ./machines/mainlaptop/home.nix
-                            ./modules/common/xmonad.nix
-                            ./modules/services/dunst.nix
-                            ./modules/services/picom.nix
-                            ./modules/terminal/alacritty.nix
-                            ./modules/gui/qutebrowser.nix
-                            ./modules/gui/firefox.nix
-                            ./modules/gui/mpv.nix
-                            ./modules/editors/emacs.nix
-                            ./modules/terminal/fish.nix
-                            ./modules/terminal/git.nix
-                            ./modules/terminal/bat.nix
-                            ./modules/terminal/fzf.nix
-                            ./modules/terminal/lsd.nix
-                            ./modules/terminal/starship.nix
-                            ./modules/terminal/tmux.nix
-                            ./modules/services/gpg.nix
+                            <<home-manager-x11-defaults>>
+                            <<home-manager-defaults>>
                           ];
                         };
                       })
@@ -167,14 +139,7 @@
                         home-manager.users.hac = { ... }: {
                           imports = [
                             ./machines/mainserver/home.nix
-                            ./modules/terminal/fish.nix
-                            ./modules/terminal/git.nix
-                            ./modules/terminal/bat.nix
-                            ./modules/terminal/fzf.nix
-                            ./modules/terminal/lsd.nix
-                            ./modules/terminal/starship.nix
-                            ./modules/terminal/tmux.nix
-                            ./modules/services/gpg.nix
+                            <<home-manager-defaults>>
                           ];
                         };
                       })

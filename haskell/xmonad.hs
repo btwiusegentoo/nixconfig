@@ -43,28 +43,23 @@ import           XMonad.Util.Run                ( hPutStrLn
                                                 , spawnPipe
                                                 )
 import           XMonad.Util.SpawnOnce          ( spawnOnce )
+import           XMonad.Util.EZConfig           ( additionalKeysP )
 
 
-myModMask :: KeyMask
-myTerminal :: String
-myFont :: String
-myEmojiFont :: String
 myPromptHeight :: Dimension
 myBorderWidth :: Dimension
-myWorkspaces :: [String]
 myNormalBorderColor :: String
 myFocusedBorderColor :: String
 
+myModMask :: KeyMask
 myModMask = mod4Mask
+myTerminal :: String
 myTerminal = "alacritty"
-myFont = "xft:TamzenForPowerline:size=14:antialias=true:hinting=false"
+myFont :: String
+myFont = "xft:SFNS Display:size=14"
+myEmojiFont :: String
 myEmojiFont = "xft:Apple Color Emoji:size=14"
-myPromptHeight = 30
-myFocusFollowsMouse :: Bool
-myFocusFollowsMouse = True
-myClickJustFocuses :: Bool
-myClickJustFocuses = False
-myBorderWidth = 2
+myWorkspaces :: [String]
 myWorkspaces =
   [ "\8203"
   , "\8203\8203"
@@ -75,106 +70,95 @@ myWorkspaces =
   , "\8203\8203\8203\8203\8203\8203\8203"
   , "\8203\8203\8203\8203\8203\8203\8203\8203"
   , "\8203\8203\8203\8203\8203\8203\8203\8203\8203"
-  ] -- zero width spaces
+  ]
+myPromptHeight = 30
+myFocusFollowsMouse :: Bool
+myFocusFollowsMouse = True
+myClickJustFocuses :: Bool
+myClickJustFocuses = False
+myBorderWidth = 2
 myNormalBorderColor = "#2b2a3e"
 myFocusedBorderColor = "#c792ea"
 myGaps = spacingRaw False (Border 4 4 4 4) True (Border 4 4 4 4) True
 
-myKeys conf@XConfig { XMonad.modMask = modm } =
-  M.fromList
-    $  [ ((modm, xK_Return), spawn $ XMonad.terminal conf)
-       , ((modm, xK_v)     , spawn $ myTerminal ++ " -e nvim")
-       , ((modm, xK_z)     , spawn "emacsclient -c -a emacs ~/")
-       , ((modm, xK_w)     , spawn "emacsclient -c -a emacs")
-       , ((modm, xK_d)     , shellPrompt myXPConfig)                  -- use xmonad prompt instead of dmenu.
-       , ( (modm .|. controlMask, xK_t)
-         , namedScratchpadAction myScratchPads "terminal"
-         ) -- terminal scratchpad
-       , ( (modm .|. controlMask, xK_s)
-         , namedScratchpadAction myScratchPads "mixer"
-         ) -- sound mixer scratchpad
-       , ( (modm .|. controlMask, xK_h)
-         , namedScratchpadAction myScratchPads "bottom"
-         )  -- bottom scratchpad
-       , ( (modm .|. controlMask, xK_n)
-         , namedScratchpadAction myScratchPads "vifm"
-         )   -- file manager scratchpad
-       , ((modm .|. controlMask, xK_m), manPrompt myXPConfig) -- search manpage
-       , ( (modm .|. controlMask, xK_e)
-         , mkUnicodePrompt "xsel" ["-b"] "/etc/UnicodeData.txt" myEmojiXPConfig
-         ) -- emoji->clipboard
-       , ((modm, xK_b)              , spawn "qutebrowser")                     -- launch qutebrowser
-       , ((modm, xK_p)              , spawn "touch ~/.cache/pomodoro_session") -- start pomodoro
-       , ((modm .|. shiftMask, xK_p), spawn "rm ~/.cache/pomodoro_session")    -- stop pomodoro
-       , ((modm, xK_e)              , spawn "~/.emacs_anywhere/bin/run") -- launch emacs_anywhere
-       , ((0, 0x1008ff11)           , spawn "amixer -q sset Master 2%-")       -- decrease volume fn+a(HHKB Dvorak)
-       , ((0, 0x1008ff13)           , spawn "amixer -q sset Master 2%+")       -- increase volume fn+o(HHKB Dvorak)
-       , ((0, 0x1008FF12)           , spawn "amixer set Master toggle")        -- mute/unmute sound fn+e(HHKB Dvorak)
-       , ((0, 0x1008ff02)           , spawn "xbacklight -inc 5")        -- increase brightness
-       , ((0, 0x1008ff03)           , spawn "xbacklight -dec 5")        -- increase brightness
-       -- , ( (0, xK_Print)
-       --   , spawn "scrot screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'"
-       --   ) -- fn+c(HHKB Dvorak)
-       , ( (0 .|. controlMask, xK_Print)
-         , spawn "scrot -s screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'"
-         ) -- ctrl+fn+c(HHKB Dvorak)
-       , ( (modm, xK_Print)
-         , spawn "scrot tmp.png -e 'xclip $f && rm $f'"
-       --   ) -- mod+fn+c(HHKB Dvorak)
-       -- , ( (modm, xK_F1)
-       --   , spawn "setxkbmap dvorak"
-       --   ) -- Switch to Dvorak layout
-       -- , ( (modm, xK_F2)
-       --   , spawn "setxkbmap us"
-         ) -- Switch to qwerty layout
-       , ((modm, xK_F3)                 , spawn "xinput --disable 11") -- Disable trackpad
-       , ((modm, xK_F4)                 , spawn "xinput --enable 11") -- Enable trackpad
-       , ((modm .|. shiftMask, xK_c)    , kill)
-       , ((modm, xK_space)              , sendMessage NextLayout)
-       , ((modm, xK_t), sendMessage $ JumpToLayout "Spacing Tall")
-       , ((modm, xK_f)                  , sendMessage $ JumpToLayout "Full")
-       , ((modm, xK_m), sendMessage $ JumpToLayout "Mirror Spacing Tall")
-       , ((modm, xK_n), sendMessage $ JumpToLayout "Spacing BSP")
-       , ((modm, xK_s), sendMessage $ JumpToLayout "Spacing Spiral")
-       , ((modm .|. shiftMask, xK_t)    , withFocused $ windows . W.sink) -- unfloat window
-       , ((modm .|. shiftMask, xK_space), setLayout $ XMonad.layoutHook conf)
-       , ((modm, xK_r)                  , refresh)
-       , ((modm, xK_h)                  , windowGo L False) -- Focus horizontally like i3wm. it's useful in some layouts
-       , ((modm, xK_l)                  , windowGo R False) -- ⬆
-       , ((modm, xK_j)                  , windows W.focusDown)
-       , ((modm, xK_k)                  , windows W.focusUp)
-       , ((modm, xK_g)                  , windows W.focusMaster)
-       , ((modm .|. shiftMask, xK_g)    , windows W.swapMaster)
-       , ((modm .|. shiftMask, xK_j)    , windows W.swapDown)
-       , ((modm .|. shiftMask, xK_k)    , windows W.swapUp)
-       , ((modm .|. shiftMask, xK_h)    , sendMessage Shrink)
-       , ((modm .|. shiftMask, xK_l)    , sendMessage Expand)
-    --, ((modm              ,   xK_comma  ), sendMessage (IncMasterN 1))
-    --, ((modm              ,   xK_period ), sendMessage (IncMasterN (-1)))
-       , ( (modm, xK_comma)
-         , do
-           layout <- getActiveLayoutDescription
-           case layout of
-             "Spacing BSP" -> sendMessage Swap
-             _             -> sendMessage (IncMasterN 1)
-         )
-       , ( (modm, xK_period)
-         , do
-           layout <- getActiveLayoutDescription
-           case layout of
-             "Spacing BSP" -> sendMessage Rotate
-             _             -> sendMessage (IncMasterN (-1))
-         )
-       , ((modm, xK_o), spawn "light-locker-command -l")
-       , ( (modm .|. shiftMask, xK_q)
-         , confirmPrompt myXPConfig "exit" $ io exitSuccess
-         )
-       , ((modm, xK_q), spawn "xmonad --recompile; xmonad --restart")
-       ]
-    ++ [ ((m .|. modm, k), windows $ f i)
-       | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
-       , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]
-       ]
+myKeys :: [(String, X ())]
+myKeys =
+  [
+    ("M-<Return>", spawn myTerminal)
+  , ("M-S-c", kill) -- Close focused application
+  , ("M-o", spawn "light-locker-command -l") -- lock screen
+  , ("M-S-q", confirmPrompt myXPConfig "exit" $ io exitSuccess) -- prompt to kill xmonad
+  , ("M-q", spawn "xmonad --recompile; xmonad --restart") -- Recompile and restart xmonad
+
+  , ("M-v", spawn $ myTerminal ++ " -e nvim")
+  , ("M-z", spawn "emacsclient -c -a emacs ~/")
+  , ("M-w", spawn "emacsclient -c -a emacs")
+  , ("M-b", spawn "qutebrowser")
+  , ("M-e", spawn "~/.emacs_anywhere/bin/run")
+
+  , ("M-C-t", namedScratchpadAction myScratchPads "terminal")
+  , ("M-C-s", namedScratchpadAction myScratchPads "mixer")
+  , ("M-C-h", namedScratchpadAction myScratchPads "bottom")
+  , ("M-C-n", namedScratchpadAction myScratchPads "vifm")
+
+  , ("M-d", shellPrompt myXPConfig)
+  , ("M-C-m", manPrompt myXPConfig)
+  , ("M-C-e", mkUnicodePrompt "xsel" ["-b"] "/etc/UnicodeData.txt" myEmojiXPConfig) -- copy emoji to clipboard
+
+  , ("<XF86AudioLowerVolume>", spawn "amixer -q sset Master 2%-") -- fn+a on HHKB Dvorak
+  , ("<XF86AudioRaiseVolume>", spawn "amixer -q sset Master 2%+") -- fn+o on HHKB Dvorak
+  , ("<XF86AudioMute>", spawn "amixer set Master toggle") -- fn+e on HHKB Dvorak
+
+  , ("<XF86MonBrightnessUp", spawn "xbacklight -inc 5")
+  , ("<XF86MonBrightnessDown", spawn "xbacklight -dec 5")
+
+  , ("C-<Print>", spawn "scrot -s screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'") -- ctrl+fn+c on HHKB Dvorak
+  , ("M-<Print>", spawn "scrot tmp.png -e 'xclip $f && rm $f'") -- mod+fn+c on HHKB Dvorak
+
+  , ("M-S-<F1>", spawn "setxkbmap dvorak") -- Switch to Dvorak layout
+  , ("M-S-<F2>", spawn "setxkbmap us") -- Switch to qwerty layout
+  , ("M-S-<F3>", spawn "xinput --disable 11") -- Disable trackpad on laptop
+  , ("M-S-<F4>", spawn "xinput --enable 11") -- Enable trackpad on laptop
+
+  , ("M-<Space>", sendMessage NextLayout) -- Change to next layout in order
+
+  , ("M-t", sendMessage $ JumpToLayout "Spacing Tall")
+  , ("M-f", sendMessage $ JumpToLayout "Full")
+  , ("M-m", sendMessage $ JumpToLayout "Mirror Spacing Tall")
+  , ("M-n", sendMessage $ JumpToLayout "Spacing BSP")
+  , ("M-s", sendMessage $ JumpToLayout "Spacing Spiral")
+
+  , ("M-S-t", withFocused $ windows . W.sink) -- unfloat window
+
+  , ("M-r", refresh)
+
+  -- focus horizontally like i3wm
+  , ("M-h", windowGo L False)
+  , ("M-l", windowGo R False)
+
+  , ("M-j", windows W.focusDown)
+  , ("M-k", windows W.focusUp)
+  , ("M-g", windows W.focusMaster)
+  , ("M-S-j", windows W.swapDown)
+  , ("M-S-k", windows W.swapUp)
+  , ("M-S-g", windows W.swapMaster)
+
+  , ("M-S-h", sendMessage Shrink)
+  , ("M-S-l", sendMessage Expand)
+
+  , ("M-,", do
+        layout <- getActiveLayoutDescription
+        case layout of
+          "Spacing BSP" -> sendMessage Swap
+          _             -> sendMessage $ IncMasterN 1
+    )
+  , ("M-.", do
+        layout <- getActiveLayoutDescription
+        case layout of
+          "Spacing BSP" -> sendMessage Rotate
+          _             -> sendMessage $ IncMasterN (-1)
+    )
+  ]
 
 myMouseBindings XConfig { XMonad.modMask = modm } = M.fromList
 
@@ -351,7 +335,7 @@ main = do
       , normalBorderColor  = myNormalBorderColor
       , focusedBorderColor = myFocusedBorderColor
       -- key bindings
-      , keys               = myKeys
+      -- , keys               = myKeys
       , mouseBindings      = myMouseBindings
       -- hooks, layouts
       , layoutHook         = myLayout
@@ -359,4 +343,4 @@ main = do
       , handleEventHook    = myEventHook
       , logHook            = myLogHook h
       , startupHook        = myStartupHook
-      }
+      } `additionalKeysP` myKeys
