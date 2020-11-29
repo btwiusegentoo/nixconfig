@@ -86,7 +86,7 @@
                       defaults
                       ./machines/maindesktop/configuration.nix
                       ./modules/common/xserver.nix
-                      ./modules/hardware/fstrim.nix
+                      ./modules/hardware/ssd.nix
                       ./modules/common/fonts.nix
                       ./modules/gui/blueman.nix
                       home-manager.nixosModules.home-manager
@@ -125,7 +125,7 @@
                       defaults
                       ./machines/mainlaptop/configuration.nix
                       ./modules/common/xserverlaptop.nix
-                      ./modules/hardware/fstrim.nix
+                      ./modules/hardware/ssd.nix
                       ./modules/hardware/tlp.nix
                       ./modules/hardware/thinkfan.nix
                       ./modules/hardware/libinput.nix

@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 { config, pkgs, fetchgit, ... }:
 {
 
@@ -5,29 +6,11 @@
     [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # import usersettings
+      # import encrypted user settings/secrets
       ./usersettings.nix
     ];
 
-  # Boot{{{
-  # Use the systemd-boot EFI boot loader.
   boot = {
-    loader.grub = {
-      enable = true;
-      version = 2;
-      extraConfig = ''
-        if keystatus --shift ; then
-            set timeout=-1
-        else
-            set timeout=0
-        fi
-      '';
-      enableCryptodisk = true;
-      copyKernels = true;
-    };
-    loader.timeout = 0;
-    # Enable latest linux kernel
-    kernelPackages = pkgs.unstable.linuxPackages_latest;
     kernelModules = [ "i915" "tpm-rng" ];
     extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
     extraModprobeConfig = ''
@@ -41,16 +24,48 @@
     ];
     plymouth.enable = true;
   };
-  # Supposedly better for the SSD.
-  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
-  # Boot faster
-  systemd.services.systemd-udev-settle.enable = false;
-  systemd.services.NetworkManager-wait-online.enable = false;
-  systemd.extraConfig = ''
-    DefaultTimeoutStopSec=10s
+  boot.loader.grub.enable = true;
+  boot.loader.grub.version = 2;
+  boot.loader.timeout = 0;
+  boot.loader.grub.extraConfig = ''
+  if keystatus --shift ; then
+      set timeout=-1
+  else
+      set timeout=0
+  fi
   '';
-  # }}}
+  boot.loader.grub.copyKernels = true;
+  systemd.services.systemd-udev-settle.serviceConfig.TimeoutSec = 5;
+  systemd.services.NetworkManager-wait-online.enable = false;
+  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
 
+  # Luks encrypted partition
+  boot.loader.grub.enableCryptodisk = true;
+  boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/27740e7b-5bb7-482a-94dc-72df547f1f66";
+  
+  # Set what drive to install grub
+  boot.loader.grub.device = "/dev/sda";
+  
+  # Root partition after unlocking luks
+  fileSystems."/" =
+    {
+      device = "/dev/disk/by-uuid/b904a3b9-a30e-425c-9e6c-6f8a56cedbf9";
+      fsType = "xfs";
+    };
+  
+  # Boot partition
+  fileSystems."/boot" =
+    {
+      device = "/dev/disk/by-uuid/f548cd01-269e-4b56-8aab-2cf06f278f88";
+      fsType = "ext2";
+    };
+  
+  # Swap partition uuid
+  swapDevices =
+    [{ device = "/dev/disk/by-uuid/1c57f70d-7083-4109-8cd5-f407a51d39cf"; }];
+
+  hardware.enableRedistributableFirmware = true;
+  sound.enable = true;
   # Hardware{{{
   hardware = {
     opengl.enable = true;
@@ -116,9 +131,6 @@
     };
   };
 
-  # enable sound
-  sound.enable = true;
-
   services.xserver.videoDrivers = [ "intel" ];
   services.xserver.deviceSection = ''
     Option "TearFree" "true"
@@ -135,5 +147,3 @@
   system.stateVersion = "20.03"; # Did you read the comment?
 
 }
-
-# vim:ft=nix sw=4 fdm=marker:

@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 { config, pkgs, fetchgit, ... }:
 {
 
@@ -5,22 +6,52 @@
     [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # import user settings
+      # import encrypted user settings/secrets
       ./usersettings.nix
     ];
 
-  # Boot{{{
-  boot = {
-    loader.grub.enable = true;
-    loader.grub.version = 2;
-    # Enable latest linux kernel
-    kernelPackages = pkgs.unstable.linuxPackages_latest;
-  };
-  # Boot faster
+  boot.loader.grub.enable = true;
+  boot.loader.grub.version = 2;
+  boot.loader.timeout = 0;
+  boot.loader.grub.extraConfig = ''
+  if keystatus --shift ; then
+      set timeout=-1
+  else
+      set timeout=0
+  fi
+  '';
+  boot.loader.grub.copyKernels = true;
   systemd.services.systemd-udev-settle.serviceConfig.TimeoutSec = 5;
   systemd.services.NetworkManager-wait-online.enable = false;
-  # }}}
+  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
 
+  # Luks encrypted partition
+  boot.loader.grub.enableCryptodisk = true;
+  boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/29e93967-944e-4306-adb2-8d2441ca5ed5";
+  
+  # Set what drive to install grub
+  boot.loader.grub.device = "/dev/sda";
+  
+  # Root partition after unlocking luks
+  fileSystems."/" =
+    {
+      device = "/dev/disk/by-uuid/4979bbc1-28e8-4505-9a3e-2d2fc0f41fa3";
+      fsType = "xfs";
+    };
+  
+  # Boot partition
+  fileSystems."/boot" =
+    {
+      device = "/dev/disk/by-uuid/f5979f75-d494-49ba-a149-82a612dcf543";
+      fsType = "ext2";
+    };
+  
+  # Swap partition uuid
+  swapDevices =
+    [{ device = "/dev/disk/by-uuid/8bb10870-d71d-484b-a861-d702a2f55484"; }];
+
+  hardware.enableRedistributableFirmware = true;
+  sound.enable = true;
   # Hardware{{{
   hardware = {
     opengl.enable = true;
@@ -48,9 +79,6 @@
   #}}}
 
   environment.variables = (import ../../modules/common/globalvars.nix);
-
-  # enable sound
-  sound.enable = true;
 
   nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 

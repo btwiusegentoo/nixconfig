@@ -1,3 +1,4 @@
+# -*- mode: Org; eval: (company-mode 0) -*- #
 #+TITLE: My NixOS configuration
 #+LANGUAGE: en
 #+STARTUP: inlineimages overview
@@ -49,7 +50,7 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#tlp][TLP]]
   - [[#thinkfan][Thinkfan]]
   - [[#zram][ZRAM]]
-  - [[#ssd-trim][SSD trim]]
+  - [[#ssd][SSD]]
   - [[#early-oom][Early oom]]
 - [[#look-and-feel][Look And Feel]]
   - [[#color-schemethemes][Color Scheme/Themes]]
@@ -128,7 +129,9 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#dunst][Dunst]]
   - [[#picom][Picom]]
 - [[#machines-1][Machines]]
-  - [[#default-system-configs][Default system configs]]
+  - [[#common-defaults][Common Defaults]]
+  - [[#bootkernelinitrd][Boot/kernel/initrd]]
+  - [[#hardware][Hardware]]
   - [[#desktop][Desktop]]
   - [[#laptop][Laptop]]
   - [[#server][Server]]
@@ -318,7 +321,7 @@ It imports modules (that contains configuration for) for each machines.
               defaults
               ./machines/maindesktop/configuration.nix
               ./modules/common/xserver.nix
-              ./modules/hardware/fstrim.nix
+              ./modules/hardware/ssd.nix
               <<x11-defaults>>
               home-manager.nixosModules.home-manager
               ({
@@ -347,7 +350,7 @@ It imports modules (that contains configuration for) for each machines.
               defaults
               ./machines/mainlaptop/configuration.nix
               ./modules/common/xserverlaptop.nix
-              ./modules/hardware/fstrim.nix
+              ./modules/hardware/ssd.nix
               ./modules/hardware/tlp.nix
               ./modules/hardware/thinkfan.nix
               ./modules/hardware/libinput.nix
@@ -451,7 +454,6 @@ Default repeat rate is too slow. Change it
 #+end_src
 *** Dvorak
 I use Dvorak layout on HHKB.
-[[https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/KB_United_States_Dvorak.svg/800px-KB_United_States_Dvorak.svg.png]]
 Dvorak layout is a ergonomic alternative for qwerty layout that requires less movement.
 My keybinds are configured with HHKB Dvorak usage in mind. I didn't remapped vim(or evil-mode) keys(hjkl) because it already feels natural as is.
 
@@ -665,13 +667,14 @@ Defaults to 1/2 of total RAM.
 #+begin_src nix
 memoryPercent = 100;
 #+end_src
-** SSD trim
-Enable SSD trim.
+** SSD
+Enable SSD trim and set better filesystem mounting options
 Make sure to only import for SSD devices.
-#+begin_src nix :tangle modules/hardware/fstrim.nix
+#+begin_src nix :tangle modules/hardware/ssd.nix
 # This file is generated from "README.org"
 {
   services.fstrim.enable = true;
+  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
 }
 #+end_src
 ** Early oom
@@ -1105,7 +1108,6 @@ Set centaur tabs height
 (setq centaur-tabs-height 32)
 #+end_src
 Set the tab style to chamfer
-[[https://raw.githubusercontent.com/ema2159/centaur-tabs/master/images/chamfer.png]]
 #+name: centaur-tabs-style
 #+begin_src elisp
 (setq centaur-tabs-style "chamfer")
@@ -1124,14 +1126,12 @@ Gray out icons for the unselected tabs
 #+end_src
 
 Display underline below the selected tab
-[[https://raw.githubusercontent.com/ema2159/centaur-tabs/master/images/underline.png]]
 #+name: centaur-tabs-underline
 #+begin_src elisp
 (setq centaur-tabs-set-bar 'under)
 #+end_src
 
 Display a marker indicating that a buffer has been modified
-[[https://raw.githubusercontent.com/ema2159/centaur-tabs/master/images/marker.png]]
 #+name: centaur-tabs-modified-marker
 #+begin_src elisp
 (setq centaur-tabs-set-modified-marker t)
@@ -1600,7 +1600,6 @@ round-borders-exclude = [
 ** Alacritty
 Alacritty is a GPU-accelerated terminal emulator, written in Rust.
 I use as default terminal.
-[[https://raw.githubusercontent.com/alacritty/alacritty/master/extra/logo/alacritty-term%2Bscanlines.svg]]
 + [[Alacritty Colors][Colors]]
 + [[Alacritty Fonts][Fonts]]
 #+begin_src nix :tangle modules/terminal/alacritty.nix :noweb no-export
@@ -2734,11 +2733,8 @@ main = do
       } `additionalKeysP` myKeys
 #+end_src
 * Emacs
-[[https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/EmacsIcon.svg/48px-EmacsIcon.svg.png]]
 I use emacs (specifically, *doom-emacs*) as main text editor
 
-*mandatory editor comparison*
-[[https://imgs.xkcd.com/comics/real_programmers.png]]
 
 doom-emacs is an Emacs framework, which is preconfigured with evil-mode(vim keybindings) that allows me to use heavily customized emacs ootb
 Doom starts up really quickly,because it tries to lazy load a lot of packages, byte compiles your configuration.
@@ -3564,7 +3560,6 @@ end
 #+end_src
 * Web Browser
 ** qutebrowser
-[[https://raw.githubusercontent.com/qutebrowser/qutebrowser/master/icons/qutebrowser-64x64.png]]
 I use qutebrowser as main browser.
 qutebrowser is a keyboard-focused(Vim-style key bindings) browser with a minimal GUI based on Chromium(qtwebengine).
 + [[qutebrowser Colors][Colors]]
@@ -3657,7 +3652,6 @@ Requires [[Emacs daemon]]
 c.editor.command = ["emacsclient", "-c", "--eval", "(find-file \"{}\")", "(org-mode)"]
 #+end_src
 ** Firefox
-[[https://3u26hb1g25wn1xwo8g186fnd-wpengine.netdna-ssl.com/files/2019/10/logo-firefox.svg]]
 Firefox is my backup browser.
 I Use for certain websites that qutebrowser can't access(like widevine websites in NixOS), or games, etc.
 #+begin_src nix :tangle modules/gui/firefox.nix :noweb no-export
@@ -3703,7 +3697,6 @@ extensions = with pkgs.nur.repos.rycee.firefox-addons; [
 ];
 #+end_src
 *** Tridactyl
-[[https://raw.githubusercontent.com/tridactyl/tridactyl/master/src/static/logo/Tridactyl_64px.png]]
 Tridactyl is a Firefox plugin that provides Vim key bindings. Makes Firefox usable.
 Replaces Firefox’s control mechanism with one modelled on Vim.
 
@@ -3751,7 +3744,6 @@ Set my own startpage
 #+end_src
 * Multimedia
 ** PulseAudio
-[[https://www.freedesktop.org/software/pulseaudio/logo.png]]
 PulseAudio is a general purpose sound server intended to run as a middleware between your applications and your hardware devices, either using ALSA or OSS.
 It's required by many programs to play sound nowadays.
 #+begin_src nix :tangle modules/services/pulseaudio.nix :noweb no-export
@@ -3814,7 +3806,6 @@ daemon.config = {
 };
 #+end_src
 ** mpv
-[[https://raw.githubusercontent.com/mpv-player/mpv.io/master/source/images/mpv-logo-128.png]]
 mpv is a FOSS, lightweight command line media player. It supports a wide variety of media file formats.
 I mostly use it to play Youtube videos [[Youtube playback with mpv][spawning from qutebrowser]] , Thanks to [[ https://github.com/ytdl-org/youtube-dl][youtube-dl]]
 + [[mpv background color][Background Color]]
@@ -4359,33 +4350,421 @@ Detect rounded corners and treat them as rectangular
 detect-rounded-corners = true;
 #+end_src
 * Machines
-** Default system configs
-This belongs to each machine configurations.
-#+name: machine-configuration-defaults
-#+begin_src nix :noweb no-export
-# This file is generated from "README.org"
-<<machine-configuration-defaultimports>>
+** Common Defaults
+Import files on each machine directories
+#+name: configurationnix-defaultimports
+#+begin_src nix
+# Include the results of the hardware scan.
+./hardware-configuration.nix
+# import encrypted user settings/secrets
+./usersettings.nix
 #+end_src
 
-*** imports
-import files that differs to machine and is stored inside machine directory.
-Files that are shared between machines are better to import from [[#defaults][flakes]]
-#+name: machine-configuration-defaultimports
+This is required to enable various firmwares like WiFi
+#+name: hardware-redistributable-firmware
 #+begin_src nix
-imports =
-[
-    # Include the results of the hardware scan.
-    ./hardware-configuration.nix
-    # import usersettings
-    ./usersettings.nix
-];
+hardware.enableRedistributableFirmware = true;
+#+end_src
+
+Enable ALSA sound
+#+name: enable-sound
+#+begin_src nix
+sound.enable = true;
+#+end_src
+** Boot/kernel/initrd
+Boot faster
+#+name: configurationnix-faster-boot
+#+begin_src nix
+systemd.services.systemd-udev-settle.serviceConfig.TimeoutSec = 5;
+systemd.services.NetworkManager-wait-online.enable = false;
+#+end_src
+
+Enable latest kernel from nixos-unstable
+#+name: configurationnix-latest-kernel
+#+begin_src nix
+boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+#+end_src
+
+*** Grub
+Enable legacy bios grub(laptop and server)
+#+name: configurationnix-enable-grub
+#+begin_src nix
+boot.loader.grub.enable = true;
+boot.loader.grub.version = 2;
+#+end_src
+
+Disable grub timeout(basically boot straight to NixOS), show grub only when shift key is holded
+#+name: configurationnix-grub-timeout
+#+begin_src nix
+boot.loader.timeout = 0;
+boot.loader.grub.extraConfig = ''
+if keystatus --shift ; then
+    set timeout=-1
+else
+    set timeout=0
+fi
+'';
+#+end_src
+
+Copy kernels and initrds to /boot. This is enabled automatically if /boot is on a different partition than / .
+#+name: configurationnix-grub-copykernels
+#+begin_src nix
+boot.loader.grub.copyKernels = true;
+#+end_src
+*** systemd-boot
+SystemD-boot is used on desktop.
+Enable it:
+#+name: configurationnix-systemdboot-enable
+#+begin_src nix
+boot.loader.systemd-boot.enable = true;
+boot.loader.efi.canTouchEfiVariables = true;
+#+end_src
+*** filesystem path/luks
+**** Desktop
+#+name: configurationnix-desktop-fspath
+#+begin_src nix
+
+# Luks encrypted partition
+boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/02d555e3-f8d2-4617-860e-06c08bec521b";
+
+# Root partition after unlocking luks
+fileSystems."/" =
+{
+    device = "/dev/disk/by-uuid/ba342cbb-2d6c-453d-8d25-df8fad829c37";
+    fsType = "xfs";
+};
+
+# Boot partition
+fileSystems."/boot" =
+{
+    device = "/dev/disk/by-uuid/E5A7-FB2A";
+    fsType = "vfat";
+};
+
+# Swap partition uuid
+swapDevices =
+[{ device = "/dev/disk/by-uuid/aedff2c4-f34c-410c-9612-aa9df0dd3cef"; }];
+#+end_src
+**** Laptop
+#+name: configurationnix-laptop-fspath
+#+begin_src nix
+# Luks encrypted partition
+boot.loader.grub.enableCryptodisk = true;
+boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/27740e7b-5bb7-482a-94dc-72df547f1f66";
+
+# Set what drive to install grub
+boot.loader.grub.device = "/dev/sda";
+
+# Root partition after unlocking luks
+fileSystems."/" =
+  {
+    device = "/dev/disk/by-uuid/b904a3b9-a30e-425c-9e6c-6f8a56cedbf9";
+    fsType = "xfs";
+  };
+
+# Boot partition
+fileSystems."/boot" =
+  {
+    device = "/dev/disk/by-uuid/f548cd01-269e-4b56-8aab-2cf06f278f88";
+    fsType = "ext2";
+  };
+
+# Swap partition uuid
+swapDevices =
+  [{ device = "/dev/disk/by-uuid/1c57f70d-7083-4109-8cd5-f407a51d39cf"; }];
+#+end_src
+**** Server
+#+name: configurationnix-server-fspath
+#+begin_src nix
+# Luks encrypted partition
+boot.loader.grub.enableCryptodisk = true;
+boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/29e93967-944e-4306-adb2-8d2441ca5ed5";
+
+# Set what drive to install grub
+boot.loader.grub.device = "/dev/sda";
+
+# Root partition after unlocking luks
+fileSystems."/" =
+  {
+    device = "/dev/disk/by-uuid/4979bbc1-28e8-4505-9a3e-2d2fc0f41fa3";
+    fsType = "xfs";
+  };
+
+# Boot partition
+fileSystems."/boot" =
+  {
+    device = "/dev/disk/by-uuid/f5979f75-d494-49ba-a149-82a612dcf543";
+    fsType = "ext2";
+  };
+
+# Swap partition uuid
+swapDevices =
+  [{ device = "/dev/disk/by-uuid/8bb10870-d71d-484b-a861-d702a2f55484"; }];
+#+end_src
+** Hardware
+Update Intel micro code(laptop, server)
+#+name: configurationnix-intel-microcode
+#+begin_src nix
+hardware.cpu.intel.updateMicrocode = true;
+#+end_src
+
+Update AMD micro code(desktop)
+#+name: configurationnix-amd-microcode
+#+begin_src nix
+hardware.cpu.amd.updateMicrocode = true;
+#+end_src
+
+Enable opengl
+32bit is required for some programs like lutris/wine
+#+name: configurationnix-opengl-enable
+#+begin_src nix
+hardware.opengl.enable = true;
+hardware.opengl.driSupport = true;
+hardware.opengl.driSupport32Bit = true;
 #+end_src
 ** Desktop
-*** System
+*** configuration.nix
+#+begin_src nix :tangel machines/maindesktop/configuration.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, fetchgit, ... }:
+{
+
+  imports =
+    [
+      <<configurationnix-defaultimports>>
+    ];
+
+  # Boot{{{
+  # Use the systemd-boot EFI boot loader.
+  boot = {
+    extraModulePackages = with config.boot.kernelPackages; [ xpadneo ];
+    extraModprobeConfig = ''
+      options bluetooth disable_ertm=Y
+    '';
+  };
+  # }}}
+  <<configurationnix-systemdboot-enable>>
+  <<configurationnix-faster-boot>>
+  <<configurationnix-latest-kernel>>
+  <<configurationnix-desktop-fspath>>
+
+  <<hardware-redistributable-firmware>>
+  <<enable-sound>>
+  <<configurationnix-amd-microcode>>
+  <<configurationnix-opengl-enable>>
+  # Hardware{{{
+  hardware = {
+    opengl.extraPackages32 = with pkgs.unstable.pkgsi686Linux; [ libva ];
+  };
+  # }}}
+
+  programs = {
+    dconf.enable = true;
+    adb.enable = true;
+    java.enable = true;
+    java.package = pkgs.unstable.jdk;
+  };
+
+  # Networking{{{
+  networking.hostName = "desktop1"; # Define your hostname.
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking = {
+    dhcpcd.enable = false;
+    useNetworkd = true;
+    useDHCP = false;
+    interfaces.enp9s0.useDHCP = true;
+    networkmanager = {
+      enable = true;
+      dns = "systemd-resolved";
+    };
+  };
+  #}}}
+
+  environment.variables = (import ../../modules/common/globalvars.nix);
+
+  virtualisation = import (../../modules/virtualisation/default.nix);
+
+  services.xserver.videoDrivers = [ "amdgpu" ];
+  services.xserver.wacom.enable = true;
+
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "20.03"; # Did you read the comment?
+
+}
+#+end_src
 ** Laptop
-*** System
+*** configuration.nix
+#+begin_src nix :tangle machines/mainlaptop/configuration.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, fetchgit, ... }:
+{
+
+  imports =
+    [
+      <<configurationnix-defaultimports>>
+    ];
+
+  boot = {
+    kernelModules = [ "i915" "tpm-rng" ];
+    extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
+    extraModprobeConfig = ''
+      options bluetooth disable_ertm=Y
+      options iwlwifi 11n_disable=8 bt_coex_active=N
+      options thinkpad_acpi experimental=1 fan_control=1
+    '';
+    kernelParams = [
+      "acpi_osi='!Windows 2012'"
+      "acpi_backlight=vendor"
+    ];
+    plymouth.enable = true;
+  };
+  <<configurationnix-enable-grub>>
+  <<configurationnix-grub-timeout>>
+  <<configurationnix-grub-copykernels>>
+  <<configurationnix-faster-boot>>
+  <<configurationnix-latest-kernel>>
+
+  <<configurationnix-laptop-fspath>>
+
+  <<hardware-redistributable-firmware>>
+  <<enable-sound>>
+  <<configurationnix-intel-microcode>>
+  <<configurationnix-opengl-enable>>
+  hardware = {
+    opengl.extraPackages = with pkgs; [
+      vaapiIntel
+      vaapiVdpau
+      libvdpau-va-gl
+      intel-media-driver
+    ];
+  };
+
+  programs = {
+    dconf.enable = true;
+    adb.enable = true;
+    java.enable = true;
+    java.package = pkgs.unstable.jdk;
+  };
+
+
+  # Networking{{{
+  networking.hostName = "laptop1"; # Define your hostname.
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking = {
+    dhcpcd.enable = false;
+    useDHCP = false;
+    interfaces.wlan0.useDHCP = false;
+    networkmanager = {
+      enable = true;
+      wifi = {
+        backend = "iwd";
+        macAddress = "random";
+        scanRandMacAddress = true;
+      };
+    };
+  };
+  #}}}
+
+  environment.variables = (import ../../modules/common/globalvars.nix);
+
+  virtualisation = import (../../modules/virtualisation/default.nix);
+
+  systemd.user.services = {
+    xkb-restore = {
+      description = "Restore keyboard layout after suspend";
+      after = [ "suspend.target" "graphical-session.target" ];
+      serviceConfig = {
+        Type = "simple";
+        Environment = "DISPLAY=:0";
+        ExecStartPre = "/usr/bin/env sleep 3";
+        ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/x230key.xkb :0\"";
+      };
+      wantedBy = [ "suspend.target" "graphical-session.target" ];
+    };
+  };
+
+  services.xserver.videoDrivers = [ "intel" ];
+  services.xserver.deviceSection = ''
+    Option "TearFree" "true"
+  '';
+
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "20.03"; # Did you read the comment?
+
+}
+#+end_src
 ** Server
-*** System
+*** configuration.nix
+#+begin_src nix :tangle machines/mainserver/configuration.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, fetchgit, ... }:
+{
+
+  imports =
+    [
+      <<configurationnix-defaultimports>>
+    ];
+
+  <<configurationnix-enable-grub>>
+  <<configurationnix-grub-timeout>>
+  <<configurationnix-grub-copykernels>>
+  <<configurationnix-faster-boot>>
+  <<configurationnix-latest-kernel>>
+
+  <<configurationnix-server-fspath>>
+
+  <<hardware-redistributable-firmware>>
+  <<enable-sound>>
+  <<configurationnix-intel-microcode>>
+
+  # Networking{{{
+  networking.hostName = "server1"; # Define your hostname.
+
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking = {
+    dhcpcd.enable = false;
+    useNetworkd = true;
+    useDHCP = false;
+    interfaces.wlp0s4f1u3u4.useDHCP = true;
+    networkmanager = {
+      enable = true;
+      dns = "systemd-resolved";
+    };
+  };
+  #}}}
+
+  environment.variables = (import ../../modules/common/globalvars.nix);
+
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "20.03"; # Did you read the comment?
+
+}
+#+end_src
 * Symlinks
 Nix modules to symlink various files included config files
 ** /etc files
@@ -4464,7 +4843,6 @@ This module is imported from home-manager
 }
 #+end_src
 * Credits
-
 - [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in lock screen wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]
 - [[https://wallhaven.cc/w/45xkj1][Wallpaper]]
 - Icons from [[https://remixicon.com][Remix Icon]]
