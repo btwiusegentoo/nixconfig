@@ -1,28 +1,25 @@
+# This file is generated from "README.org"
 { config, pkgs, lib, ... }:
 let
 
-  # Haskell packages{{{
-  haskell-env = pkgs.unstable.haskellPackages.ghcWithHoogle
-    (
-      hp: with hp; [
-        xmonad
-        xmonad-contrib
-        xmonad-extras
-        apply-refact
-        haskell-language-server
-        brittany
-        cabal-install
-        hlint
-        xmobar
-      ]
-    );
-  # }}}
+  haskell-env = pkgs.unstable.haskellPackages.ghcWithHoogle (
+    hp: with hp; [
+      xmonad
+      xmonad-contrib
+      xmonad-extras
+      apply-refact
+      haskell-language-server
+      brittany
+      cabal-install
+      hlint
+      xmobar
+    ]
+  );
 
 in
 {
-
-  # Packages to install{{{
   home.packages = with pkgs; [
+    haskell-env
     trash-cli
     tree
     bc
@@ -38,7 +35,6 @@ in
     cabal2nix
     nix-index
     niv
-    haskell-env
     rnix-lsp
     scrot
     feh
@@ -107,14 +103,9 @@ in
     fortune
     asciiquarium
   ];
-  #}}}
 
-  # services {{{
-  services = {
-    keynav.enable = true;
-    lorri.enable = true;
-  };
-  #}}}
+  services.lorri.enable = true;
+  services.keynav.enable = true;
 
   # programs {{{
   programs = {
@@ -123,12 +114,10 @@ in
   };
   #}}}
 
-  # Set your keyboard layout. I recommend Dvorak.
   home.keyboard = {
     layout = "us";
     variant = "dvorak";
   };
-  #Scale to 1080p
   xsession.profileExtra = "xrandr --output LVDS1 --scale-from 1920x1080 --panning 1920x1080";
 
   # home files{{{
@@ -227,7 +216,4 @@ in
     "EDITOR" = "emacsclient -c";
   }; # }}}
 
-  xdg = import ../../modules/common/xdg.nix { inherit pkgs; };
-
 }
-# vim:ft=nix fdm=marker sw=4:

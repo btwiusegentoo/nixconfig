@@ -40,11 +40,14 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#enable-flakes][Enable flakes]]
   - [[#allowed-users][Allowed users]]
   - [[#trusted-users][Trusted users]]
+  - [[#enable-lorri][Enable lorri]]
   - [[#integrate-lorri-direnv-with-fish-shell][Integrate lorri direnv with fish shell]]
 - [[#input][Input]]
   - [[#keyboard][Keyboard]]
   - [[#trackpad][Trackpad]]
+  - [[#keynav][keynav]]
 - [[#output][Output]]
+  - [[#monitor][Monitor]]
 - [[#other-hardwares][Other Hardwares]]
   - [[#bluetooth][Bluetooth]]
   - [[#tlp][TLP]]
@@ -108,6 +111,8 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#doom-emacs-configel-base-code][doom-emacs config.el base code]]
 - [[#neovim][neovim]]
   - [[#open-lazygit-commit-window-inside-neovim][Open lazygit commit window inside neovim]]
+- [[#dev-environment][Dev environment]]
+  - [[#haskell][Haskell]]
 - [[#web-browser][Web Browser]]
   - [[#qutebrowser][qutebrowser]]
   - [[#firefox][Firefox]]
@@ -140,7 +145,6 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#config-files][~/.config files]]
 - [[#credits][Credits]]
 
-* [/] Tasks :noexport:
 * Flake
 A [[https://nixos.wiki/wiki/Flakes][flake]] is (usually) a Git repository that contains a file named ~flake.nix~ at root.
 This repository is compatible with nix flakes.
@@ -249,6 +253,7 @@ List default modules for home-manager that *doesn't require X11* here
 List default modules for home-manager that *requires X11* here
 #+name: home-manager-x11-defaults
 #+begin_src nix
+./modules/common/xdg.nix
 ./modules/common/xmonad.nix
 ./modules/services/dunst.nix
 ./modules/services/picom.nix
@@ -436,6 +441,12 @@ Add user here to use cachix and run ~nixos-rebuild~ from that user.
 #+begin_src nix
 nix.trustedUsers = [ "root" "@wheel" ];
 #+end_src
+** Enable lorri
+lorri is a nix-shell replacement with fast direnv integration
+#+name: lorri-enable
+#+begin_src nix
+services.lorri.enable = true;
+#+end_src
 ** Integrate lorri direnv with fish shell
 For direnv to work properly it needs to be hooked into the shell.
 Once the hook is configured, restart your shell for direnv to be activated.
@@ -469,12 +480,61 @@ Xorg config
 layout = "us";
 xkbVariant = "dvorak";
 #+end_src
+
+home-manager config
+#+name: home-manager-keymap
+#+begin_src nix
+home.keyboard = {
+  layout = "us";
+  variant = "dvorak";
+};
+#+end_src
 *** IME
 Install Japanese IME
 #+name: japanese-ime
 #+begin_src nix
 i18n.inputMethod.enabled = "fcitx";
 i18n.inputMethod.fcitx.engines = with pkgs.fcitx-engines; [ mozc ];
+#+end_src
+*** Thinkpad
+I can't live without HHKB-ish layout. I remap my ThinkPad layout:
+#+begin_src conf :tangle configs/thinkpadlayout.xkb
+xkb_keymap {
+ xkb_keycodes {
+  include "evdev+aliases(qwerty)"
+  <ESC> = 49;
+  <BKSP> = 51;
+  <LCTL> = 37;
+  <TLDE> = 9;
+  <BKSL> = 22;
+ };
+ xkb_types { include "complete"};
+ xkb_compatibility { include "complete"};
+ xkb_symbols { include "pc+us(dvorak)+us(dvorak):2+inet(evdev)+altwin(swap_alt_win)+ctrl(nocaps)" };
+ xkb_geometry { include "pc(pc104)"};
+};
+#+end_src
+
+Symlink it to /etc for convenience
+#+name: thinkpad-layout-file
+#+begin_src nix
+environment.etc."thinkpadlayout.xkb".source = ../../configs/thinkpadlayout.xkb;
+#+end_src
+
+Make a systemd service to execute everytime after waking up from restart/sleep
+#+name: thinkpad-layout-service
+#+begin_src nix
+  systemd.user.services.xkb-restore = {
+      description = "Restore keyboard layout after suspend";
+      after = [ "suspend.target" "graphical-session.target" ];
+      serviceConfig = {
+        Type = "simple";
+        Environment = "DISPLAY=:0";
+        ExecStartPre = "/usr/bin/env sleep 3";
+        ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/thinkpadlayout.xkb :0\"";
+      };
+      wantedBy = [ "suspend.target" "graphical-session.target" ];
+  };
 #+end_src
 ** Trackpad
 I use libinput because the better palm detection.
@@ -488,7 +548,49 @@ It's a minimal config because trackpad is mostly disabled.
   services.xserver.libinput.accelSpeed = "1.000000";
 }
 #+end_src
+** keynav
+keynav is a program that allows you to control the mouse with keyboard in a very efficient way.
+One of the big reasons I can live mostly without mouse
+#+name: keynav-enable
+#+begin_src nix
+services.keynav.enable = true;
+#+end_src
+
+Generate keynav config.
+Super-; to start keynav
+s to  warp cursor
+m,w,v,z to scroll, think like hjkl on QWERTY keyboard. it's positioned on bottom right of Dvorak layout
+#+name: keynav-config
+#+begin_src conf
+"keynav/keynavrc".text = ''
+  super+semicolon start
+  s warp
+  m click 6
+  w click 5
+  v click 4
+  z click 7
+'';
+#+end_src
 * Output
+** Monitor
+*** Brightness
+We need these kernel parameters to be able to control display brightness on ThinkPad
+#+name: configurationnix-laptop-brightness
+#+begin_src nix
+"acpi_osi='!Windows 2012'"
+"acpi_backlight=vendor"
+#+end_src
+*** Resolution
+Scale desktop monitor to 1440p
+#+name: xrandr-desktop-scale
+#+begin_src nix
+xsession.profileExtra = "xrandr --output DVI-D-0 --scale-from 2560x1440 --panning 2560x1440";
+#+end_src
+Scale laptop monitor to 1080p
+#+name: xrandr-laptop-scale
+#+begin_src nix
+xsession.profileExtra = "xrandr --output LVDS1 --scale-from 1920x1080 --panning 1920x1080";
+#+end_src
 * Other Hardwares
 ** Bluetooth
 This module configures bluetooth for all machines.
@@ -716,15 +818,10 @@ Choose colored treemacs(side bar file tree) theme
 (setq doom-themes-treemacs-theme "doom-colors")
 #+end_src
 *** Alacritty Colors
-Enable custom cursor colors
-#+name: alacritty-custom-cursor-colors
-#+begin_src nix
-custom_cursor_colors = true;
-#+end_src
 Color codes taken from [[https://github.com/aaron-williamson/base16-alacritty/blob/master/colors/base16-material-palenight-256.yml][here]]
 #+name: alacritty-colors
 #+begin_src nix
-colors = {
+programs.alacritty.settings.colors = {
   # Default colors
   primary = {
     background = "0x292d3e";
@@ -809,19 +906,19 @@ password-border-color = "#202331"
 *** Notification Colors
 #+name: dunst-colors
 #+begin_src nix
-global = {
+services.dunst.settings.global = {
     frame_color = "#959DCB";
     separator_color = "#959DCB";
 };
-urgency_low = {
+services.dunst.settings.urgency_low = {
     background = "#444267";
     foreground = "#676E95";
 };
-urgency_normal = {
+services.dunst.settings.urgency_normal = {
     background = "#32374D";
     foreground = "#959DCB";
 };
-urgency_critical = {
+services.dunst.settings.urgency_critical = {
     background = "#F07178";
     foreground = "#959DCB";
 };
@@ -1015,26 +1112,26 @@ settings.colors = {
 Set mpv background color, color used to draw parts of the mpv window not covered by video.
 #+name: mpv-background-color
 #+begin_src nix
-config.background = "#292D3E";
+programs.mpv.config.background = "#292D3E";
 #+end_src
 *** zathura colors
 Set zathura interface colors
 #+name: zathura-colors
 #+begin_src nix
-default-bg = "#292D3E";
-default-fg = "#A6ACCD";
-statusbar-bg = "#202331";
-statusbar-fg = "#A6ACCD";
-inputbar-bg = "#202331";
-inputbar-fg = "#A6ACCD";
-highlight-color = "#444267";
-highlight-active-color = "#82aaff";
+programs.zathura.options.default-bg = "#292D3E";
+programs.zathura.options.default-fg = "#A6ACCD";
+programs.zathura.options.statusbar-bg = "#202331";
+programs.zathura.options.statusbar-fg = "#A6ACCD";
+programs.zathura.options.inputbar-bg = "#202331";
+programs.zathura.options.inputbar-fg = "#A6ACCD";
+programs.zathura.options.highlight-color = "#444267";
+programs.zathura.options.highlight-active-color = "#82aaff";
 #+end_src
 Set colors to recolor the document
 #+name: zathura-recolor-colors
 #+begin_src nix
-recolor-lightcolor = "#292D3E";
-recolor-darkcolor = "#A6ACCD";
+programs.zathura.options.recolor-lightcolor = "#292D3E";
+programs.zathura.options.recolor-darkcolor = "#A6ACCD";
 #+end_src
 *** bat theme
 Set theme name
@@ -1299,9 +1396,9 @@ myEmojiFont = "xft:Apple Color Emoji:size=14"
 *** Alacritty Fonts
 I use Spleen font for Alacritty.
 The size is in point(pt)
-#+name: alacritty-font
+#+name: alacritty-fonts
 #+begin_src nix
-font = {
+programs.alacritty.settings.font = {
   normal = {
     family = "Spleen";
     style = "Regular";
@@ -1428,7 +1525,7 @@ Seems like this user-level config is needed to programs use Apple Color Emoji fo
 *** Dunst(Notifications) font
 #+name: dunst-font
 #+begin_src nix
-global.font = "SFNS Display 14";
+services.dunst.settings.global.font = "SFNS Display 14";
 #+end_src
 ** Wallpapers
 Desktop wallpaper ~pictures/wallpaper1.png~
@@ -1471,11 +1568,18 @@ spawnOnce "nitrogen --restore &"
 ** Icons
 ** Cursors
 *** Alacritty cursor
+Set cursor shape
 #+name: alacritty-cursor
 #+begin_src nix
-cursor = {
-style = "Beam";
+programs.alacritty.settings.cursor = {
+  style = "Beam";
 };
+#+end_src
+
+Enable custom cursor colors
+#+name: alacritty-custom-cursor-colors
+#+begin_src nix
+programs.alacritty.settings.custom_cursor_colors = true;
 #+end_src
 *** Set x11 cursor
 First, import this module in [[xmonad]]
@@ -1496,7 +1600,7 @@ setDefaultCursor xC_left_ptr
 Programs that doesn't have opacity option, or the opacity option doesn't work great(like PGTK emacs) can be set opacity using picom with following code:
 #+name: picom-opacity
 #+begin_src nix
-opacityRule = [
+services.picom.opacityRule = [
     "80:class_g  = 'Zathura'"
     "80:class_g  = 'TelegramDesktop'"
     "80:class_g  = 'Discord'"
@@ -1533,7 +1637,7 @@ Window opacity as a floating point number from ~0.0~ to ~1.0~
 The value ~0.0~ is completely transparent and ~1.0~ is opaque.
 #+name: alacritty-opacity
 #+begin_src nix
-background_opacity = 0.8;
+programs.alacritty.settings.background_opacity = 0.8;
 #+end_src
 *** Emacs opacity
 Set to nil, let picom manage opacity because pure gtk emacs doesn't work great with opacity option.
@@ -1602,47 +1706,44 @@ Alacritty is a GPU-accelerated terminal emulator, written in Rust.
 I use as default terminal.
 + [[Alacritty Colors][Colors]]
 + [[Alacritty Fonts][Fonts]]
++ [[Alacritty cursor][Cursor style]]
 #+begin_src nix :tangle modules/terminal/alacritty.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  programs.alacritty = {
-    <<alacritty-enable>>
-    settings = {
-      <<alacritty-enable-true-color>>
-      <<alacritty-window-padding>>
-      <<alacritty-window-dynamicpadding>>
-      <<alacritty-window-decorations>>
-      <<alacritty-window-startup-mode>>
-      <<alacritty-scrolling>>
-      <<alacritty-font>>
-      <<alacritty-boldtext-bright-colors>>
-      <<alacritty-opacity>>
-      <<alacritty-keybinds>>
-      <<alacritty-custom-cursor-colors>>
-      <<alacritty-cursor>>
-      <<alacritty-colors>>
-    };
-  };
+  <<alacritty-enable>>
+  <<alacritty-colors>>
+  <<alacritty-fonts>>
+  <<alacritty-enable-true-color>>
+  <<alacritty-window-padding>>
+  <<alacritty-window-dynamicpadding>>
+  <<alacritty-window-decorations>>
+  <<alacritty-window-startup-mode>>
+  <<alacritty-scrolling>>
+  <<alacritty-boldtext-bright-colors>>
+  <<alacritty-opacity>>
+  <<alacritty-keybinds>>
+  <<alacritty-cursor>>
+  <<alacritty-custom-cursor-colors>>
 }
 #+end_src
 *** Install Alacritty
 Whether to enable Alacritty
 #+name: alacritty-enable
 #+begin_src nix
-enable = true;
+programs.alacritty.enable = true;
 #+end_src
 *** Enable true color
 xterm-256color describes Xterm with support for 256 colors enabled.
 set TERM environment variable.
 #+name: alacritty-enable-true-color
 #+begin_src nix
-env.TERM = "xterm-256color";
+programs.alacritty.settings.env.TERM = "xterm-256color";
 #+end_src
 *** Alacritty padding
 Blank space added around the window in pixels.
 #+name: alacritty-window-padding
 #+begin_src nix
-window.padding = {
+programs.alacritty.settings.window.padding = {
     x = 12;
     y = 0;
 };
@@ -1650,14 +1751,14 @@ window.padding = {
 Dynamic padding
 #+name: alacritty-window-dynamicpadding
 #+begin_src nix
-window.dynamic_padding = false;
+programs.alacritty.settings.window.dynamic_padding = false;
 #+end_src
 *** Window decorations
 - full : Borders and title bar
 - none: Neither borders nor title bar
 #+name: alacritty-window-decorations
 #+begin_src nix
-window.decorations = "none";
+programs.alacritty.settings.window.decorations = "none";
 #+end_src
 *** Window startup mode
 - Windowed
@@ -1665,14 +1766,14 @@ window.decorations = "none";
 - Fullscreen
 #+name: alacritty-window-startup-mode
 #+begin_src nix
-window.startup_mode = "Windowed";
+programs.alacritty.settings.window.startup_mode = "Windowed";
 #+end_src
 *** Scrolling
 History sets maximum number of lines in the scrollback buffer.
 Multiplier sets scrolling distance multiplier.
 #+name: alacritty-scrolling
 #+begin_src nix
-scrolling = {
+programs.alacritty.settings.scrolling = {
     history = 10000;
     multiplier = 3;
 };
@@ -1682,7 +1783,7 @@ If ~true~, bold text is drawn using the bright color variants.
 Maybe usable for bitmap fonts?
 #+name: alacritty-boldtext-bright-colors
 #+begin_src nix
-draw_bold_text_with_bright_colors = true;
+programs.alacritty.settings.draw_bold_text_with_bright_colors = true;
 #+end_src
 *** Key bindings
 ~C-S-c~ to copy, ~C-S-v~ to paste
@@ -1690,28 +1791,28 @@ draw_bold_text_with_bright_colors = true;
 ~C-S-Down~ to scroll downwards.
 #+name: alacritty-keybinds
 #+begin_src nix
-      key_bindings = [
-        {
-          key = "V";
-          mods = "Control|Shift";
-          action = "Paste";
-        }
-        {
-          key = "C";
-          mods = "Control|Shift";
-          action = "Copy";
-        }
-        {
-          key = "Up";
-          mods = "Control|Shift";
-          action = "ScrollPageUp";
-        }
-        {
-          key = "Down";
-          mods = "Control|Shift";
-          action = "ScrollPageDown";
-        }
-      ];
+programs.alacritty.settings.key_bindings = [
+  {
+    key = "V";
+    mods = "Control|Shift";
+    action = "Paste";
+  }
+  {
+    key = "C";
+    mods = "Control|Shift";
+    action = "Copy";
+  }
+  {
+    key = "Up";
+    mods = "Control|Shift";
+    action = "ScrollPageUp";
+  }
+  {
+    key = "Down";
+    mods = "Control|Shift";
+    action = "ScrollPageDown";
+  }
+];
 #+end_src
 ** TTY
 Configure TTY console.
@@ -1756,27 +1857,26 @@ fish is a Unix shell that attempts to be more interactive and user-friendly
 { pkgs, ... }:
 
 {
-  programs.fish = {
-    <<fish-enable>>
+  <<fish-enable>>
 
-    shellAbbrs = {
-      <<fish-common-abbrs>>
-      <<fish-lazygit>>
-      <<fish-sshadd-git>>
-      <<fish-git-abbrs>>
-      <<fish-screenshots>>
-      <<fish-programs>>
-      <<fish-nixos>>
-      <<fish-misc-commands>>
-    };
+  programs.fish.shellAbbrs = {
+    <<fish-common-abbrs>>
+    <<fish-lazygit>>
+    <<fish-sshadd-git>>
+    <<fish-git-abbrs>>
+    <<fish-screenshots>>
+    <<fish-programs>>
+    <<fish-nixos>>
+    <<fish-misc-commands>>
+  };
 
-    plugins =
-      [
-        <<fish-plugin-z>>
-        <<fish-plugin-ssh-agent>>
-      ];
+  programs.fish.plugins =
+    [
+      <<fish-plugin-z>>
+      <<fish-plugin-ssh-agent>>
+    ];
 
-    interactiveShellInit = ''
+  programs.fish.interactiveShellInit = ''
       <<fish-vi-binds>>
       <<fish-greeting>>
       <<fish-esc-delay>>
@@ -1787,15 +1887,13 @@ fish is a Unix shell that attempts to be more interactive and user-friendly
       alias vifm="bash -c 'vifmrun'"
 
     '';
-  };
-
 }
 #+end_src
 *** Enable fish
 Turn on to install fish shell
 #+name: fish-enable
 #+begin_src nix
-enable = true;
+programs.fish.enable = true;
 #+end_src
 *** Abbreviations
 **** Common commands
@@ -1998,16 +2096,16 @@ Set esc key delay
 #+begin_src fish
 set -U fish_escape_delay_ms 10
 #+end_src
-** starship
+** TODO starship
 starship is a minimal, blazing fast, and infinitely customizable prompt for any shell
 #+begin_src nix :tangle modules/terminal/starship.nix :noweb no-export
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
+<<starship-enable>>
+<<starship-fish-integration>>
+<<starship-package>>
   programs.starship = {
-    <<starship-enable>>
-    enableFishIntegration = true;
-    package = pkgs.unstable.starship;
     settings = {
       add_newline = true;
 
@@ -2034,7 +2132,17 @@ starship is a minimal, blazing fast, and infinitely customizable prompt for any 
 Turn on to install starship
 #+name: starship-enable
 #+begin_src nix
-enable = true;
+programs.starship.enable = true;
+#+end_src
+*** Enable fish shell integration
+#+name: starship-fish-integration
+#+begin_src nix
+programs.starship.enableFishIntegration = true;
+#+end_src
+*** starship package
+#+name: starship-package
+#+begin_src nix
+programs.starship.package = pkgs.unstable.starship;
 #+end_src
 ** Shell utilities
 *** Git
@@ -2734,7 +2842,6 @@ main = do
 #+end_src
 * Emacs
 I use emacs (specifically, *doom-emacs*) as main text editor
-
 
 doom-emacs is an Emacs framework, which is preconfigured with evil-mode(vim keybindings) that allows me to use heavily customized emacs ootb
 Doom starts up really quickly,because it tries to lazy load a lot of packages, byte compiles your configuration.
@@ -3558,6 +3665,32 @@ else
     export EDITOR="nvim"
 end
 #+end_src
+* Dev environment
+** Haskell
+Haskell packages to install on home environment
+We need haskell-language-server to use in emacs
+#+name: haskell-packages
+#+begin_src nix
+haskell-env = pkgs.unstable.haskellPackages.ghcWithHoogle (
+  hp: with hp; [
+    xmonad
+    xmonad-contrib
+    xmonad-extras
+    apply-refact
+    haskell-language-server
+    brittany
+    cabal-install
+    hlint
+    xmobar
+  ]
+);
+#+end_src
+
+put these packages at ~home.packages~ to install like this:
+#+name: haskell-packages-env
+#+begin_src nix
+haskell-env
+#+end_src
 * Web Browser
 ** qutebrowser
 I use qutebrowser as main browser.
@@ -3708,6 +3841,7 @@ tridactyl
 
 **** TODO Configuration
 Idk why, file based configuration doesn't work now.
+Configuration to make it behave like qutebrowser
 #+name: tridactylrc
 #+begin_src vimrc :tangle no
 
@@ -3750,44 +3884,42 @@ It's required by many programs to play sound nowadays.
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
-  hardware.pulseaudio = {
-    <<pulseaudio-enable>>
-    <<pulseaudio-package>>
-    <<pulseaudio-support-32bit>>
-    <<pulseaudio-extramodules>>
-    <<pulseaudio-daemon-config>>
-  };
+  <<pulseaudio-enable>>
+  <<pulseaudio-package>>
+  <<pulseaudio-support-32bit>>
+  <<pulseaudio-extramodules>>
+  <<pulseaudio-daemon-config>>
 }
 #+end_src
 *** Enable PulseAudio
 Whether to enable the PulseAudio sound server.
 #+name: pulseaudio-enable
 #+begin_src nix
-enable = true;
+hardware.pulseaudio.enable = true;
 #+end_src
 *** PulseAudio 32bit support
 Include 32-bit pulseaudio libraries in the system. It's needed by certain programs(like wine 32bit, mainly used for games)
 #+name: pulseaudio-support-32bit
 #+begin_src nix
-support32Bit = true;
+hardware.pulseaudio.support32Bit = true;
 #+end_src
 *** PulseAudio package
 Select the PulseAudio derivation to use. This can be used to enable features (such as JACK support, Bluetooth) via the pulseaudioFull package
 #+name: pulseaudio-package
 #+begin_src nix
-package = pkgs.pulseaudioFull;
+hardware.pulseaudio.package = pkgs.pulseaudioFull;
 #+end_src
 *** PulseAudio extra modules
 Extra PulseAudio modules to use. This is intended for out-of-tree pulseaudio modules like extra bluetooth codecs.
 #+name: pulseaudio-extramodules
 #+begin_src nix
-extraModules = [ pkgs.pulseaudio-modules-bt ];
+hardware.pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
 #+end_src
 *** PulseAudio daemon config
 idk, this config is supposed to improve audio quality
 #+name: pulseaudio-daemon-config
 #+begin_src nix
-daemon.config = {
+hardware.pulseaudio.daemon.config = {
     default-sample-rate = "48000";
     alternate-sample-rate = "44100";
     default-sample-channels = "2";
@@ -3812,34 +3944,32 @@ I mostly use it to play Youtube videos [[Youtube playback with mpv][spawning fro
 #+begin_src nix :tangle modules/gui/mpv.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  programs.mpv = {
-    <<mpv-install>>
-    <<mpv-background-color>>
-    <<mpv-hardware-decoding>>
-    <<mpv-bindings>>
-  };
+  <<mpv-install>>
+  <<mpv-background-color>>
+  <<mpv-hardware-decoding>>
+  <<mpv-bindings>>
 }
 #+end_src
 *** Install mpv
 Turn on to install mpv
 #+name: mpv-install
 #+begin_src nix
-enable = true;
+programs.mpv.enable = true;
 #+end_src
 *** Enable hardware decoding
 Hardware decoding is not enabled by default because it's likely to cause issues like tearing, stutter, etc on Low Power GPUs
 My GPUs are totally fine. Enable it:
 #+name: mpv-hardware-decoding
 #+begin_src nix
-config.hwdec = "auto";
-config.hwdec-codecs = "all";
+programs.mpv.config.hwdec = "auto";
+programs.mpv.config.hwdec-codecs = "all";
 #+end_src
 *** mpv default volume
 Set the startup volume. 0 means silence, 100 means no volume reduction or ampififacion.
 Negative values can be passed for compatibility, but are treated as 0.
 #+name: mpv-default-volume
 #+begin_src nix
-config.volume = 80;
+programs.mpv.config.volume = 80;
 #+end_src
 *** mpv key bindings
 Even though I use [[Dvorak]], I'm vim keybinding user.
@@ -3848,7 +3978,7 @@ It's a great idea to control volume and seek video/music with *hjkl*
 *l* already have set to ab-loop for default. So I have to change it.
 #+name: mpv-bindings
 #+begin_src nix
-bindings = {
+programs.mpv.bindings = {
     h = "seek -10";
     j = "add volume -2";
     k = "add volume 2";
@@ -3862,27 +3992,23 @@ zathura is a highly customizable and functional document viewer based on the gir
 #+begin_src nix :tangle modules/gui/zathura.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  programs.zathura = {
-    <<zathura-enable>>
-    options = {
-      <<zathura-recolor>>
-      <<zathura-recolor-colors>>
-      <<zathura-colors>>
-    };
-  };
+  <<zathura-enable>>
+  <<zathura-recolor>>
+  <<zathura-recolor-colors>>
+  <<zathura-colors>>
 }
 #+end_src
 *** Enable zathura
 Turn on to install zathura
 #+name: zathura-enable
 #+begin_src nix
-enable = true;
+programs.zathura.enable = true;
 #+end_src
 *** Recolor
 Turn on to recolor the document
 #+name: zathura-recolor
 #+begin_src nix
-recolor = "true";
+programs.zathura.options.recolor = "true";
 #+end_src
 * Security
 ** doas
@@ -3909,27 +4035,23 @@ Clam AntiVirus is a FOSS antivirus software toolkit able to detect many types of
 #+begin_src nix :tangle modules/services/clamav.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  services.clamav.daemon = {
-    <<clamav-daemon-enable>>
-    <<clamav-daemon-config>>
-  };
-  services.clamav.updater = {
-    <<clamav-updater-enable>>
-    <<clamav-updater-frequency>>
-    <<clamav-updater-interval>>
-    <<clamav-updater-config>>
-  };
+  <<clamav-daemon-enable>>
+  <<clamav-daemon-config>>
+  <<clamav-updater-enable>>
+  <<clamav-updater-frequency>>
+  <<clamav-updater-interval>>
+  <<clamav-updater-config>>
 }
 #+end_src
 *** Enable ClamAV daemon
 #+name:clamav-daemon-enable
 #+begin_src nix
-enable = true;
+services.clamav.daemon.enable = true;
 #+end_src
 *** ClamAV daemon configs
 #+name: clamav-daemon-config
 #+begin_src nix
-extraConfig = ''
+services.clamav.daemon.extraConfig = ''
 
 '';
 #+end_src
@@ -3937,24 +4059,24 @@ extraConfig = ''
 Enable ClamAV freshclam updater
 #+name: clamav-updater-enable
 #+begin_src nix
-enable = true;
+services.clamav.updater.enable = true;
 #+end_src
 *** ClamAV update frequency
 Number of database checks per day
 #+name: clamav-updater-frequency
 #+begin_src nix
-frequency = 24;
+services.clamav.updater.frequency = 24;
 #+end_src
 *** ClamAV updater interval
 How often freshclam is invoked
 #+name: clamav-updater-interval
 #+begin_src nix
-interval = "hourly";
+services.clamav.updater.interval = "hourly";
 #+end_src
 *** ClamAV updater configs
 #+name: clamav-updater-config
 #+begin_src nix
-extraConfig = ''
+services.clamav.updater.extraConfig = ''
 
 '';
 #+end_src
@@ -3964,53 +4086,49 @@ GnuPG allows to encrypt and sign your data and communication, features a versati
 #+begin_src nix :tangel modules/services/gpg.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  services.gpg-agent = {
-    <<gpg-agent-enable>>
-    <<gpg-agent-ssh>>
-    <<gpg-agent-grabkbmouse>>
-    <<gpg-agent-pinentry-flavor>>
-  };
-  programs.gpg = {
-    <<gpg-enable>>
-    <<gpg-settings>>
-  };
+  <<gpg-enable>>
+  <<gpg-settings>>
+  <<gpg-agent-enable>>
+  <<gpg-agent-ssh>>
+  <<gpg-agent-grabkbmouse>>
+  <<gpg-agent-pinentry-flavor>>
 }
 #+end_src
 *** Enable GPG
 Install GnuPG
 #+name: gpg-enable
 #+begin_src nix
-enable = true;
+programs.gpg.enable = true;
 #+end_src
 *** GPG settings
 #+name: gpg-settings
 #+begin_src nix
-settings = {
+programs.settings = {
 };
 #+end_src
 *** Enable GPG agent
 whether to install GnuPG private key agent
 #+name: gpg-agent-enable
 #+begin_src nix
-enable = true;
+services.gpg-agent.enable = true;
 #+end_src
 *** Enable SSH support
 Use GPG agent for SSH keys
 #+name: gpg-agent-ssh
 #+begin_src nix
-enableSshSupport = true;
+services.gpg-agent.enableSshSupport = true;
 #+end_src
 *** Grab the keyboard and mouse
 Tell the pinentry to grab the keyboard and mouse. This option should in general be used to avoid X-sniffing attacks.
 #+name: gpg-agent-grabkbmouse
 #+begin_src nix
-grabKeyboardAndMouse = true;
+services.gpg-agent.grabKeyboardAndMouse = true;
 #+end_src
 *** Select pinentry interface
 Use "curses" to be able to use GPG-agent without X11
 #+name: gpg-agent-pinentry-flavor
 #+begin_src nix
-pinentryFlavor = "curses";
+services.gpg-agent.pinentryFlavor = "curses";
 #+end_src
 * Common configs
 ** X server
@@ -4153,41 +4271,41 @@ This module is imported from home-manager
   <<xdg-userdirs>>
   <<xdg-mime-enable>>
   <<xdg-mimeapps>>
-  configFile = import ./xdg-configfiles.nix { inherit pkgs; };
+  xdg.configFile = import ./xdg-configfiles.nix { inherit pkgs; };
 }
 #+end_src
 
 *** Enable XDG module
 #+name: xdg-enable
 #+begin_src nix
-enable = true;
+xdg.enable = true;
 #+end_src
 *** Enable XDG user dirs
 XDG user dirs is a tool to manager "well known" user directories like the Desktop folder, Pictures folder, and the Music folder.
 These directories are created by enabling this.
 #+name: xdg-userdirs
 #+begin_src nix
-userDirs.enable = true;
+xdg.userDirs.enable = true;
 #+end_src
 *** Enable XDG mime
 Install files to support the XDG Shared MIME-info specification and the XDG MIME Applications specification.
 #+name: xdg-mime-enable
 #+begin_src nix
-mime.enable = true;
+xdg.mime.enable = true;
 #+end_src
 *** XDG mimeapps
 Configure default applications/associations of applications with mimetypes
 #+name: xdg-mimeapps
 #+begin_src nix
-mimeApps = {
-enable = true;
-defaultApplications = {
+xdg.mimeApps = {
+  enable = true;
+  defaultApplications = {
     "text/html" = "org.qutebrowser.qutebrowser.desktop";
     "x-scheme-handler/http" = "org.qutebrowser.qutebrowser.desktop";
     "x-scheme-handler/https" = "org.qutebrowser.qutebrowser.desktop";
     "x-scheme-handler/about" = "org.qutebrowser.qutebrowser.desktop";
     "x-scheme-handler/unknown" = "org.qutebrowser.qutebrowser.desktop";
-};
+  };
 };
 #+end_src
 * Services
@@ -4196,81 +4314,76 @@ This module configures OpenSSH, a suite of secure networking utilities based on 
 #+begin_src nix :tangle modules/services/openssh.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  services.openssh = {
-    <<ssh-enable>>
-    <<ssh-challenge-response-authentication>>
-    <<ssh-x11-forward>>
-    <<ssh-open-firewall>>
-    <<ssh-password-authentication>>
-    <<ssh-root-login>>
-  };
+  <<ssh-enable>>
+  <<ssh-challenge-response-authentication>>
+  <<ssh-x11-forward>>
+  <<ssh-open-firewall>>
+  <<ssh-password-authentication>>
+  <<ssh-root-login>>
 }
 #+end_src
 *** Enable SSH
 #+name: ssh-enable
 #+begin_src nix
-enable = true;
+services.openssh.enable = true;
 #+end_src
 *** Challenge Response Authentication
 challenge response authentication uses a cryptographic protocol that allows to prove that the user knows the password without revealing the password itself.
 thus, makes the authentication more secure.
 #+name: ssh-challenge-response-authentication
 #+begin_src nix
-challengeResponseAuthentication = true;
+services.openssh.challengeResponseAuthentication = true;
 #+end_src
 *** X11 forwarding
 X11 forwarding is a method to start a graphical apllication installed on a remote system and forward that application to the local system.
 #+name: ssh-x11-forward
 #+begin_src nix
-forwardX11 = false;
+services.openssh.forwardX11 = false;
 #+end_src
 *** Open firewall
 Whether to automatically open the ssh ports in the firewall.
 #+name: ssh-open-firewall
 #+begin_src nix
-openFirewall = true;
+services.openssh.openFirewall = true;
 #+end_src
 *** Password authentication
 Disable this to use Public Key Authentication
 #+name: ssh-password-authentication
 #+begin_src nix
-passwordAuthentication = false;
+services.openssh.passwordAuthentication = false;
 #+end_src
 *** Root login
 Whether the root user can login using ssh.
 #+name: ssh-root-login
 #+begin_src nix
-permitRootLogin = "no";
+services.openssh.permitRootLogin = "no";
 #+end_src
 ** Dunst
 Dunst is a minimal notification daemon. Mostly used by WM users.
 This module is imported from home-manager
++  [[Dunst(Notifications) font][Fonts]]
 + [[Notification Colors][Colors]]
 #+begin_src nix :tangle modules/services/dunst.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  services.dunst = {
-    <<dunst-enable>>
-    <<dunst-settings>>
-  };
+  <<dunst-enable>>
+  <<dunst-settings>>
+  <<dunst-font>>
+  <<dunst-colors>>
 }
 #+end_src
 *** Enable dunst
 #+name: dunst-enable
 #+begin_src nix
-enable = true;
+services.dunst.enable = true;
 #+end_src
 *** Dunst Settings
-Font can be configured [[#dunstnotifications-font][here]]
-Colors can be configured [[#notification-colors][here]]
 #+name: dunst-settings
 #+begin_src nix :noweb no-export
-settings = {
+services.dunst.settings = {
     global.transparency = 10;
     global.alignment = "left";
     global.geometry = "300x5-30+20";
-    <<dunst-font>>
-    <<dunst-colors>>
     urgency_low.timeout = 10;
     urgency_normal.timeout = 10;
     urgency_critical.timeout = 10;
@@ -4284,37 +4397,35 @@ This module is imported from home-manager
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
-  services.picom = {
-    <<picom-enable>>
-    <<picom-package>>
-    <<picom-backend>>
-    <<picom-experimental-backends>>
-    <<picom-opacity>>
-    extraOptions = ''
-      <<picom-client-opacity>>
-      <<picom-detect-rounded-corners>>
-      <<picom-blur>>
-      <<picom-blur-exclude>>
-      <<picom-corner-radius>>
-      <<picom-rounded-corners-exclude>>
-      <<picom-enable-rounded-borders>>
-      <<picom-round-borders-exclude>>
-    '';
-  };
+  <<picom-enable>>
+  <<picom-package>>
+  <<picom-backend>>
+  <<picom-experimental-backends>>
+  <<picom-opacity>>
+  services.picom.extraOptions = ''
+    <<picom-client-opacity>>
+    <<picom-detect-rounded-corners>>
+    <<picom-blur>>
+    <<picom-blur-exclude>>
+    <<picom-corner-radius>>
+    <<picom-rounded-corners-exclude>>
+    <<picom-enable-rounded-borders>>
+    <<picom-round-borders-exclude>>
+  '';
 }
 #+end_src
 
 *** Enable picom
 #+name: picom-enable
 #+begin_src nix
-enable = true;
+services.picom.enable = true;
 #+end_src
 *** Picom package
 This fork contains dual kawase blur(KDE-like fancy blur) and rounded borders.
 Requires NUR.
 #+name: picom-package
 #+begin_src nix
-package = pkgs.nur.repos.reedrw.picom-next-ibhagwan;
+services.picom.package = pkgs.nur.repos.reedrw.picom-next-ibhagwan;
 #+end_src
 *** Picom backend
 xrender backend uses software rendering.
@@ -4325,7 +4436,7 @@ kawase-blur was originally written for glx backend.
 Just use glx.
 #+name: picom-backend
 #+begin_src nix
-backend = "glx";
+services.picom.backend = "glx";
 #+end_src
 *** Experimental backends
 Whether to use the new experimental backends.
@@ -4333,7 +4444,7 @@ Currently, new backends feature better vsync with the xrender backend and improv
 Also, I think dual_kawase blur and rounded borders have better implementation within the experimental backends code.
 #+name: picom-experimental-backends
 #+begin_src nix
-experimentalBackends = true;
+services.picom.experimentalBackends = true;
 #+end_src
 
 *** Detect Client Opacity
@@ -4383,6 +4494,12 @@ Enable latest kernel from nixos-unstable
 #+name: configurationnix-latest-kernel
 #+begin_src nix
 boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+#+end_src
+
+Enable plymouth(boot screen splash)
+#+name: configurationnix-plymouth-enable
+#+begin_src nix
+boot.plymouth.enable = true;
 #+end_src
 
 *** Grub
@@ -4522,7 +4639,30 @@ hardware.opengl.enable = true;
 hardware.opengl.driSupport = true;
 hardware.opengl.driSupport32Bit = true;
 #+end_src
+*** xserver AMDGPU driver
+This belongs to desktop config
+#+name: configurationnix-amdgpu-driver
+#+begin_src nix
+services.xserver.videoDrivers = [ "amdgpu" ];
+services.xserver.deviceSection = ''
+Option "TearFree" "true"
+'';
+#+end_src
+*** xserver intel gpu driver
+This belongs to laptop config
+#+name: configurationnix-intelgpu-driver
+#+begin_src nix
+services.xserver.videoDrivers = [ "intel" ];
+services.xserver.deviceSection = ''
+Option "TearFree" "true"
+'';
+#+end_src
 ** Desktop
+*** Set desktop hostname
+#+name: configurationnix-desktop-hostname
+#+begin_src nix
+networking.hostName = "desktop1";
+#+end_src
 *** configuration.nix
 #+begin_src nix :tangel machines/maindesktop/configuration.nix :noweb no-export
 # This file is generated from "README.org"
@@ -4546,6 +4686,7 @@ hardware.opengl.driSupport32Bit = true;
   <<configurationnix-systemdboot-enable>>
   <<configurationnix-faster-boot>>
   <<configurationnix-latest-kernel>>
+  <<configurationnix-plymouth-enable>>
   <<configurationnix-desktop-fspath>>
 
   <<hardware-redistributable-firmware>>
@@ -4565,8 +4706,8 @@ hardware.opengl.driSupport32Bit = true;
     java.package = pkgs.unstable.jdk;
   };
 
+  <<configurationnix-desktop-hostname>>
   # Networking{{{
-  networking.hostName = "desktop1"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -4587,8 +4728,7 @@ hardware.opengl.driSupport32Bit = true;
   environment.variables = (import ../../modules/common/globalvars.nix);
 
   virtualisation = import (../../modules/virtualisation/default.nix);
-
-  services.xserver.videoDrivers = [ "amdgpu" ];
+  <<configurationnix-amdgpu-driver>>
   services.xserver.wacom.enable = true;
 
   # This value determines the NixOS release from which the default
@@ -4601,7 +4741,245 @@ hardware.opengl.driSupport32Bit = true;
 
 }
 #+end_src
+*** Packages to install on desktop home environment
+#+name: home-manager-desktop-packages
+#+begin_src nix
+home.packages = with pkgs; [
+  <<haskell-packages-env>>
+  trash-cli
+  tree
+  bc
+  gitAndTools.diff-so-fancy
+  gitAndTools.delta
+  unstable.ripgrep
+  unstable.fd
+  unstable.fzf
+  unstable.mosh
+  binutils
+  killall
+  neofetch
+  pfetch
+  nodePackages.node2nix
+  cabal2nix
+  nix-index
+  niv
+  rnix-lsp
+  scrot
+  feh
+  tty-clock
+  appimage-run
+  lightlocker
+  circleci-cli
+  fontforge
+  palenight-gtk-theme
+  unstable.pop-icon-theme
+  unstable.hicolor-icon-theme # fallback gtk theme
+  unstable.pandoc
+  unstable.nitrogen
+  unstable.chafa
+  unstable.ueberzug
+  # nixpkgs
+  nixfmt
+  nixpkgs-fmt
+  nixpkgs-review
+  nix-prefetch-git
+  nix-prefetch-github
+  pypi2nix
+  # rust
+  unstable.cargo
+  # lua
+  unstable.luajit
+  unstable.luajitPackages.lua-lsp
+  # tui apps
+  cava
+  unstable.vifm-full
+  vifmimg
+  htop
+  unstable.bottom
+  ncpamixer
+  unstable.mps-youtube
+  unstable.lazygit
+  # gui apps
+  gimp
+  krita
+  kdenlive
+  olive-editor
+  blender
+  master.discord
+  tdesktop
+  pavucontrol
+  spotify
+  sxiv
+  unstable.retroarch
+  unstable.steam
+  unstable.virt-manager
+  unstable.pulseeffects
+  # node packages
+  nodePackages.gitmoji-cli
+  # dependencies
+  ffmpeg-full
+  unstable.ffmpegthumbnailer
+  frei0r
+  unstable.universal-ctags
+  libnotify
+  xsel # used by xmonad emoji prompt
+  unstable.youtube-dl
+  unstable.neovim-remote
+  unstable.direnv
+  unstable.imagemagick
+  unstable.zstd
+  unstable.editorconfig-core-c
+  unstable.sqlite
+  # misc
+  glxinfo
+  xclip
+  qt5.qttools
+  xkb-switch
+  unstable.libinput-gestures
+  unstable.xdotool
+  unstable.xorg.xwininfo
+  unstable.xfontsel
+  unstable.xorg.libXext
+  unstable.steam-run
+  xorg.xev
+  file
+  catimg
+  # joke command
+  cowsay
+  cmatrix
+  espeak
+  figlet
+  fortune
+  asciiquarium
+];
+#+end_src
+*** home.nix
+#+begin_src nix :tangle machines/maindesktop/home.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, lib, ... }:
+let
+  <<haskell-packages>>
+
+in
+{
+  <<home-manager-desktop-packages>>
+
+  <<lorri-enable>>
+  <<keynav-enable>>
+
+  # programs {{{
+  programs = {
+
+    home-manager.enable = true;
+
+    neovim = (import ../../modules/editors/neovim.nix) { inherit pkgs; };
+  };
+  #}}}
+
+  <<home-manager-keymap>>
+  <<xrandr-desktop-scale>>
+
+  # home files{{{
+  home.file = {
+
+    # xmobar{{{
+    ".xmonad/xmobar.hs".source = ../../haskell/xmobar.hs;
+    ".xmonad/xmobar.hs".onChange = ''
+      if [[ -v DISPLAY ]] ; then
+          echo "Recompiling xmobar"
+          xmobar -r ~/.xmonad/xmobar.hs &
+          sleep 2
+          disown
+          killall xmobar
+          echo "Restarting"
+          xmonad --restart
+      fi
+    ''; # }}}
+
+    # tmux theme
+    ".palenight-tmux".source = ../../.palenight-tmux;
+
+    # neovim dashboard logo
+    "Pictures/neovimlogo.png".source = (pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/neovim/neovim.github.io/master/logos/neovim-logo-flat.png";
+      sha256 = "1vl7mi87wisqhd9zigg24y2ksjyyjk6225bvw9qk4s6gfv62w4jm";
+    });
+
+    # emacs-anywhere
+    ".emacs_anywhere".source = (pkgs.fetchFromGitHub {
+      owner = "btwiusegentoo";
+      repo = "emacs-anywhere";
+      rev = "e739c8bf1930eeb68ecaf312a885f5788942154c";
+      sha256 = "0k0iay6pd01k2nyjm2n648n8ja36mgarvb9677ky2d758xkzgckv";
+    });
+
+    # doom emacs
+    # ".emacs.d/init.el".text = ''
+    #     (load "default.el")
+    # '';
+    ".doom.d/init.el".source = ../../doom.d/init.el;
+    ".doom.d/config.el".source = ../../doom.d/config.el;
+    ".doom.d/packages.el".source = ../../doom.d/packages.el;
+
+    ".ghc/ghci.conf".text = ''
+      :set prompt "%s λ: "
+    '';
+
+  };
+  #}}}
+
+  # xsession{{{
+  xsession = {
+    enable = true;
+    scriptPath = ".hm-xsession";
+
+    pointerCursor = {
+      package = pkgs.bibata-cursors;
+      name = "bibata-cursors";
+      size = 16;
+    };
+
+  }; #}}}
+
+  # xresources config{{{
+  xresources.properties = {
+    "Xft.dpi" = 96;
+  };
+  # }}}
+
+  # Home Manager config{{{
+  # Home Manager needs a bit of information about you and the
+  # paths it should manage.
+  home.username = "btw";
+  home.homeDirectory = "/home/btw";
+
+  # This value determines the Home Manager release that your
+  # configuration is compatible with. This helps avoid breakage
+  # when a new Home Manager release introduces backwards
+  # incompatible changes.
+  #
+  # You can update Home Manager without changing this value. See
+  # the Home Manager release notes for a list of state version
+  # changes in each release.
+  home.stateVersion = "20.03";
+
+  #}}}
+
+  # local env variables{{{
+  home.sessionVariables = {
+    "XDG_CONFIG_HOME" = "$HOME/.config";
+    "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
+    "COLORTERM" = "truecolor";
+  }; # }}}
+
+}
+#+end_src
 ** Laptop
+*** Set laptop hostname
+#+name: configurationnix-laptop-hostname
+#+begin_src nix
+networking.hostName = "laptop1";
+#+end_src
 *** configuration.nix
 #+begin_src nix :tangle machines/mainlaptop/configuration.nix :noweb no-export
 # This file is generated from "README.org"
@@ -4622,96 +5000,293 @@ hardware.opengl.driSupport32Bit = true;
       options thinkpad_acpi experimental=1 fan_control=1
     '';
     kernelParams = [
-      "acpi_osi='!Windows 2012'"
-      "acpi_backlight=vendor"
+      <<configurationnix-laptop-brightness>>
     ];
-    plymouth.enable = true;
   };
   <<configurationnix-enable-grub>>
   <<configurationnix-grub-timeout>>
   <<configurationnix-grub-copykernels>>
   <<configurationnix-faster-boot>>
   <<configurationnix-latest-kernel>>
-
+  <<configurationnix-plymouth-enable>>
   <<configurationnix-laptop-fspath>>
 
   <<hardware-redistributable-firmware>>
   <<enable-sound>>
   <<configurationnix-intel-microcode>>
   <<configurationnix-opengl-enable>>
-  hardware = {
-    opengl.extraPackages = with pkgs; [
-      vaapiIntel
-      vaapiVdpau
-      libvdpau-va-gl
-      intel-media-driver
-    ];
-  };
+  hardware.opengl.extraPackages = with pkgs; [
+    vaapiIntel
+    vaapiVdpau
+    libvdpau-va-gl
+    intel-media-driver
+  ];
 
-  programs = {
-    dconf.enable = true;
-    adb.enable = true;
-    java.enable = true;
-    java.package = pkgs.unstable.jdk;
-  };
+programs = {
+  dconf.enable = true;
+  adb.enable = true;
+  java.enable = true;
+  java.package = pkgs.unstable.jdk;
+};
 
+<<configurationnix-laptop-hostname>>
+# Networking{{{
+# networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-  # Networking{{{
-  networking.hostName = "laptop1"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
-  networking = {
-    dhcpcd.enable = false;
-    useDHCP = false;
-    interfaces.wlan0.useDHCP = false;
-    networkmanager = {
-      enable = true;
-      wifi = {
-        backend = "iwd";
-        macAddress = "random";
-        scanRandMacAddress = true;
-      };
+# The global useDHCP flag is deprecated, therefore explicitly set to false here.
+# Per-interface useDHCP will be mandatory in the future, so this generated config
+# replicates the default behaviour.
+networking = {
+  dhcpcd.enable = false;
+  useDHCP = false;
+  interfaces.wlan0.useDHCP = false;
+  networkmanager = {
+    enable = true;
+    wifi = {
+      backend = "iwd";
+      macAddress = "random";
+      scanRandMacAddress = true;
     };
+  };
+};
+#}}}
+
+environment.variables = (import ../../modules/common/globalvars.nix);
+
+virtualisation = import (../../modules/virtualisation/default.nix);
+
+<<thinkpad-layout-service>>
+
+<<configurationnix-intelgpu-driver>>
+
+# This value determines the NixOS release from which the default
+# settings for stateful data, like file locations and database versions
+# on your system were taken. It‘s perfectly fine and recommended to leave
+# this value at the release version of the first install of this system.
+# Before changing this value read the documentation for this option
+# (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+system.stateVersion = "20.03"; # Did you read the comment?
+
+}
+#+end_src
+*** Packages to install on laptop home environment
+#+name: home-manager-laptop-packages
+#+begin_src nix :noweb no-export
+home.packages = with pkgs; [
+  <<haskell-packages-env>>
+  trash-cli
+  tree
+  bc
+  gitAndTools.diff-so-fancy
+  gitAndTools.delta
+  unstable.ripgrep
+  unstable.fd
+  unstable.fzf
+  killall
+  neofetch
+  pfetch
+  nodePackages.node2nix
+  cabal2nix
+  nix-index
+  niv
+  rnix-lsp
+  scrot
+  feh
+  tty-clock
+  appimage-run
+  lightlocker
+  circleci-cli
+  fontforge
+  palenight-gtk-theme
+  unstable.pop-icon-theme
+  unstable.hicolor-icon-theme # fallback gtk theme
+  unstable.pandoc
+  unstable.nitrogen
+  unstable.chafa
+  unstable.ueberzug
+  # nixpkgs
+  nixfmt
+  nixpkgs-fmt
+  nixpkgs-review
+  nix-prefetch-git
+  nix-prefetch-github
+  pypi2nix
+  # rust
+  unstable.cargo
+  # tui apps
+  cava
+  unstable.vifm-full
+  vifmimg
+  htop
+  unstable.powertop
+  unstable.bottom
+  ncpamixer
+  unstable.mps-youtube
+  unstable.lazygit
+  # gui apps
+  master.discord
+  tdesktop
+  pavucontrol
+  spotify
+  sxiv
+  unstable.pulseeffects
+  # node packages
+  nodePackages.gitmoji-cli
+  # dependencies
+  unstable.universal-ctags
+  libnotify
+  xsel # used by xmonad emoji prompt
+  unstable.youtube-dl
+  unstable.neovim-remote
+  unstable.direnv
+  unstable.imagemagick
+  unstable.xdotool
+  unstable.xorg.xwininfo
+  unstable.zstd
+  unstable.editorconfig-core-c
+  unstable.sqlite
+  # misc
+  glxinfo
+  xclip
+  file
+  catimg
+  steam-run
+  # joke command
+  cmatrix
+  figlet
+  fortune
+  asciiquarium
+];
+#+end_src
+*** home.nix
+#+begin_src nix :tangle machines/mainlaptop/home.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, lib, ... }:
+let
+
+  <<haskell-packages>>
+
+in
+{
+  <<home-manager-laptop-packages>>
+
+  <<lorri-enable>>
+  <<keynav-enable>>
+
+  # programs {{{
+  programs = {
+    home-manager.enable = true;
+    neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; };
   };
   #}}}
 
-  environment.variables = (import ../../modules/common/globalvars.nix);
+  <<home-manager-keymap>>
+  <<xrandr-laptop-scale>>
 
-  virtualisation = import (../../modules/virtualisation/default.nix);
+  # home files{{{
+  home.file = {
 
-  systemd.user.services = {
-    xkb-restore = {
-      description = "Restore keyboard layout after suspend";
-      after = [ "suspend.target" "graphical-session.target" ];
-      serviceConfig = {
-        Type = "simple";
-        Environment = "DISPLAY=:0";
-        ExecStartPre = "/usr/bin/env sleep 3";
-        ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/x230key.xkb :0\"";
-      };
-      wantedBy = [ "suspend.target" "graphical-session.target" ];
-    };
+    # xmobar{{{
+    ".xmonad/xmobar.hs".source = ../../haskell/xmobarlaptop.hs;
+    ".xmonad/xmobar.hs".onChange = ''
+      if [[ -v DISPLAY ]] ; then
+          echo "Recompiling xmobar"
+          xmobar -r ~/.xmonad/xmobar.hs &
+          sleep 2
+          disown
+          killall xmobar
+          echo "Restarting"
+          xmonad --restart
+      fi
+    ''; # }}}
+
+    # tmux theme
+    ".palenight-tmux".source = ../../.palenight-tmux;
+
+    # neovim dashboard logo
+    "Pictures/neovimlogo.png".source = (pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/neovim/neovim.github.io/master/logos/neovim-logo-flat.png";
+      sha256 = "1vl7mi87wisqhd9zigg24y2ksjyyjk6225bvw9qk4s6gfv62w4jm";
+    });
+
+    # emacs-anywhere
+    ".emacs_anywhere".source = (pkgs.fetchFromGitHub {
+      owner = "btwiusegentoo";
+      repo = "emacs-anywhere";
+      rev = "e739c8bf1930eeb68ecaf312a885f5788942154c";
+      sha256 = "0k0iay6pd01k2nyjm2n648n8ja36mgarvb9677ky2d758xkzgckv";
+    });
+
+    # doom emacs
+    # ".emacs.d/init.el".text = ''
+    #     (load "default.el")
+    # '';
+    ".doom.d/init.el".source = ../../doom.d/init.el;
+    ".doom.d/config.el".source = ../../doom.d/config.el;
+    ".doom.d/packages.el".source = ../../doom.d/packages.el;
+
+    ".ghc/ghci.conf".text = ''
+      :set prompt "%s 𝛌: "
+    '';
+
   };
+  #}}}
 
-  services.xserver.videoDrivers = [ "intel" ];
-  services.xserver.deviceSection = ''
-    Option "TearFree" "true"
-  '';
+  # xsession{{{
+  xsession = {
+    enable = true;
+    scriptPath = ".hm-xsession";
+    #initExtra = ''
+    #${pkgs.xorg.xkbcomp}/bin/xkbcomp /etc/.jislayoutremap.xkb $DISPLAY
+    #'';
+    pointerCursor = {
+      package = pkgs.bibata-cursors;
+      name = "Bibata Ice";
+      size = 16;
+    };
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.03"; # Did you read the comment?
+  }; #}}}
+
+  # xresources config{{{
+  xresources.properties = {
+    "Xft.dpi" = 96;
+  };
+  # }}}
+
+  # Home Manager config{{{
+  # Home Manager needs a bit of information about you and the
+  # paths it should manage.
+  home.username = "x230";
+  home.homeDirectory = "/home/x230";
+
+  # This value determines the Home Manager release that your
+  # configuration is compatible with. This helps avoid breakage
+  # when a new Home Manager release introduces backwards
+  # incompatible changes.
+  #
+  # You can update Home Manager without changing this value. See
+  # the Home Manager release notes for a list of state version
+  # changes in each release.
+  home.stateVersion = "20.03";
+
+  #}}}
+
+  # local env variables{{{
+  home.sessionVariables = {
+    "XDG_CONFIG_HOME" = "$HOME/.config";
+    "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
+    "COLORTERM" = "truecolor";
+    "EDITOR" = "emacsclient -c";
+  }; # }}}
 
 }
 #+end_src
 ** Server
+*** Set server hostname
+#+name: configurationnix-server-hostname
+#+begin_src nix
+networking.hostName = "server1";
+#+end_src
 *** configuration.nix
 #+begin_src nix :tangle machines/mainserver/configuration.nix :noweb no-export
 # This file is generated from "README.org"
@@ -4728,6 +5303,7 @@ hardware.opengl.driSupport32Bit = true;
   <<configurationnix-grub-copykernels>>
   <<configurationnix-faster-boot>>
   <<configurationnix-latest-kernel>>
+  <<configurationnix-plymouth-enable>>
 
   <<configurationnix-server-fspath>>
 
@@ -4735,8 +5311,8 @@ hardware.opengl.driSupport32Bit = true;
   <<enable-sound>>
   <<configurationnix-intel-microcode>>
 
+  <<configurationnix-server-hostname>>
   # Networking{{{
-  networking.hostName = "server1"; # Define your hostname.
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
@@ -4765,6 +5341,132 @@ hardware.opengl.driSupport32Bit = true;
 
 }
 #+end_src
+*** Packages to install on server home environment
+#+name: home-manager-server-packages
+#+begin_src nix :noweb no-export
+home.packages = with pkgs; [
+  trash-cli
+  unstable.fd
+  gitAndTools.diff-so-fancy
+  ripgrep
+  unstable.fzf
+  binutils
+  killall
+  neofetch
+  unstable.mosh
+  nix-index
+  niv
+  scrot
+  feh
+  lightlocker
+  circleci-cli
+  # nixpkgs
+  nix-prefetch-git
+  nix-prefetch-github
+  # tui apps
+  htop
+  # dependencies
+  libnotify
+  unstable.youtube-dl
+  unstable.neovim-remote
+  unstable.direnv
+  unstable.imagemagick
+  # misc
+  file
+  catimg
+  # joke command
+  cowsay
+  cmatrix
+  espeak
+  figlet
+  fortune
+  asciiquarium
+];
+#+end_src
+*** home.nix
+#+begin_src nix :tangle machines/mainserver/home.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, lib, ... }:
+{
+  <<home-manager-server-packages>>
+  <<lorri-enable>>
+
+  # programs {{{
+  programs = {
+
+    home-manager.enable = true;
+
+    neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; }; # don't compile
+  };
+  #}}}
+
+  # home files{{{
+  home.file = {
+
+    # tmux theme
+    ".palenight-tmux".source = ../../.palenight-tmux;
+
+    # neovim dashboard logo
+    "Pictures/neovimlogo.png".source = (pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/neovim/neovim.github.io/master/logos/neovim-logo-flat.png";
+      sha256 = "1vl7mi87wisqhd9zigg24y2ksjyyjk6225bvw9qk4s6gfv62w4jm";
+    });
+
+    ".ghc/ghci.conf".text = ''
+      :set prompt "%s λ: "
+    '';
+
+  };
+  #}}}
+
+  # .config files{{{
+  xdg.configFile = {
+
+    "nvim/coc-settings.json".source = ../../configs/coc-settings.json;
+    "neofetch/config.conf".source = ../../configs/neofetch.conf;
+    "ncpamixer.conf".source = ../../configs/ncpamixer.conf;
+
+    # nixpkgs{{{
+    "nixpkgs/config.nix".text = ''
+      { allowUnfree = true; }
+    '';
+    # }}}
+
+    "vifm/vifmrc".source = ../../configs/vifmrc.vim;
+
+  };
+  # }}}
+
+  xsession.enable = false;
+
+
+  # Home Manager config{{{
+  # Home Manager needs a bit of information about you and the
+  # paths it should manage.
+  home.username = "hac";
+  home.homeDirectory = "/home/hac";
+
+  # This value determines the Home Manager release that your
+  # configuration is compatible with. This helps avoid breakage
+  # when a new Home Manager release introduces backwards
+  # incompatible changes.
+  #
+  # You can update Home Manager without changing this value. See
+  # the Home Manager release notes for a list of state version
+  # changes in each release.
+  home.stateVersion = "20.03";
+
+  #}}}
+
+  # local env variables{{{
+  home.sessionVariables = {
+    "XDG_CONFIG_HOME" = "$HOME/.config";
+    "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
+    "COLORTERM" = "truecolor";
+  }; # }}}
+
+}
+#+end_src
 * Symlinks
 Nix modules to symlink various files included config files
 ** /etc files
@@ -4786,11 +5488,10 @@ That makes possible to share same config that uses these files for more than one
     "icons/volume-mute.xpm".source = ../../icons/volume-mute.xpm;
     "icons/clock.xpm".source = ../../icons/clock.xpm;
     # misc
-    ".jislayoutremap.xkb".source = ../../configs/jislayoutremap.xkb;
-    "x230key.xkb".source = ../../configs/thinkpadlayout.xkb;
     # emojis
     "UnicodeData.txt".source = ../../textfiles/UnicodeData.txt;
   };
+  <<thinkpad-layout-file>>
 }
 #+end_src
 
@@ -4813,16 +5514,7 @@ This module is imported from home-manager
 
   <<tridactylrc-symlink>>
 
-  # keynav{{{
-  "keynav/keynavrc".text = ''
-    super+semicolon start
-    s warp
-    m click 6
-    w click 5
-    v click 4
-    z click 7
-  '';
-  # }}}
+  <<keynav-config>>
 
   # flashfocus
   "flashfocus/flashfocus.yml".source = ../../configs/flashfocus.yml;

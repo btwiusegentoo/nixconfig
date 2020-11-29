@@ -14,7 +14,6 @@
       <<tridactylrc>>
   '';
 
-  # keynav{{{
   "keynav/keynavrc".text = ''
     super+semicolon start
     s warp
@@ -23,7 +22,6 @@
     v click 4
     z click 7
   '';
-  # }}}
 
   # flashfocus
   "flashfocus/flashfocus.yml".source = ../../configs/flashfocus.yml;

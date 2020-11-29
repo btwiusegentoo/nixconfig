@@ -14,9 +14,8 @@
     "icons/volume-mute.xpm".source = ../../icons/volume-mute.xpm;
     "icons/clock.xpm".source = ../../icons/clock.xpm;
     # misc
-    ".jislayoutremap.xkb".source = ../../configs/jislayoutremap.xkb;
-    "x230key.xkb".source = ../../configs/thinkpadlayout.xkb;
     # emojis
     "UnicodeData.txt".source = ../../textfiles/UnicodeData.txt;
   };
+  environment.etc."thinkpadlayout.xkb".source = ../../configs/thinkpadlayout.xkb;
 }

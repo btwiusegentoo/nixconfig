@@ -22,7 +22,6 @@
       "acpi_osi='!Windows 2012'"
       "acpi_backlight=vendor"
     ];
-    plymouth.enable = true;
   };
   boot.loader.grub.enable = true;
   boot.loader.grub.version = 2;
@@ -38,7 +37,7 @@
   systemd.services.systemd-udev-settle.serviceConfig.TimeoutSec = 5;
   systemd.services.NetworkManager-wait-online.enable = false;
   boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
-
+  boot.plymouth.enable = true;
   # Luks encrypted partition
   boot.loader.grub.enableCryptodisk = true;
   boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/27740e7b-5bb7-482a-94dc-72df547f1f66";
@@ -66,84 +65,73 @@
 
   hardware.enableRedistributableFirmware = true;
   sound.enable = true;
-  # Hardware{{{
-  hardware = {
-    opengl.enable = true;
-    opengl.driSupport = true;
-    opengl.extraPackages = with pkgs; [
-      vaapiIntel
-      vaapiVdpau
-      libvdpau-va-gl
-      intel-media-driver
-    ];
-    cpu.intel.updateMicrocode = true;
-    # trackpoint.enable = true;
-    # trackpoint.emulateWheel= true;
-    # trackpoint.device = "TPPS/2 IBM TrackPoint";
-  };
-  # }}}
+  hardware.cpu.intel.updateMicrocode = true;
+  hardware.opengl.enable = true;
+  hardware.opengl.driSupport = true;
+  hardware.opengl.driSupport32Bit = true;
+  hardware.opengl.extraPackages = with pkgs; [
+    vaapiIntel
+    vaapiVdpau
+    libvdpau-va-gl
+    intel-media-driver
+  ];
 
-  programs = {
-    dconf.enable = true;
-    adb.enable = true;
-    java.enable = true;
-    java.package = pkgs.unstable.jdk;
-  };
+programs = {
+  dconf.enable = true;
+  adb.enable = true;
+  java.enable = true;
+  java.package = pkgs.unstable.jdk;
+};
 
+networking.hostName = "laptop1";
+# Networking{{{
+# networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-  # Networking{{{
-  networking.hostName = "laptop1"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
-  networking = {
-    dhcpcd.enable = false;
-    useDHCP = false;
-    interfaces.wlan0.useDHCP = false;
-    networkmanager = {
-      enable = true;
-      wifi = {
-        backend = "iwd";
-        macAddress = "random";
-        scanRandMacAddress = true;
-      };
+# The global useDHCP flag is deprecated, therefore explicitly set to false here.
+# Per-interface useDHCP will be mandatory in the future, so this generated config
+# replicates the default behaviour.
+networking = {
+  dhcpcd.enable = false;
+  useDHCP = false;
+  interfaces.wlan0.useDHCP = false;
+  networkmanager = {
+    enable = true;
+    wifi = {
+      backend = "iwd";
+      macAddress = "random";
+      scanRandMacAddress = true;
     };
   };
-  #}}}
+};
+#}}}
 
-  environment.variables = (import ../../modules/common/globalvars.nix);
+environment.variables = (import ../../modules/common/globalvars.nix);
 
-  virtualisation = import (../../modules/virtualisation/default.nix);
+virtualisation = import (../../modules/virtualisation/default.nix);
 
-  systemd.user.services = {
-    xkb-restore = {
+  systemd.user.services.xkb-restore = {
       description = "Restore keyboard layout after suspend";
       after = [ "suspend.target" "graphical-session.target" ];
       serviceConfig = {
         Type = "simple";
         Environment = "DISPLAY=:0";
         ExecStartPre = "/usr/bin/env sleep 3";
-        ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/x230key.xkb :0\"";
+        ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/thinkpadlayout.xkb :0\"";
       };
       wantedBy = [ "suspend.target" "graphical-session.target" ];
-    };
   };
 
-  services.xserver.videoDrivers = [ "intel" ];
-  services.xserver.deviceSection = ''
-    Option "TearFree" "true"
-  '';
+services.xserver.videoDrivers = [ "intel" ];
+services.xserver.deviceSection = ''
+Option "TearFree" "true"
+'';
 
-  nixpkgs.config = import ../../configs/nixpkgs-config.nix;
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.03"; # Did you read the comment?
+# This value determines the NixOS release from which the default
+# settings for stateful data, like file locations and database versions
+# on your system were taken. It‘s perfectly fine and recommended to leave
+# this value at the release version of the first install of this system.
+# Before changing this value read the documentation for this option
+# (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+system.stateVersion = "20.03"; # Did you read the comment?
 
 }

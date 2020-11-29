@@ -1,7 +1,6 @@
+# This file is generated from "README.org"
 { config, pkgs, lib, ... }:
 {
-
-  # Packages to install{{{
   home.packages = with pkgs; [
     trash-cli
     unstable.fd
@@ -40,13 +39,7 @@
     fortune
     asciiquarium
   ];
-  #}}}
-
-  # services {{{
-  services = {
-    lorri.enable = true;
-  };
-  #}}}
+  services.lorri.enable = true;
 
   # programs {{{
   programs = {
@@ -85,7 +78,7 @@
 
     # nixpkgs{{{
     "nixpkgs/config.nix".text = ''
-      { allowUnfree = true; } 
+      { allowUnfree = true; }
     '';
     # }}}
 
@@ -123,4 +116,3 @@
   }; # }}}
 
 }
-# vim:ft=nix fdm=marker sw=4:

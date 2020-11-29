@@ -1,10 +1,10 @@
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
+programs.starship.enable = true;
+programs.starship.enableFishIntegration = true;
+programs.starship.package = pkgs.unstable.starship;
   programs.starship = {
-    enable = true;
-    enableFishIntegration = true;
-    package = pkgs.unstable.starship;
     settings = {
       add_newline = true;
 

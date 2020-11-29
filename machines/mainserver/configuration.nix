@@ -24,6 +24,7 @@
   systemd.services.systemd-udev-settle.serviceConfig.TimeoutSec = 5;
   systemd.services.NetworkManager-wait-online.enable = false;
   boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+  boot.plymouth.enable = true;
 
   # Luks encrypted partition
   boot.loader.grub.enableCryptodisk = true;
@@ -52,16 +53,10 @@
 
   hardware.enableRedistributableFirmware = true;
   sound.enable = true;
-  # Hardware{{{
-  hardware = {
-    opengl.enable = true;
-    opengl.driSupport = true;
-    cpu.intel.updateMicrocode = true;
-  };
-  # }}}
+  hardware.cpu.intel.updateMicrocode = true;
 
+  networking.hostName = "server1";
   # Networking{{{
-  networking.hostName = "server1"; # Define your hostname.
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
@@ -79,8 +74,6 @@
   #}}}
 
   environment.variables = (import ../../modules/common/globalvars.nix);
-
-  nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

@@ -2,75 +2,74 @@
 { pkgs, ... }:
 
 {
-  programs.fish = {
-    enable = true;
+  programs.fish.enable = true;
 
-    shellAbbrs = {
-      "c" = "clear";
-      "s" = "lsd";
-      "sa" = "lsd -aF";
-      "ss" = "lsd -alF";
-      "suv" = "sudoedit";
-      "cat" = "bat";
-      "diff" = "diff-so-fancy";
-      "untar" = "tar -xvzf";
-      "uefi" = "systemctl reboot --firmware-setup";
-      "lg" = "lazygit";
-      "sshgit" = "ssh-add ~/.ssh/githubkey";
-      "g" = "git";
-      "ga" = "git add";
-      "gall" = "git add --all";
-      "gc" = "git clone";
-      "gmc" = "gitmoji -c";
-      "gco" = "git commit";
-      "gp" = "git push";
-      "gb" = "git branch";
-      "gd" = "git diff";
-      "gdst" = "git diff --staged";
-      "gst" = "git status";
-      "gch" = "git checkout";
-      "gf" = "git fetch";
-      "gmv" = "git mv";
-      "gl" = "git log --graph --color=always";
-      "glo" = "git log --graph --color=always --oneline";
-      "scrotclipsel" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
-      "scrotclip" = "scrot ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
-      "v" = "nvim";
-      "em" = "emacsclient -c";
-      "top" = "btm";
-      "vf" = "vifm";
-      "ncpa" = "ncpamixer";
-      "nixre" = "doas nixos-rebuild switch --flake";
-      "nixrt" = "doas nixos-rebuild test --flake";
-      "dnixtrash" = "doas nix-collect-garbage -d";
-      "nixtrash" = "nix-collect-garbage -d";
-      "tty-clock" = "tty-clock -C 1 -c";
-      "rickroll" = "curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash";
-    };
+  programs.fish.shellAbbrs = {
+    "c" = "clear";
+    "s" = "lsd";
+    "sa" = "lsd -aF";
+    "ss" = "lsd -alF";
+    "suv" = "sudoedit";
+    "cat" = "bat";
+    "diff" = "diff-so-fancy";
+    "untar" = "tar -xvzf";
+    "uefi" = "systemctl reboot --firmware-setup";
+    "lg" = "lazygit";
+    "sshgit" = "ssh-add ~/.ssh/githubkey";
+    "g" = "git";
+    "ga" = "git add";
+    "gall" = "git add --all";
+    "gc" = "git clone";
+    "gmc" = "gitmoji -c";
+    "gco" = "git commit";
+    "gp" = "git push";
+    "gb" = "git branch";
+    "gd" = "git diff";
+    "gdst" = "git diff --staged";
+    "gst" = "git status";
+    "gch" = "git checkout";
+    "gf" = "git fetch";
+    "gmv" = "git mv";
+    "gl" = "git log --graph --color=always";
+    "glo" = "git log --graph --color=always --oneline";
+    "scrotclipsel" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
+    "scrotclip" = "scrot ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
+    "v" = "nvim";
+    "em" = "emacsclient -c";
+    "top" = "btm";
+    "vf" = "vifm";
+    "ncpa" = "ncpamixer";
+    "nixre" = "doas nixos-rebuild switch --flake";
+    "nixrt" = "doas nixos-rebuild test --flake";
+    "dnixtrash" = "doas nix-collect-garbage -d";
+    "nixtrash" = "nix-collect-garbage -d";
+    "tty-clock" = "tty-clock -C 1 -c";
+    "rickroll" = "curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash";
+  };
 
-    plugins =
-      [
-        {
-            name = "z";
-            src = pkgs.fetchFromGitHub {
-            owner = "jethrokuan";
-            repo = "z";
-            rev = "ddeb28a7b6a1f0ec6dae40c636e5ca4908ad160a";
-            sha256 = "0c5i7sdrsp0q3vbziqzdyqn4fmp235ax4mn4zslrswvn8g3fvdyh";
-            };
-        }
-        {
-            name = "fish-ssh-agent";
-            src = pkgs.fetchFromGitHub {
-            owner = "danhper";
-            repo = "fish-ssh-agent";
-            rev = "ce90d80aa9549c626f9c5fc5a964536de015a192";
-            sha256 = "03zj5g7dxkhqpp9lijxxlnyx4cc7nqpapj5iqfv7swavyximicyi";
-            };
-        }
-      ];
+  programs.fish.plugins =
+    [
+      {
+          name = "z";
+          src = pkgs.fetchFromGitHub {
+          owner = "jethrokuan";
+          repo = "z";
+          rev = "ddeb28a7b6a1f0ec6dae40c636e5ca4908ad160a";
+          sha256 = "0c5i7sdrsp0q3vbziqzdyqn4fmp235ax4mn4zslrswvn8g3fvdyh";
+          };
+      }
+      {
+          name = "fish-ssh-agent";
+          src = pkgs.fetchFromGitHub {
+          owner = "danhper";
+          repo = "fish-ssh-agent";
+          rev = "ce90d80aa9549c626f9c5fc5a964536de015a192";
+          sha256 = "03zj5g7dxkhqpp9lijxxlnyx4cc7nqpapj5iqfv7swavyximicyi";
+          };
+      }
+    ];
 
-    interactiveShellInit = ''
+  programs.fish.interactiveShellInit = ''
       fish_vi_key_bindings
       set fish_greeting
       set -U fish_escape_delay_ms 10
@@ -117,6 +116,4 @@
       alias vifm="bash -c 'vifmrun'"
 
     '';
-  };
-
 }
