@@ -102,8 +102,8 @@ myKeys =
   , ("<XF86AudioRaiseVolume>", spawn "amixer -q sset Master 2%+") -- fn+o on HHKB Dvorak
   , ("<XF86AudioMute>", spawn "amixer set Master toggle") -- fn+e on HHKB Dvorak
 
-  , ("<XF86MonBrightnessUp", spawn "xbacklight -inc 5")
-  , ("<XF86MonBrightnessDown", spawn "xbacklight -dec 5")
+  , ("<XF86MonBrightnessUp>", spawn "xbacklight -inc 5")
+  , ("<XF86MonBrightnessDown>", spawn "xbacklight -dec 5")
 
   , ("C-<Print>", spawn "scrot -s screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'") -- ctrl+fn+c on HHKB Dvorak
   , ("M-<Print>", spawn "scrot tmp.png -e 'xclip $f && rm $f'") -- mod+fn+c on HHKB Dvorak
