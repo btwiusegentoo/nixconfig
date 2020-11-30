@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 final: prev:
 {
   neofetch = prev.neofetch.overrideAttrs (old: rec {

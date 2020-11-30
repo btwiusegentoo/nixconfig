@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 final: prev:
 {
   neovim-unwrapped = prev.neovim-unwrapped.overrideAttrs (old: rec {

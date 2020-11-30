@@ -28,7 +28,6 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
 
 * [0/8]TODOs :noexport:
 - [ ] Document xmobar
-- [ ] Document overlays
 - [ ] Document custom packages
 - [ ] Document configuration.nix/home.nix
 - [ ] Document emacs-anywhere
@@ -51,6 +50,10 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#trusted-users][Trusted users]]
   - [[#enable-lorri][Enable lorri]]
   - [[#integrate-lorri-direnv-with-fish-shell][Integrate lorri direnv with fish shell]]
+- [[#overlays][Overlays]]
+  - [[#overrides][Overrides]]
+  - [[#import-custom-packages][Import custom packages]]
+  - [[#attribute-overrides][Attribute overrides]]
 - [[#input][Input]]
   - [[#keyboard][Keyboard]]
   - [[#trackpad][Trackpad]]
@@ -96,6 +99,9 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#mouse][Mouse]]
   - [[#function-to-get-active-layout-description][Function to get active layout description]]
   - [[#xmonadhs-base-code][xmonad.hs base code]]
+- [[#xmobar][xmobar]]
+  - [[#desktop-config][Desktop config]]
+  - [[#laptop-config][Laptop config]]
 - [[#emacs][Emacs]]
   - [[#install-emacs-nativecomp-pgtk][Install Emacs nativecomp pgtk]]
   - [[#enable-emacs-daemon][Enable Emacs daemon]]
@@ -464,14 +470,85 @@ Once the hook is configured, restart your shell for direnv to be activated.
 #+begin_src fish
 eval (direnv hook fish)
 #+end_src
+* Overlays
+** Overrides
+override nixpkgs packages. useful for home-manager modules.
+#+begin_src nix :tangle overlays/overrides.nix
+# This file is generated from "README.org"
+final: prev:
+{
+  inherit (final.unstable) lua;
+  inherit (final.unstable) fish;
+  inherit (final.master) youtube-dl;
+  inherit (final.master) mpv;
+  inherit (final.unstable) fzf;
+}
+#+end_src
+** Import custom packages
+Import custom packages into nixpkgs, so you can treat just like any other package.
+#+begin_src nix :tangle overlays/packages.nix
+# This file is generated from "README.org"
+final: prev: rec {
+  san-francisco-font = prev.callPackage ../packages/san-francisco-font { };
+  apple-color-emoji = prev.callPackage ../packages/apple-color-emoji { };
+  tamzen-nerdfont = prev.callPackage ../packages/tamzen-nerdfont { };
+  palenight-gtk-theme = prev.callPackage ../packages/palenight-gtk-theme { };
+  vifmimg = prev.callPackage ../packages/vifmimg { };
+}
+#+end_src
+** Attribute overrides
+*** neofetch
+Install latest neofetch with new NixOS logo
+#+begin_src nix :tangle overlays/neofetch.nix
+# This file is generated from "README.org"
+final: prev:
+{
+  neofetch = prev.neofetch.overrideAttrs (old: rec {
+    version = "unstable-2020-11-02";
+    src = prev.fetchFromGitHub {
+      owner = "dylanaraps";
+      repo = "neofetch";
+      rev = "5dfce0f9c3068d4d8a49d0b7182bdace61b8f4d0";
+      sha256 = "131r07wllkvrcgw0ndyf5avqpzqkym56ii0qck6qyjfa8ylx6s31";
+    };
+  });
+}
+#+end_src
+*** neovim
+#+begin_src nix :tangle overlays/neovim.nix
+# This file is generated from "README.org"
+final: prev:
+{
+  neovim = prev.neovim.override {
+    viAlias = true;
+    vimAlias = true;
+  };
+}
+#+end_src
+*** neovim-unwrapped
+#+begin_src nix :tangle overlays/neovim-unwrapped.nix
+# This file is generated from "README.org"
+final: prev:
+{
+  neovim-unwrapped = prev.neovim-unwrapped.overrideAttrs (old: rec {
+    ## use neovim nightly
+    version = "master";
+    src = builtins.fetchGit {
+      url = "https://github.com/neovim/neovim";
+      rev = "f26df8bb66158baacb79c79822babaf137607cd6";
+    };
+    patches = old.patches ++ [ ../patches/nvim_fix_terminal_colors.patch ];
+  });
+}
+#+end_src
 * Input
 ** Keyboard
 *** Xorg repeat rate
 Default repeat rate is too slow. Change it
 #+name: xserver-autorepeat
 #+begin_src nix
-    autoRepeatDelay = 200;
-    autoRepeatInterval = 25;
+services.xserver.autoRepeatDelay = 200;
+services.xserver.autoRepeatInterval = 25;
 #+end_src
 *** Dvorak
 I use Dvorak layout on HHKB.
@@ -487,8 +564,8 @@ console.keyMap = "dvorak";
 Xorg config
 #+name: xserver-keymap
 #+begin_src nix
-layout = "us";
-xkbVariant = "dvorak";
+services.xserver.layout = "us";
+services.xserver.xkbVariant = "dvorak";
 #+end_src
 
 home-manager config
@@ -714,81 +791,76 @@ TLP is a feature-rich command line utility for Linux, saving laptop battery powe
 #+begin_src nix :tangle modules/hardware/tlp.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  services.tlp = {
     <<tlp-enable>>
-    settings = {
-      <<tlp-settings>>
-    };
-  };
+    <<tlp-settings>>
 }
 #+end_src
 *** Enable TLP
 #+name: tlp-enable
 #+begin_src nix
-enable = true;
+services.tlp.enable = true;
 #+end_src
 *** TLP settings
 #+name: tlp-settings
 #+begin_src nix
-"SOUND_POWER_SAVE_ON_AC" = 0;
-"SOUND_POWER_SAVE_ON_BAT" = 1;
-"SOUND_POWER_SAVE_CONTROLLER" = "Y";
-"BAY_POWEROFF_ON_AC" = 0;
-"BAY_POWEROFF_ON_BAT" = 1;
-"DISK_APM_LEVEL_ON_AC" = "254 254";
-"DISK_APM_LEVEL_ON_BAT" = "128 128";
-"DISK_IOSCHED" = "none none";
-"SATA_LINKPWR_ON_AC" = "med_power_with_dipm max_performance";
-"SATA_LINKPWR_ON_BAT" = "min_power";
-"MAX_LOST_WORK_SECS_ON_AC" = 15;
-"MAX_LOST_WORK_SECS_ON_BAT" = 60;
-"NMI_WATCHDOG" = 0;
-"WIFI_PWR_ON_AC" = "off";
-"WIFI_PWR_ON_BAT" = "on";
-"WOL_DISABLE" = "Y";
-"CPU_SCALING_GOVERNOR_ON_AC" = "powersave";
-"CPU_SCALING_GOVERNOR_ON_BAT" = "powersave";
-"CPU_MIN_PERF_ON_AC" = 0;
-"CPU_MAX_PERF_ON_AC" = 100;
-"CPU_MIN_PERF_ON_BAT" = 0;
-"CPU_MAX_PERF_ON_BAT" = 50;
-"CPU_BOOST_ON_AC" = 1;
-"CPU_BOOST_ON_BAT" = 1;
-"SCHED_POWERSAVE_ON_AC" = 0;
-"SCHED_POWERSAVE_ON_BAT" = 1;
-"ENERGY_PERF_POLICY_ON_AC" = "performance";
-"ENERGY_PERF_POLICY_ON_BAT" = "power";
-"RESTORE_DEVICE_STATE_ON_STARTUP" = 0;
-"RUNTIME_PM_ON_AC" = "on";
-"RUNTIME_PM_ON_BAT" = "auto";
-"PCIE_ASPM_ON_AC" = "default";
-"PCIE_ASPM_ON_BAT" = "powersupersave";
-"USB_AUTOSUSPEND" = 1;
+services.tlp.settings = {
+  "SOUND_POWER_SAVE_ON_AC" = 0;
+  "SOUND_POWER_SAVE_ON_BAT" = 1;
+  "SOUND_POWER_SAVE_CONTROLLER" = "Y";
+  "BAY_POWEROFF_ON_AC" = 0;
+  "BAY_POWEROFF_ON_BAT" = 1;
+  "DISK_APM_LEVEL_ON_AC" = "254 254";
+  "DISK_APM_LEVEL_ON_BAT" = "128 128";
+  "DISK_IOSCHED" = "none none";
+  "SATA_LINKPWR_ON_AC" = "med_power_with_dipm max_performance";
+  "SATA_LINKPWR_ON_BAT" = "min_power";
+  "MAX_LOST_WORK_SECS_ON_AC" = 15;
+  "MAX_LOST_WORK_SECS_ON_BAT" = 60;
+  "NMI_WATCHDOG" = 0;
+  "WIFI_PWR_ON_AC" = "off";
+  "WIFI_PWR_ON_BAT" = "on";
+  "WOL_DISABLE" = "Y";
+  "CPU_SCALING_GOVERNOR_ON_AC" = "powersave";
+  "CPU_SCALING_GOVERNOR_ON_BAT" = "powersave";
+  "CPU_MIN_PERF_ON_AC" = 0;
+  "CPU_MAX_PERF_ON_AC" = 100;
+  "CPU_MIN_PERF_ON_BAT" = 0;
+  "CPU_MAX_PERF_ON_BAT" = 50;
+  "CPU_BOOST_ON_AC" = 1;
+  "CPU_BOOST_ON_BAT" = 1;
+  "SCHED_POWERSAVE_ON_AC" = 0;
+  "SCHED_POWERSAVE_ON_BAT" = 1;
+  "ENERGY_PERF_POLICY_ON_AC" = "performance";
+  "ENERGY_PERF_POLICY_ON_BAT" = "power";
+  "RESTORE_DEVICE_STATE_ON_STARTUP" = 0;
+  "RUNTIME_PM_ON_AC" = "on";
+  "RUNTIME_PM_ON_BAT" = "auto";
+  "PCIE_ASPM_ON_AC" = "default";
+  "PCIE_ASPM_ON_BAT" = "powersupersave";
+  "USB_AUTOSUSPEND" = 1;
+};
 #+end_src
 ** Thinkfan
 Thinkfan is a simple, lightweight fan controler for IBM/Lenovo ThinkPads
 #+begin_src nix :tangle modules/hardware/thinkfan.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  services.thinkfan = {
-    <<thinkfan-enable>>
-    <<thinkfan-fan>>
-    levels = ''
-        <<thinkfan-levels>>
-    '';
-  };
+  <<thinkfan-enable>>
+  <<thinkfan-fan>>
+  <<thinkfan-sensors>>
+  <<thinkfan-levels>>
 }
 #+end_src
 *** Enable Thinkfan
 #+name: thinkfan-enable
 #+begin_src nix
-enable = true;
+services.thinkfan.enable = true;
 #+end_src
 *** Select Fan
 Specify the fan to use.
 #+name: thinkfan-fan
 #+begin_src nix
-fan = "tp_fan /proc/acpi/ibm/fan";
+services.thinkfan.fan = "tp_fan /proc/acpi/ibm/fan";
 #+end_src
 *** Select sensors
 thinkfan can read temperatures from three possible sources:
@@ -797,7 +869,7 @@ thinkfan can read temperatures from three possible sources:
 S.M.A.R.T. which reads the temperature directly from the hard drive using libatasmart
 #+name: thinkfan-sensors
 #+begin_src nix
-sensors = ''
+services.thinkfan.sensors = ''
     hwmon /sys/class/thermal/thermal_zone0/temp
 '';
 #+end_src
@@ -805,6 +877,7 @@ sensors = ''
 Configure fan speed
 #+name: thinkfan-levels
 #+begin_src nix
+services.thinkfan.levels = ''
 (0, 0,  42)
 (1, 40, 47)
 (2, 45, 52)
@@ -814,37 +887,36 @@ Configure fan speed
 (6, 65, 77)
 (7, 70, 80)
 (127, 75, 32767)
+'';
 #+end_src
 ** ZRAM
 ZRAM is a linux kernel module that creates in-memory compressed devices and swap space. Literally download more RAM
 #+begin_src nix :tangle modules/hardware/zram.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  zramSwap = {
-    <<zram-enable>>
-    <<zram-algorithm>>
-    <<zram-memory-percent>>
-  };
+  <<zram-enable>>
+  <<zram-algorithm>>
+  <<zram-memory-percent>>
 }
 #+end_src
 *** Enable ZRAM
 #+name: zram-enable
 #+begin_src nix
-enable = true;
+zramSwap.enable = true;
 #+end_src
 *** ZRAM algorithm
 Compression algorithm. lzo has good compression, but is slow. lz4 has bad compression, but is fast.
 zstd is both good compression and fast, but requires newer kernel.
 #+name: zram-algorithm
 #+begin_src nix
-algorithm = "zstd";
+zramSwap.algorithm = "zstd";
 #+end_src
 *** ZRAM memory percent
 Maximum amount of memory that can be used by the zram swap devices.
 Defaults to 1/2 of total RAM.
 #+name: zram-memory-percent
 #+begin_src nix
-memoryPercent = 100;
+zramSwap.memoryPercent = 100;
 #+end_src
 ** SSD
 Enable SSD trim and set better filesystem mounting options
@@ -1005,7 +1077,7 @@ services.dunst.settings.urgency_critical = {
 Enable darkmode
 #+name: qutebrowser-darkmode
 #+begin_src nix
-settings.colors.webpage.darkmode.enabled = true;
+programs.qutebrowser.settings.colors.webpage.darkmode.enabled = true;
 #+end_src
 
 Colors from base16-qutebrowser (https://github.com/theova/base16-qutebrowser)
@@ -1013,7 +1085,7 @@ Base16 qutebrowser template by theova
 Material Palenight scheme by Nate Peterson
 #+name: qutebrowser-colors
 #+begin_src nix
-settings.colors = {
+programs.qutebrowser.settings.colors = {
   completion = {
     fg = "#959DCB";
     odd.bg = "#292D3E";
@@ -1239,34 +1311,37 @@ material-palenight applied to [[fzf]]
 "--color=bg+:0,bg:#292D3E,spinner:#89DDFF,hl:#82AAFF,fg:#8796B0,header:#82AAFF,info:#FFCB6B,pointer:#89DDFF,marker:#89DDFF,fg+:#959DCB,prompt:#c792ea,hl+:#82AAFF"
 #+end_src
 *** fish shell colors
+Set colors only if it isn't TTY
 #+name: fish-colors
 #+begin_src fish
-set -U fish_color_autosuggestion 676e95
-set -U fish_color_cancel -r
-set -U fish_color_command green #white
-set -U fish_color_comment 32374D
-set -U fish_color_cwd green
-set -U fish_color_cwd_root red
-set -U fish_color_end brblack #blue
-set -U fish_color_error red
-set -U fish_color_escape yellow #green
-set -U fish_color_history_current --bold
-set -U fish_color_host normal
-set -U fish_color_match --background=brblue
-set -U fish_color_normal normal
-set -U fish_color_operator blue #green
-set -U fish_color_param 8796B0
-set -U fish_color_quote yellow #brblack
-set -U fish_color_redirection cyan
-set -U fish_color_search_match bryellow --background=32374D
-set -U fish_color_selection white --bold --background=32374D
-set -U fish_color_status red
-set -U fish_color_user brgreen
-set -U fish_color_valid_path --underline
-set -U fish_pager_color_completion normal
-set -U fish_pager_color_description yellow --dim
-set -U fish_pager_color_prefix white --bold #--underline
-set -U fish_pager_color_progress brwhite --background=cyan
+if test "$TERM" != "linux"
+    set -U fish_color_autosuggestion 676e95
+    set -U fish_color_cancel -r
+    set -U fish_color_command green #white
+    set -U fish_color_comment 32374D
+    set -U fish_color_cwd green
+    set -U fish_color_cwd_root red
+    set -U fish_color_end brblack #blue
+    set -U fish_color_error red
+    set -U fish_color_escape yellow #green
+    set -U fish_color_history_current --bold
+    set -U fish_color_host normal
+    set -U fish_color_match --background=brblue
+    set -U fish_color_normal normal
+    set -U fish_color_operator blue #green
+    set -U fish_color_param 8796B0
+    set -U fish_color_quote yellow #brblack
+    set -U fish_color_redirection cyan
+    set -U fish_color_search_match bryellow --background=32374D
+    set -U fish_color_selection white --bold --background=32374D
+    set -U fish_color_status red
+    set -U fish_color_user brgreen
+    set -U fish_color_valid_path --underline
+    set -U fish_pager_color_completion normal
+    set -U fish_pager_color_description yellow --dim
+    set -U fish_pager_color_prefix white --bold #--underline
+    set -U fish_pager_color_progress brwhite --background=cyan
+end
 #+end_src
 *** tmux colors
 load colorscheme file
@@ -1339,65 +1414,63 @@ Install fonts:
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
-  fonts = {
-    <<system-font-config>>
-    <<enable-font-dir>>
-    <<enable-ghostscript-fonts>>
-    fonts = with pkgs; [
-      (nerdfonts.override { fonts = [ "Gohu" ]; })
-      unstable.dejavu_fonts
-      unstable.spleen
-      san-francisco-font
-      apple-color-emoji
-      noto-fonts-cjk
-      emacs-all-the-icons-fonts
-    ];
-  };
+  fonts.fonts = with pkgs; [
+    (nerdfonts.override { fonts = [ "Gohu" ]; })
+    unstable.dejavu_fonts
+    unstable.spleen
+    san-francisco-font
+    apple-color-emoji
+    noto-fonts-cjk
+    emacs-all-the-icons-fonts
+  ];
+  <<system-font-config>>
+  <<fontconfig-enable>>
+  <<fontconfig-allowbitmaps>>
+  <<use-embedded-bitmaps>>
+  <<enable-font-dir>>
+  <<enable-ghostscript-fonts>>
 }
 #+end_src
-*** System font config
+*** Enable fontconfig
+If enabled, a fontconfig file will be built pointing to a set of default fonts.
+#+name: fontconfig-enable
+#+begin_src nix
+fonts.fontconfig.enable = true;
+#+end_src
+*** Default fonts
 Set system-wide monospace/emoji font below. Note that setting emoji here is not sufficient to show emoji properly.
 #+name: system-font-config
 #+begin_src nix :noweb no-export
-    fontconfig = {
-      <<fontconfig-enable>>
-      <<fontconfig-allowbitmaps>>
-      <<use-embedded-bitmaps>>
+    fonts.fontconfig = {
       defaultFonts = {
         emoji = [ "Apple Color Emoji" ];
         monospace = [ "Spleen" ];
       };
     };
 #+end_src
-**** Enable fontconfig
-If enabled, a fontconfig file will be built pointing to a set of default fonts.
-#+name: fontconfig-enable
-#+begin_src nix
-enable = true;
-#+end_src
-**** Allow bitmaps
+*** Allow bitmaps
 This option is needed to allow usage of bitmap fonts. Like Spleen I use.
 #+name: fontconfig-allowbitmaps
 #+begin_src nix
-allowBitmaps = true;
+fonts.fontconfig.allowBitmaps = true;
 #+end_src
-**** Use embedded bitmaps
+*** Use embedded bitmaps
 This option is necessary to make emacs show unicode emojis properly.
 #+name: use-embedded-bitmaps
 #+begin_src nix
-useEmbeddedBitmaps = true;
+fonts.fontconfig.useEmbeddedBitmaps = true;
 #+end_src
-**** Enable Font Dir
+*** Enable Font Dir
 Create a directory with links to all fonts in ~/run/current-system/sw/share/X11-fonts~
 #+name: enable-font-dir
 #+begin_src nix
-enableFontDir = true;
+fonts.enableFontDir = true;
 #+end_src
-**** Enable ghost script fonts
+*** Enable ghost script fonts
 Add the fonts provided by Ghostscript to the list of system fonts.
 #+name: enable-ghostscript-fonts
 #+begin_src nix
-enableGhostscriptFonts = true;
+fonts.enableGhostscriptFonts = true;
 #+end_src
 *** TTY Font
 Console fonts needs to be installed here via ~console.packages~ to be able to set.
@@ -1505,7 +1578,7 @@ San Francisco for most web contents.
 The size is in point(pt)
 #+name: qutebrowser-fonts
 #+begin_src nix
-settings.fonts = {
+programs.qutebrowser.settings.fonts = {
   default_family = "SFNS Display";
   web.family.standard = "SFNS Display";
   web.family.serif = "SFNS Display";
@@ -2922,6 +2995,185 @@ main = do
       , startupHook        = myStartupHook
       } `additionalKeysP` myKeys
 #+end_src
+* xmobar
+xmobar is lightweight status bar that is written/configured in Haskell.
+Since it serves well my usage, it can be configured in Haskell, I use it.
+** Desktop config
+#+begin_src haskell :tangle haskell/xmobar.hs :noweb no-export
+-- This file is generated from "README.org"
+import           Xmobar
+
+
+config :: Config
+config = defaultConfig
+  { font             = "xft:SFNS Display-14,GohuFont Nerd Font-14"
+  , additionalFonts  = []
+  , borderColor      = "#232635"
+  , border           = BottomB
+  -- , alpha            = 255
+  -- , bgColor          = "#3C435E"
+  , alpha            = 220
+  , bgColor          = "#203123" -- Somehow color get messed up when using alpha issue#246 this is the workaround. invert 3rd4th <--> 5th6th like this.
+  , fgColor          = "#676E95"
+  , position         = TopSize L 100 30
+  , textOffset       = -1
+  , iconOffset       = 13
+  , lowerOnStart     = True
+  , pickBroadest     = False
+  , persistent       = False
+  , hideOnStart      = False
+  , iconRoot         = "/etc/icons"
+  , allDesktops      = True
+  , overrideRedirect = True
+  , commands         = [ Run $ Cpu ["-t", "<icon=cpu.xpm/>  <total>%"] 10
+                       , Run $ Memory ["-t", "<icon=ram.xpm/>  <used>MB"] 10
+                       , Run $ Date "%a %m/%_d" "date" 10
+                       , Run $ Date "%H:%M:%S" "time" 10
+                       , Run $ Volume
+                         "default"
+                         "Master"
+                         [ "-t"
+                         , "<status>  <volume>%"
+                         , "--"
+                         , "-O"
+                         , "<icon=volume.xpm/>"
+                         , -- on
+                           "-o"
+                         , "<icon=volume-mute.xpm/>"
+                         , -- off
+                           "-C"
+                         , "#FFFFFF"
+                         , "-c"
+                         , "#f07178"
+                         ]
+                         3
+                       , Run StdinReader
+                       ]
+  , sepChar          = "%"
+  , alignSep         = "}{"
+  , template         =
+    "%StdinReader% }\
+     \ <fc=#89ddff><icon=clock.xpm/>  %time%</fc> \
+     \{ <fc=#f07178>%cpu%</fc> | <fc=#80cbc4>%memory%</fc>\
+     \ | <fc=#f78c6c><icon=calendar.xpm/>  %date%</fc> | <fc=#82aaff>%default:Master%</fc>"
+  }
+
+
+main :: IO ()
+main = xmobar config
+#+end_src
+** Laptop config
+#+begin_src haskell :tangle haskell/xmobarlaptop.hs :noweb no-export
+-- This file is generated from "README.org"
+import           Xmobar
+
+
+config :: Config
+config = defaultConfig
+  { font             = "xft:SFNS Display-14,GohuFont Nerd Font-14"
+  , additionalFonts  = []
+  , borderColor      = "#232635"
+  , border           = BottomB
+  -- , alpha            = 255
+  -- , bgColor          = "#3C435E"
+  , alpha            = 220
+  , bgColor          = "#203123" -- Somehow color get messed up when using alpha issue#246 this is the workaround. invert 3rd4th <--> 5th6th like this.
+  , fgColor          = "#676E95"
+  , position         = TopSize L 100 30
+  , textOffset       = -1
+  , iconOffset       = 13
+  , lowerOnStart     = True
+  , pickBroadest     = False
+  , persistent       = False
+  , hideOnStart      = False
+  , iconRoot         = "/etc/icons"
+  , allDesktops      = True
+  , overrideRedirect = True
+  , commands         = [ Run $ Cpu ["-t", "<icon=cpu.xpm/>  <total>%"] 10
+                       , Run $ Memory ["-t", "<icon=ram.xpm/>  <used>MB"] 10
+                       , Run $ Date "%a %m/%_d" "date" 10
+                       , Run $ Date "%H:%M:%S" "time" 10
+                       , Run $ BatteryN
+                         ["BAT0"]
+                         [ "-t"
+                         , "<acstatus>  <left>"
+                         , "-S"
+                         , "Off"
+                         , "-d"
+                         , "0"
+                         , "-m"
+                         , "3"
+                         , "-L"
+                         , "10"
+                         , "-H"
+                         , "90"
+                         , "-p"
+                         , "3"
+                         , "--low"
+                         , "#f07178"
+                         , "--normal"
+                         , "#676E95"
+                         , "--high"
+                         , "#80cbc4"
+                         , "--"
+                         , "-P"
+                         , "-a"
+                         , "notify-send -u critical 'Battery running out!!!!!!'"
+                         , "-A"
+                         , "7"
+           -- Charged
+                         , "-i"
+                         , "<icon=battery-charging.xpm/>"
+           -- AC on
+                         , "-O"
+                         , "<icon=battery-charging.xpm/>"
+           -- Discharging
+                         , "-o"
+                         , "<icon=battery.xpm/>"
+                         , "-H"
+                         , "10"
+                         , "-L"
+                         , "7"
+                         , "-h"
+                         , "#80cbc4"
+                         , "-l"
+                         , "#f07178"
+                         ]
+                         50
+                         "battery"
+                       , Run $ Volume
+                         "default"
+                         "Master"
+                         [ "-t"
+                         , "<status>  <volume>%"
+                         , "--"
+                         , "-O"
+                         , "<icon=volume.xpm/>"
+                         , -- on
+                           "-o"
+                         , "<icon=volume-mute.xpm/>"
+                         , -- off
+                           "-C"
+                         , "#FFFFFF"
+                         , "-c"
+                         , "#f07178"
+                         ]
+                         3
+                       , Run StdinReader
+                       ]
+  , sepChar          = "%"
+  , alignSep         = "}{"
+  , template         =
+    "%StdinReader% }\
+     \ <fc=#89ddff><icon=clock.xpm/>  %time%</fc> \
+     \{ %battery% | <fc=#f07178>%cpu%</fc> | <fc=#80cbc4>%memory%</fc>\
+     \ | <fc=#f78c6c><icon=calendar.xpm/>  %date%</fc> | <fc=#82aaff>%default:Master%</fc>"
+  }
+
+
+main :: IO ()
+main = xmobar config
+#+end_src
 * Emacs
 I use emacs (specifically, *doom-emacs*) as main text editor
 
@@ -3792,30 +4044,27 @@ qutebrowser is a keyboard-focused(Vim-style key bindings) browser with a minimal
 #+begin_src nix :tangle modules/gui/qutebrowser.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  programs.qutebrowser = {
-    <<qutebrowser-enable>>
-    <<qutebrowser-searchengine>>
-    <<qutebrowser-gpu-acceleration>>
-    <<qutebrowser-mpv>>
-    <<qutebrowser-mpv-hint>>
-    <<qutebrowser-start-page>>
-    <<qutebrowser-default-zoom>>
-    <<qutebrowser-fonts>>
-    <<qutebrowser-darkmode>>
-    <<qutebrowser-colors>>
-    <<qutebrowser-history-max-completion>>
-    extraConfig = ''
+  <<qutebrowser-enable>>
+  <<qutebrowser-searchengine>>
+  <<qutebrowser-gpu-acceleration>>
+  <<qutebrowser-mpv>>
+  <<qutebrowser-mpv-hint>>
+  <<qutebrowser-start-page>>
+  <<qutebrowser-default-zoom>>
+  <<qutebrowser-fonts>>
+  <<qutebrowser-darkmode>>
+  <<qutebrowser-colors>>
+  <<qutebrowser-history-max-completion>>
+  programs.qutebrowser.extraConfig = ''
       <<qutebrowser-emacs-editor>>
     '';
-
-  };
 }
 #+end_src
 *** Install qutebrowser
 Turn on this option to install qutebrowser
 #+name: qutebrowser-enable
 #+begin_src nix
-enable = true;
+programs.qutebrowser.enable = true;
 #+end_src
 *** Search engine
 While the default option (DuckDuckGo) is great, I'm still not ready to switch to it.
@@ -3823,7 +4072,7 @@ So, I choose to use Google as default search engine
 qutebrowser can set multiple search engines, but I don't use it.
 #+name: qutebrowser-searchengine
 #+begin_src nix
-searchEngines = {
+programs.qutebrowser.searchEngines = {
     DEFAULT = "https://google.com/search?q={}";
 };
 #+end_src
@@ -3832,7 +4081,7 @@ Idk why, these gpu acceleration flags are disabled in qtwebengine by default (Se
 These flags makes a significant difference in perfomance, CPU usage, and battery life. Especially usable for laptop. Enable it.
 #+name: qutebrowser-gpu-acceleration
 #+begin_src nix
-settings.qt.args = [ "enable-native-gpu-memory-buffers" "enable-gpu-rasterization" "use-gl=egl" "ignore-gpu-blacklist" "num-raster-threads=4" ];
+programs.qutebrowser.settings.qt.args = [ "enable-native-gpu-memory-buffers" "enable-gpu-rasterization" "use-gl=egl" "ignore-gpu-blacklist" "num-raster-threads=4" ];
 #+end_src
 *** Youtube playback with mpv
 Youtube video uses vp9 codec nowadays, that can't be playbacked in Linux with GPU acceleration.
@@ -3841,32 +4090,32 @@ But, qutebrowser can't. So, just play the video in mpv as alternative workaround
 Press ~yd~ to open current youtube video URL in mpv
 #+name: qutebrowser-mpv
 #+begin_src nix
-keyBindings.normal."yd" = "spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' {url}";
+programs.qutebrowser.keyBindings.normal."yd" = "spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' {url}";
 #+end_src
 Or, ~yf~ use hints to select and open youtube video in mpv
 #+name: qutebrowser-mpv-hint
 #+begin_src nix
-keyBindings.normal."yf" = "hint links spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' --force-window yes {hint-url}";
+programs.qutebrowser.keyBindings.normal."yf" = "hint links spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' --force-window yes {hint-url}";
 #+end_src
 *** Qutebrowser start page
 Set my own start page
 #+name: qutebrowser-start-page
 #+begin_src nix
-settings.url.start_pages = [ "https://btwiusegentoo.github.io/start.html" ];
-settings.url.default_page = "https://btwiusegentoo.github.io/start.html";
+programs.qutebrowser.settings.url.start_pages = [ "https://btwiusegentoo.github.io/start.html" ];
+programs.qutebrowser.settings.url.default_page = "https://btwiusegentoo.github.io/start.html";
 #+end_src
 *** Max completion history items
 Set qutebrowser max completion items from history to 30
 #+name: qutebrowser-history-max-completion
 #+begin_src nix
-settings.completion.web_history.max_items = 30;
+programs.qutebrowser.settings.completion.web_history.max_items = 30;
 #+end_src
 *** Default zoom
 Even with 1080p xrandr scale in laptop or 1440p xrandr scale in desktop, I feel everything is too big(possibly I'm weird)
 So I have to set default zoom to 90%
 #+name: qutebrowser-default-zoom
 #+begin_src nix
-settings.zoom.default = "90%";
+programs.qutebrowser.settings.zoom.default = "90%";
 #+end_src
 *** Edit text on qutebrowser using emacs
 You can write text in qutebrowser using emacs.
@@ -3883,40 +4132,32 @@ I Use for certain websites that qutebrowser can't access(like widevine websites 
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
-  programs.firefox = {
-    <<firefox-enable>>
-    <<firefox-package>>
-    <<firefox-extensions>>
-    profiles = {
-      default = {
-        isDefault = true;
-        name = "Default";
-        settings = {
-          <<firefox-startpage>>
-          <<firefox-search-isus>>
-        };
-      };
-    };
-  };
+  <<firefox-enable>>
+  <<firefox-package>>
+  <<firefox-extensions>>
+  <<firefox-startpage>>
+  <<firefox-search-isus>>
+  programs.firefox.profiles.default.isDefault = true;
+  programs.firefox.profiles.default.name = "Default";
 }
 #+end_src
 *** Install Firefox
 Turn on to install Firefox
 #+name: firefox-enable
 #+begin_src nix
-enable = true;
+programs.firefox.enable = true;
 #+end_src
 *** Firefox package
 I like to use Firefox from nixpkgs-unstable
 #+name: firefox-package
 #+begin_src nix
-package = pkgs.unstable.firefox;
+programs.firefox.package = pkgs.unstable.firefox;
 #+end_src
 *** Extensions
 Extensions to install goes here:
 #+name: firefox-extensions
 #+begin_src nix :noweb no-export
-extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+programs.firefox.extensions = with pkgs.nur.repos.rycee.firefox-addons; [
   <<firefox-tridactyl-install>>
   ublock-origin
 ];
@@ -3961,12 +4202,12 @@ Install tridactyl configuration into ~$HOME/.config/tridactyl/tridactylrc~
 Set my own startpage
 #+name: firefox-startpage
 #+begin_src nix
-"browser.startup.homepage" = "https://btwiusegentoo.github.io/start.html";
+programs.firefox.profiles.default.settings."browser.startup.homepage" = "https://btwiusegentoo.github.io/start.html";
 #+end_src
 *** Use US google search engine
 #+name: firefox-search-isus
 #+begin_src nix
-"browser.search.isUS" = true;
+programs.firefox.profiles.default.settings."browser.search.isUS" = true;
 #+end_src
 * Multimedia
 ** mpv
@@ -4170,19 +4411,19 @@ Change layout [[#dvorak][here]] and repeat rate [[#xorg-repeat-rate][here]]
 Enable xserver
 #+name: xserver-enable
 #+begin_src nix
-enable = true;
+services.xserver.enable = true;
 #+end_src
 
 Auto start xserver
 #+name: xserver-autorun
 #+begin_src nix
-autorun = true;
+services.xserver.autorun = true;
 #+end_src
 
 Xorg dpi
 #+name: xserver-dpi
 #+begin_src nix
-dpi = 96;
+services.xserver.dpi = 96;
 #+end_src
 
 Following code goes to ~xserver.nix~ file
@@ -4190,23 +4431,21 @@ Following code goes to ~xserver.nix~ file
 # This file is generated from "README.org"
 { pkgs, config, ... }:
 {
-  services.xserver = {
-    <<xserver-enable>>
-    <<xserver-autorun>>
-    <<xserver-keymap>>
-    <<xserver-autorepeat>>
-    <<xserver-dpi>>
-    desktopManager.session = [
-      {
-        name = "home-manager";
-        start = ''
+  <<xserver-enable>>
+  <<xserver-autorun>>
+  <<xserver-keymap>>
+  <<xserver-autorepeat>>
+  <<xserver-dpi>>
+  services.xserver.desktopManager.session = [
+    {
+      name = "home-manager";
+      start = ''
           ${pkgs.runtimeShell} $HOME/.hm-xsession &
           waitPID=$!
         '';
-      }
-    ];
-    <<xserver-lightdm>>
-  };
+    }
+  ];
+  <<xserver-lightdm>>
 }
 #+end_src
 
@@ -4215,23 +4454,21 @@ And this is for laptop
 # This file is generated from "README.org"
 { pkgs, config, ... }:
 {
-  services.xserver = {
-    <<xserver-enable>>
-    <<xserver-autorun>>
-    <<xserver-keymap>>
-    <<xserver-autorepeat>>
-    <<xserver-dpi>>
-    desktopManager.session = [
-      {
-        name = "home-manager";
-        start = ''
+  <<xserver-enable>>
+  <<xserver-autorun>>
+  <<xserver-keymap>>
+  <<xserver-autorepeat>>
+  <<xserver-dpi>>
+  services.xserver.desktopManager.session = [
+    {
+      name = "home-manager";
+      start = ''
           ${pkgs.runtimeShell} $HOME/.hm-xsession &
           waitPID=$!
         '';
-      }
-    ];
-    <<xserver-lightdm-laptop>>
-  };
+    }
+  ];
+  <<xserver-lightdm-laptop>>
 }
 #+end_src
 ** LightDM
@@ -4241,7 +4478,7 @@ I use LightDM because mini greeter is minimal, and it's easy to use as lockscree
 [[#lock-screen][Wallpaper]]
 #+name: xserver-lightdm
 #+begin_src nix :noweb no-export
-displayManager = {
+services.xserver.displayManager = {
     lightdm = {
     enable = true;
     greeters.mini = {
@@ -4262,7 +4499,7 @@ displayManager = {
 laptop config
 #+name: xserver-lightdm-laptop
 #+begin_src nix :noweb no-export
-displayManager = {
+services.xserver.displayManager = {
     lightdm = {
     enable = true;
     greeters.mini = {
@@ -5259,9 +5496,6 @@ in
   xsession = {
     enable = true;
     scriptPath = ".hm-xsession";
-    #initExtra = ''
-    #${pkgs.xorg.xkbcomp}/bin/xkbcomp /etc/.jislayoutremap.xkb $DISPLAY
-    #'';
     pointerCursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata Ice";

@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 final: prev:
 {
   inherit (final.unstable) lua;

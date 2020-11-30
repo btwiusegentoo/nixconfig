@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 final: prev: rec {
   san-francisco-font = prev.callPackage ../packages/san-francisco-font { };
   apple-color-emoji = prev.callPackage ../packages/apple-color-emoji { };

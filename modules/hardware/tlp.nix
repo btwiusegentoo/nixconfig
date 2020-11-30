@@ -1,8 +1,7 @@
 # This file is generated from "README.org"
 {
-  services.tlp = {
-    enable = true;
-    settings = {
+    services.tlp.enable = true;
+    services.tlp.settings = {
       "SOUND_POWER_SAVE_ON_AC" = 0;
       "SOUND_POWER_SAVE_ON_BAT" = 1;
       "SOUND_POWER_SAVE_CONTROLLER" = "Y";
@@ -38,5 +37,4 @@
       "PCIE_ASPM_ON_BAT" = "powersupersave";
       "USB_AUTOSUSPEND" = 1;
     };
-  };
 }

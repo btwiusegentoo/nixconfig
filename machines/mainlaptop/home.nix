@@ -173,9 +173,6 @@ in
   xsession = {
     enable = true;
     scriptPath = ".hm-xsession";
-    #initExtra = ''
-    #${pkgs.xorg.xkbcomp}/bin/xkbcomp /etc/.jislayoutremap.xkb $DISPLAY
-    #'';
     pointerCursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata Ice";
