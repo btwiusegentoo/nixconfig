@@ -26,10 +26,11 @@ You can install this config running this command at repository root ~nixos-rebui
 Note that you need [[#nix][flakes enabled to install]].
 Use ~SPC m .~ in doom-emacs to move faster to headlines.
 
-* [0/7]TODOs :noexport:
+* [0/8]TODOs :noexport:
 - [ ] Document xmobar
 - [ ] Document overlays
-- [ ] Document packages
+- [ ] Document custom packages
+- [ ] Document configuration.nix/home.nix
 - [ ] Document emacs-anywhere
 - [ ] Document neovim and coc-settings.json
 - [ ] Document flashfocus
