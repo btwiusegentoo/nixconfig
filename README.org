@@ -4691,7 +4691,7 @@ Option "TearFree" "true"
 networking.hostName = "desktop1";
 #+end_src
 *** configuration.nix
-#+begin_src nix :tangel machines/maindesktop/configuration.nix :noweb no-export
+#+begin_src nix :tangle machines/maindesktop/configuration.nix :noweb no-export
 # This file is generated from "README.org"
 { config, pkgs, fetchgit, ... }:
 {

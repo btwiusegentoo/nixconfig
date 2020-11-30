@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 { config, pkgs, fetchgit, ... }:
 {
 
@@ -5,38 +6,54 @@
     [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # import user settings
+      # import encrypted user settings/secrets
       ./usersettings.nix
     ];
 
   # Boot{{{
   # Use the systemd-boot EFI boot loader.
   boot = {
-    loader.systemd-boot.enable = true;
-    loader.efi.canTouchEfiVariables = true;
-    # Enable latest linux kernel
-    kernelPackages = pkgs.unstable.linuxPackages_latest;
     extraModulePackages = with config.boot.kernelPackages; [ xpadneo ];
     extraModprobeConfig = ''
       options bluetooth disable_ertm=Y
     '';
   };
-  # Supposedly better for the SSD.
-  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
-  # Boot faster
+  # }}}
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
   systemd.services.systemd-udev-settle.serviceConfig.TimeoutSec = 5;
   systemd.services.NetworkManager-wait-online.enable = false;
-  # }}}
-
-  # Hardware{{{
-  hardware = {
-    opengl.enable = true;
-    opengl.driSupport = true;
-    opengl.driSupport32Bit = true;
-    opengl.extraPackages32 = with pkgs.unstable.pkgsi686Linux; [ libva ];
-    cpu.amd.updateMicrocode = true;
+  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+  boot.plymouth.enable = true;
+  
+  # Luks encrypted partition
+  boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/02d555e3-f8d2-4617-860e-06c08bec521b";
+  
+  # Root partition after unlocking luks
+  fileSystems."/" =
+  {
+      device = "/dev/disk/by-uuid/ba342cbb-2d6c-453d-8d25-df8fad829c37";
+      fsType = "xfs";
   };
-  # }}}
+  
+  # Boot partition
+  fileSystems."/boot" =
+  {
+      device = "/dev/disk/by-uuid/E5A7-FB2A";
+      fsType = "vfat";
+  };
+  
+  # Swap partition uuid
+  swapDevices =
+  [{ device = "/dev/disk/by-uuid/aedff2c4-f34c-410c-9612-aa9df0dd3cef"; }];
+
+  hardware.enableRedistributableFirmware = true;
+  sound.enable = true;
+  hardware.cpu.amd.updateMicrocode = true;
+  hardware.opengl.enable = true;
+  hardware.opengl.driSupport = true;
+  hardware.opengl.driSupport32Bit = true;
+  hardware.opengl.extraPackages32 = with pkgs.unstable.pkgsi686Linux; [ libva ];
 
   programs = {
     dconf.enable = true;
@@ -45,8 +62,8 @@
     java.package = pkgs.unstable.jdk;
   };
 
+  networking.hostName = "desktop1";
   # Networking{{{
-  networking.hostName = "desktop1"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -67,14 +84,11 @@
   environment.variables = (import ../../modules/common/globalvars.nix);
 
   virtualisation = import (../../modules/virtualisation/default.nix);
-
-  # enable sound
-  sound.enable = true;
-
   services.xserver.videoDrivers = [ "amdgpu" ];
+  services.xserver.deviceSection = ''
+  Option "TearFree" "true"
+  '';
   services.xserver.wacom.enable = true;
-
-  nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -85,5 +99,3 @@
   system.stateVersion = "20.03"; # Did you read the comment?
 
 }
-
-# vim:ft=nix sw=4 fdm=marker:
