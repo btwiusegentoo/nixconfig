@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 { pkgs, ... }:
 
 {
@@ -9,8 +10,10 @@
   "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
   "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
 
+  "tridactyl/tridactylrc".text = ''
+      <<tridactylrc>>
+  '';
 
-  # keynav{{{
   "keynav/keynavrc".text = ''
     super+semicolon start
     s warp
@@ -19,7 +22,6 @@
     v click 4
     z click 7
   '';
-  # }}}
 
   # flashfocus
   "flashfocus/flashfocus.yml".source = ../../configs/flashfocus.yml;
@@ -37,7 +39,4 @@
     name = "perfecteq.json";
     sha256 = "04mjqsiajqdzp43fn16j6sfz3972yfpqq6s2vw0cnim5bp9a642b";
   };
-
-  ## for local testing purposes
-  #"qutebrowser/css/palenight-all-sites.css".source = ../../projects/palenight-everything-css/palenight-all-sites.css;
 }

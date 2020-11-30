@@ -1,4 +1,5 @@
+# This file is generated from "README.org"
 {
-  enable = true;
-  enableAliases = false; # let me use custom alias.
+  programs.lsd.enable = true;
+  programs.lsd.enableAliases = false;
 }

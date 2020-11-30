@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 { config, pkgs, fetchgit, ... }:
 {
 
@@ -5,33 +6,11 @@
     [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # import usersettings
+      # import encrypted user settings/secrets
       ./usersettings.nix
-      # import system packages
-      ../../modules/common/systempackages.nix
-      # import locale configs
-      ../../modules/common/globallocale.nix
     ];
 
-  # Boot{{{
-  # Use the systemd-boot EFI boot loader.
   boot = {
-    loader.grub = {
-      enable = true;
-      version = 2;
-      extraConfig = ''
-        if keystatus --shift ; then
-            set timeout=-1
-        else
-            set timeout=0
-        fi
-      '';
-      enableCryptodisk = true;
-      copyKernels = true;
-    };
-    loader.timeout = 0;
-    # Enable latest linux kernel
-    kernelPackages = pkgs.unstable.linuxPackages_latest;
     kernelModules = [ "i915" "tpm-rng" ];
     extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
     extraModprobeConfig = ''
@@ -43,38 +22,59 @@
       "acpi_osi='!Windows 2012'"
       "acpi_backlight=vendor"
     ];
-    plymouth.enable = true;
   };
-  # Supposedly better for the SSD.
-  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
-  # Boot faster
-  systemd.services.systemd-udev-settle.enable = false;
-  systemd.services.NetworkManager-wait-online.enable = false;
-  systemd.extraConfig = ''
-    DefaultTimeoutStopSec=10s
+  boot.loader.grub.enable = true;
+  boot.loader.grub.version = 2;
+  boot.loader.timeout = 0;
+  boot.loader.grub.extraConfig = ''
+  if keystatus --shift ; then
+      set timeout=-1
+  else
+      set timeout=0
+  fi
   '';
-  # }}}
+  boot.loader.grub.copyKernels = true;
+  systemd.services.systemd-udev-settle.serviceConfig.TimeoutSec = 5;
+  systemd.services.NetworkManager-wait-online.enable = false;
+  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+  boot.plymouth.enable = true;
+  # Luks encrypted partition
+  boot.loader.grub.enableCryptodisk = true;
+  boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/27740e7b-5bb7-482a-94dc-72df547f1f66";
+  
+  # Set what drive to install grub
+  boot.loader.grub.device = "/dev/sda";
+  
+  # Root partition after unlocking luks
+  fileSystems."/" =
+    {
+      device = "/dev/disk/by-uuid/b904a3b9-a30e-425c-9e6c-6f8a56cedbf9";
+      fsType = "xfs";
+    };
+  
+  # Boot partition
+  fileSystems."/boot" =
+    {
+      device = "/dev/disk/by-uuid/f548cd01-269e-4b56-8aab-2cf06f278f88";
+      fsType = "ext2";
+    };
+  
+  # Swap partition uuid
+  swapDevices =
+    [{ device = "/dev/disk/by-uuid/1c57f70d-7083-4109-8cd5-f407a51d39cf"; }];
 
-  # Hardware{{{
-  hardware = {
-    pulseaudio = (import ../../modules/services/pulseaudio.nix) { inherit pkgs; };
-    bluetooth = (import ../../modules/common/bluetooth.nix) { inherit pkgs; };
-    opengl.enable = true;
-    opengl.driSupport = true;
-    opengl.extraPackages = with pkgs; [
-      vaapiIntel
-      vaapiVdpau
-      libvdpau-va-gl
-      intel-media-driver
-    ];
-    cpu.intel.updateMicrocode = true;
-    # trackpoint.enable = true;
-    # trackpoint.emulateWheel= true;
-    # trackpoint.device = "TPPS/2 IBM TrackPoint";
-  };
-  # }}}
-
-  zramSwap = (import ../../modules/services/zram.nix);
+  hardware.enableRedistributableFirmware = true;
+  sound.enable = true;
+  hardware.cpu.intel.updateMicrocode = true;
+  hardware.opengl.enable = true;
+  hardware.opengl.driSupport = true;
+  hardware.opengl.driSupport32Bit = true;
+  hardware.opengl.extraPackages = with pkgs; [
+    vaapiIntel
+    vaapiVdpau
+    libvdpau-va-gl
+    intel-media-driver
+  ];
 
   programs = {
     dconf.enable = true;
@@ -83,9 +83,8 @@
     java.package = pkgs.unstable.jdk;
   };
 
-
+  networking.hostName = "laptop1";
   # Networking{{{
-  networking.hostName = "laptop1"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
@@ -106,91 +105,26 @@
   };
   #}}}
 
-  fonts = (import ../../modules/common/fonts.nix) { inherit pkgs; };
-
   environment.variables = (import ../../modules/common/globalvars.nix);
-
-  services = {
-    fstrim.enable = true; # Trim ssd
-    blueman.enable = true; # Used for bluetooth
-    earlyoom.enable = true;
-    tlp = import (../../modules/services/tlp.nix);
-    thinkfan = import (../../modules/services/thinkfan.nix);
-    openssh = import (../../modules/common/openssh.nix);
-  };
 
   virtualisation = import (../../modules/virtualisation/default.nix);
 
-  #systemd.user.services = {
-  #xkb-restore = {
-  #description = "Restore keyboard layout after suspend";
-  #after = [ "suspend.target" "graphical-session.target" ];
-  #serviceConfig = {
-  #Type = "simple";
-  #Environment = "DISPLAY=:0";
-  #ExecStartPre = "/usr/bin/env sleep 3";
-  #ExecStart = "/usr/bin/xkbcomp /etc/.jislayoutremap.xkb :0";
-  #};
-  #wantedBy = [ "suspend.target" "graphical-session.target" ];
-  #};
-  #};
-  systemd.user.services = {
-    xkb-restore = {
-      description = "Restore keyboard layout after suspend";
-      after = [ "suspend.target" "graphical-session.target" ];
-      serviceConfig = {
-        Type = "simple";
-        Environment = "DISPLAY=:0";
-        ExecStartPre = "/usr/bin/env sleep 3";
-        ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/x230key.xkb :0\"";
-      };
-      wantedBy = [ "suspend.target" "graphical-session.target" ];
+    systemd.user.services.xkb-restore = {
+        description = "Restore keyboard layout after suspend";
+        after = [ "suspend.target" "graphical-session.target" ];
+        serviceConfig = {
+          Type = "simple";
+          Environment = "DISPLAY=:0";
+          ExecStartPre = "/usr/bin/env sleep 3";
+          ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/thinkpadlayout.xkb :0\"";
+        };
+        wantedBy = [ "suspend.target" "graphical-session.target" ];
     };
-  };
 
-  # enable sound
-  sound.enable = true;
-
-  services.xserver.layout = "us";
-  services.xserver.xkbVariant = "dvorak";
-  # services.xserver.xkbOptions = "ctrl:nocaps,altwin:swap_alt_win,swap_lalt_lwin";
   services.xserver.videoDrivers = [ "intel" ];
   services.xserver.deviceSection = ''
-    Option "TearFree" "true"
+  Option "TearFree" "true"
   '';
-  services.xserver.inputClassSections = [
-    ''
-      Identifier "touchpad"
-      MatchProduct "SynPS/2 Synaptics TouchPad"
-      # MatchTag "lenovo_x230_all"
-      Driver "synaptics"
-      # fix touchpad resolution
-      Option "VertResolution" "100"
-      Option "HorizResolution" "65"
-      # disable synaptics driver pointer acceleration
-      Option "MinSpeed" "1"
-      Option "MaxSpeed" "1"
-      # tweak the X-server pointer acceleration
-      Option "AccelerationProfile" "2"
-      Option "AdaptiveDeceleration" "16"
-      Option "ConstantDeceleration" "16"
-      Option "VelocityScale" "20"
-      Option "AccelerationNumerator" "30"
-      Option "AccelerationDenominator" "10"
-      Option "AccelerationThreshold" "10"
-      # Disable two fingers right mouse click
-      Option "TapButton2" "0"
-      Option "HorizHysteresis" "100"
-      Option "VertHysteresis" "100"
-      # fix touchpad scroll speed
-      Option "VertScrollDelta" "500"
-      Option "HorizScrollDelta" "500"
-    ''
-  ];
-
-  environment.etc = import ../../modules/common/etcfiles.nix;
-
-  nixpkgs.config = import ../../configs/nixpkgs-config.nix;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -201,5 +135,3 @@
   system.stateVersion = "20.03"; # Did you read the comment?
 
 }
-
-# vim:ft=nix sw=4 fdm=marker:

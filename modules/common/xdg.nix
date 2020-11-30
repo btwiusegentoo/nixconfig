@@ -1,10 +1,11 @@
+# This file is generated from "README.org"
 { pkgs, ... }:
 
 {
-  enable = true;
-  mime.enable = true;
-  userDirs.enable = true;
-  mimeApps = {
+  xdg.enable = true;
+  xdg.userDirs.enable = true;
+  xdg.mime.enable = true;
+  xdg.mimeApps = {
     enable = true;
     defaultApplications = {
       "text/html" = "org.qutebrowser.qutebrowser.desktop";
@@ -14,5 +15,5 @@
       "x-scheme-handler/unknown" = "org.qutebrowser.qutebrowser.desktop";
     };
   };
-  configFile = import ./xdg-configfiles.nix { inherit pkgs; };
+  xdg.configFile = import ./xdg-configfiles.nix { inherit pkgs; };
 }

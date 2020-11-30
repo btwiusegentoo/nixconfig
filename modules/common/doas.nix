@@ -1,3 +1,4 @@
+# This file is generated from "README.org"
 {
   security.sudo.enable = false;
   security.doas = {

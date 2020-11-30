@@ -5,31 +5,10 @@
 
 {
 
-  hardware.enableRedistributableFirmware = true;
-
   boot.initrd.availableKernelModules = [ "ehci_pci" "ahci" "firewire_ohci" "usb_storage" "sd_mod" "sr_mod" "sdhci_pci" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
-
-  fileSystems."/" =
-    {
-      device = "/dev/disk/by-uuid/b904a3b9-a30e-425c-9e6c-6f8a56cedbf9";
-      fsType = "xfs";
-    };
-
-  boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/27740e7b-5bb7-482a-94dc-72df547f1f66";
-
-  boot.loader.grub.device = "/dev/sda";
-
-  fileSystems."/boot" =
-    {
-      device = "/dev/disk/by-uuid/f548cd01-269e-4b56-8aab-2cf06f278f88";
-      fsType = "ext2";
-    };
-
-  swapDevices =
-    [{ device = "/dev/disk/by-uuid/1c57f70d-7083-4109-8cd5-f407a51d39cf"; }];
 
   nix.maxJobs = lib.mkDefault 4;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";

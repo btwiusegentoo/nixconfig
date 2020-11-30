@@ -1,7 +1,6 @@
+# This file is generated from "README.org"
 { config, pkgs, lib, ... }:
 {
-
-  # Packages to install{{{
   home.packages = with pkgs; [
     trash-cli
     unstable.fd
@@ -40,16 +39,7 @@
     fortune
     asciiquarium
   ];
-  #}}}
-
-  # services {{{
-  services = {
-
-    lorri.enable = true;
-    gpg-agent = (import ../../modules/services/gpg-agent-curses.nix);
-
-  };
-  #}}}
+  services.lorri.enable = true;
 
   # programs {{{
   programs = {
@@ -57,15 +47,6 @@
     home-manager.enable = true;
 
     neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; }; # don't compile
-
-    git = (import ../../modules/terminal/git.nix) { inherit pkgs; };
-    fish = (import ../../modules/terminal/fish.nix) { inherit pkgs; };
-    tmux = (import ../../modules/terminal/tmux.nix) { inherit pkgs; };
-    bat = (import ../../modules/terminal/bat.nix) { inherit pkgs; };
-    starship = (import ../../modules/terminal/starship.nix) { inherit pkgs; };
-    lsd = (import ../../modules/terminal/lsd.nix);
-    fzf = (import ../../modules/terminal/fzf.nix);
-    gpg.enable = true;
   };
   #}}}
 
@@ -97,7 +78,7 @@
 
     # nixpkgs{{{
     "nixpkgs/config.nix".text = ''
-      { allowUnfree = true; } 
+      { allowUnfree = true; }
     '';
     # }}}
 
@@ -135,4 +116,3 @@
   }; # }}}
 
 }
-# vim:ft=nix fdm=marker sw=4:

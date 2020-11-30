@@ -1,17 +1,18 @@
+# This file is generated from "README.org"
 { pkgs, ... }:
 {
-  enable = true;
-  package = pkgs.nur.repos.reedrw.picom-next-ibhagwan;
-  backend = "glx";
-  experimentalBackends = true;
-  opacityRule = [
-    "80:class_g  = 'Zathura'"
-    "80:class_g  = 'TelegramDesktop'"
-    "80:class_g  = 'Discord'"
-    "80:class_g  = 'Emacs'"
-    "100:class_g = 'keynav'"
+  services.picom.enable = true;
+  services.picom.package = pkgs.nur.repos.reedrw.picom-next-ibhagwan;
+  services.picom.backend = "glx";
+  services.picom.experimentalBackends = true;
+  services.picom.opacityRule = [
+      "80:class_g  = 'Zathura'"
+      "80:class_g  = 'TelegramDesktop'"
+      "80:class_g  = 'Discord'"
+      "80:class_g  = 'Emacs'"
+      "100:class_g = 'keynav'"
   ];
-  extraOptions = ''
+  services.picom.extraOptions = ''
     detect-client-opacity = true;
     detect-rounded-corners = true;
     blur:

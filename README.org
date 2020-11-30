@@ -1,0 +1,5563 @@
+# -*- mode: Org; eval: (company-mode 0) -*- #
+#+TITLE: My NixOS configuration
+#+LANGUAGE: en
+#+STARTUP: inlineimages overview
+#+PROPERTY: header-args :tangle no :cache yes :results silent
+
+[[https://builtwithnix.org/badge.svg]] [[https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg]]
+
+#+ATTR_HTML: :width 300
+#+ATTR_ORG: :width 300
+[[file:pictures/screenshot1.png]] [[file:pictures/wallpaper2.png]]
+
+
+* Introduction :noexport:
+Hi! This is my repo that contains my configuration files for my machines (aka dotfiles)
+This repository contains configuration for three hosts currently
+- Ryzen desktop
+- My portable laptop
+- My lowspec server
+All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix Flakes]].
+[[https://github.com/nix-community/home-manager][home-manager]] is used to manage user environment. I try to install programs/services in user level as much as possible.
+I use [[https://xmonad.org/][xmonad]] as window manager for Desktop and Laptop, while server is headless.
+My English is not good, but I will try to make this into literate config just for fun.
+To generate actual files, open this file in emacs, and execute ~M-x org-babel-tangle~.
+You can install this config running this command at repository root ~nixos-rebuild switch --flake .~
+Note that you need [[#nix][flakes enabled to install]].
+Use ~SPC m .~ in doom-emacs to move faster to headlines.
+
+* [0/8]TODOs :noexport:
+- [ ] Document xmobar
+- [ ] Document overlays
+- [ ] Document custom packages
+- [ ] Document configuration.nix/home.nix
+- [ ] Document emacs-anywhere
+- [ ] Document neovim and coc-settings.json
+- [ ] Document flashfocus
+- [ ] Document vifm
+* Table of Contents :TOC_2_gh:
+- [[#flake][Flake]]
+  - [[#flake-inputs][Flake inputs]]
+  - [[#default-imports][default imports]]
+  - [[#x11-imports][X11 imports]]
+  - [[#home-manager-imports][home-manager imports]]
+  - [[#home-manager-x11-imports][home-manager X11 imports]]
+  - [[#nixpkgs-config][nixpkgs config]]
+  - [[#import-overlays][import overlays]]
+  - [[#machines][Machines]]
+- [[#nix][Nix]]
+  - [[#enable-flakes][Enable flakes]]
+  - [[#allowed-users][Allowed users]]
+  - [[#trusted-users][Trusted users]]
+  - [[#enable-lorri][Enable lorri]]
+  - [[#integrate-lorri-direnv-with-fish-shell][Integrate lorri direnv with fish shell]]
+- [[#input][Input]]
+  - [[#keyboard][Keyboard]]
+  - [[#trackpad][Trackpad]]
+  - [[#keynav][keynav]]
+- [[#output][Output]]
+  - [[#monitor][Monitor]]
+  - [[#sound][Sound]]
+- [[#other-hardwares][Other Hardwares]]
+  - [[#bluetooth][Bluetooth]]
+  - [[#tlp][TLP]]
+  - [[#thinkfan][Thinkfan]]
+  - [[#zram][ZRAM]]
+  - [[#ssd][SSD]]
+  - [[#early-oom][Early oom]]
+- [[#look-and-feel][Look And Feel]]
+  - [[#color-schemethemes][Color Scheme/Themes]]
+  - [[#style][Style]]
+  - [[#fonts][Fonts]]
+  - [[#wallpapers][Wallpapers]]
+  - [[#icons][Icons]]
+  - [[#cursors][Cursors]]
+  - [[#opacity][Opacity]]
+  - [[#border][Border]]
+- [[#terminalshell][Terminal/Shell]]
+  - [[#alacritty][Alacritty]]
+  - [[#tty][TTY]]
+  - [[#vterm][vterm]]
+  - [[#fish-shell][fish shell]]
+  - [[#starship][starship]]
+  - [[#shell-utilities][Shell utilities]]
+- [[#xmonad][xmonad]]
+  - [[#install-xmonad-set-config-file-path][Install xmonad/ Set config file path]]
+  - [[#imports][imports]]
+  - [[#workspaces][Workspaces]]
+  - [[#xmonad-prompt][xmonad prompt]]
+  - [[#set-default-terminal][Set default terminal]]
+  - [[#set-gaps][Set gaps]]
+  - [[#keybindings][Keybindings]]
+  - [[#layouts][Layouts]]
+  - [[#startupsautostart][Startups(autostart)]]
+  - [[#scratchpads][Scratchpads]]
+  - [[#managehook][ManageHook]]
+  - [[#mouse][Mouse]]
+  - [[#function-to-get-active-layout-description][Function to get active layout description]]
+  - [[#xmonadhs-base-code][xmonad.hs base code]]
+- [[#emacs][Emacs]]
+  - [[#install-emacs-nativecomp-pgtk][Install Emacs nativecomp pgtk]]
+  - [[#enable-emacs-daemon][Enable Emacs daemon]]
+  - [[#select-doom-emacs-modules][Select doom-emacs modules]]
+  - [[#install-custom-packages][Install custom packages]]
+  - [[#disable-line-number][Disable line number]]
+  - [[#indent][Indent]]
+  - [[#history-length][History length]]
+  - [[#enable-auto-saving][Enable auto saving]]
+  - [[#delete-files-to-trash][Delete files to trash]]
+  - [[#stretch-cursor][Stretch cursor]]
+  - [[#centaur-tabs][Centaur Tabs]]
+  - [[#company-auto-completionlsp][Company auto completion/LSP]]
+  - [[#projectile][Projectile]]
+  - [[#magit][Magit]]
+  - [[#dired][Dired]]
+  - [[#org-mode][org-mode]]
+  - [[#evil-mode][Evil-mode]]
+  - [[#rainbow-mode][Rainbow mode]]
+  - [[#haskell-mode][Haskell mode]]
+  - [[#twittering-mode][Twittering mode]]
+  - [[#performance-optimize-remove-the-clutter][Performance (optimize, remove the clutter)]]
+  - [[#emacsnix-base-code][emacs.nix base code]]
+  - [[#doom-emacs-configel-base-code][doom-emacs config.el base code]]
+- [[#neovim][neovim]]
+  - [[#open-lazygit-commit-window-inside-neovim][Open lazygit commit window inside neovim]]
+- [[#dev-environment][Dev environment]]
+  - [[#haskell][Haskell]]
+- [[#web-browser][Web Browser]]
+  - [[#qutebrowser][qutebrowser]]
+  - [[#firefox][Firefox]]
+- [[#multimedia][Multimedia]]
+  - [[#mpv][mpv]]
+  - [[#zathura][zathura]]
+- [[#security][Security]]
+  - [[#doas][doas]]
+  - [[#clamav][ClamAV]]
+  - [[#gnupg][GnuPG]]
+- [[#common-configs][Common configs]]
+  - [[#x-server][X server]]
+  - [[#lightdm][LightDM]]
+  - [[#locale][Locale]]
+  - [[#xdg][XDG]]
+- [[#services][Services]]
+  - [[#openssh][OpenSSH]]
+  - [[#dunst][Dunst]]
+  - [[#picom][Picom]]
+- [[#machines-1][Machines]]
+  - [[#common-defaults][Common Defaults]]
+  - [[#bootkernelinitrd][Boot/kernel/initrd]]
+  - [[#hardware][Hardware]]
+  - [[#desktop][Desktop]]
+  - [[#laptop][Laptop]]
+  - [[#server][Server]]
+- [[#symlinks][Symlinks]]
+  - [[#etc-files][/etc files]]
+  - [[#config-files][~/.config files]]
+- [[#credits][Credits]]
+
+* Flake
+A [[https://nixos.wiki/wiki/Flakes][flake]] is (usually) a Git repository that contains a file named ~flake.nix~ at root.
+This repository is compatible with nix flakes.
+The following code is the base code of  ~flake.nix~ file.
+#+begin_src nix :tangle flake.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  description = "NixOS configuration for all machines";
+
+  <<flake-inputs>>
+
+  outputs = inputs@{ self, home-manager, nur, nixpkgs, ... }:
+    let
+      inherit (builtins) listToAttrs attrValues attrNames readDir;
+      inherit (nixpkgs) lib;
+      inherit (lib) removeSuffix;
+
+      <<nixpkgs-config>>
+
+      <<flake-defaults>>
+    in
+    {
+      <<flake-overlays>>
+
+      nixosConfigurations = {
+        <<desktop1>>
+        <<laptop1>>
+        <<server1>>
+      };
+    };
+}
+#+end_src
+** Flake inputs
+Flakes provides a better approach than channel to manage nixpkgs and overlays. 
+It's called ~inputs~.
+Channels aren't pinned in the config. When updating nixpkgs, you have to run this command ~nix-channel --update~ *locally* everytime.
+Therefore, nixpkgs revision differs from machine to machine, making not fully reproducible.
+Using nix flakes, All inputs are automatically pinned at specific revision in ~flake.lock~ file at repository root to guarantee reproducibility.
+This can also be achieved by manually pinning nixpkgs at specific revision using overlays.
+But flakes does it automatically, without having to update rev and sha256 manually everytime.
+You can update inputs easily like this: ~nix flake --update-input nixpkgs~
+
+Currently, I have *home-manager*, *NUR* (nix user repository), *emacs pgtk nativecomp overlay*, and *nixpkgs* 20.09,unstable,master as inputs:
+#+name: flake-inputs
+#+begin_src nix
+  inputs = {
+    home-manager = {
+      url = "github:rycee/home-manager";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
+    nur.url = "github:nix-community/NUR";
+    emacs.url = "github:berbiche/emacs-pgtk-nativecomp-overlay";
+
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
+    unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    master.url = "github:nixos/nixpkgs/master";
+  };
+#+end_src
+
+** default imports
+Import default modules
+#+name: flake-defaults
+#+begin_src nix
+      defaults = { pkgs, ... }: {
+        imports = [
+          ./cachix.nix
+          ./modules/common/nix.nix
+          ./modules/common/doas.nix
+          ./modules/common/console.nix
+          ./modules/hardware/bluetooth.nix
+          ./modules/hardware/zram.nix
+          ./modules/hardware/earlyoom.nix
+          ./modules/common/etcfiles.nix
+          ./modules/common/systempackages.nix
+          ./modules/common/globallocale.nix
+          ./modules/services/pulseaudio.nix
+          ./modules/services/clamav.nix
+          ./modules/services/openssh.nix
+        ];
+      };
+#+end_src
+
+** X11 imports
+List default modules that *requires X11* here
+#+name: x11-defaults
+#+begin_src nix
+./modules/common/fonts.nix
+./modules/gui/blueman.nix
+#+end_src
+** home-manager imports
+List default modules for home-manager that *doesn't require X11* here
+#+name: home-manager-defaults
+#+begin_src nix
+./modules/terminal/fish.nix
+./modules/terminal/git.nix
+./modules/terminal/bat.nix
+./modules/terminal/fzf.nix
+./modules/terminal/lsd.nix
+./modules/terminal/starship.nix
+./modules/terminal/tmux.nix
+./modules/services/gpg.nix
+#+end_src
+** home-manager X11 imports
+List default modules for home-manager that *requires X11* here
+#+name: home-manager-x11-defaults
+#+begin_src nix
+./modules/common/xdg.nix
+./modules/common/xmonad.nix
+./modules/services/dunst.nix
+./modules/services/picom.nix
+./modules/terminal/alacritty.nix
+./modules/gui/qutebrowser.nix
+./modules/gui/firefox.nix
+./modules/gui/mpv.nix
+./modules/editors/emacs.nix
+#+end_src
+** nixpkgs config
+This configuration is for default nixpkgs.
+Set system arch to x86_64, Allow installation for non-free software(also known as proprietary software), and import overlays from [[#overlays][here]]
+#+name: nixpkgs-config
+#+begin_src nix
+      pkgs = (import nixpkgs) {
+        system = "x86_64-linux";
+        config = { allowUnfree = true; };
+        overlays = attrValues self.overlays;
+      };
+#+end_src
+
+** import overlays
+This code searchs ~./overlays~ directory for nix files and automatically imports the files.
+NUR, nixos-unstable, nixpkgs master are imported as package set of pkgs here. Packages from these package sets can be referred like ~pkgs.unstable.fish~ ~pkgs.master.discord~ ~pkgs.nur.repos.rycee.firefox-addons~
+This have a benefit than just importing the same way as pkgs like ~{pkgs, unstable, master, ... }:~. If you import unstable just like pkgs, idk why, but it can't be imported from overlays.
+So it can't be used to override packages of home-manager modules.
+Importing as package set makes it possible and it's more convenient.
+#+name: flake-overlays
+#+begin_src nix
+      overlays =
+        let
+          overlayFiles = listToAttrs (map
+            (name: {
+              name = removeSuffix ".nix" name;
+              value = import (./overlays + "/${name}");
+            })
+            (attrNames (readDir ./overlays)));
+        in
+        overlayFiles // {
+          nur = final: prev: {
+            nur = import inputs.nur { nurpkgs = final; pkgs = final; };
+          };
+          emacsPgtk = final: prev: {
+            emacsGccPgtk = inputs.emacs.packages.${final.system}.emacsGccPgtk;
+          };
+          unstable = final: prev: {
+            unstable = import inputs.unstable {
+              system = final.system;
+              config.allowUnfree = true;
+            };
+          };
+          master = final: prev: {
+            master = import inputs.master {
+              system = final.system;
+              config.allowUnfree = true;
+            };
+          };
+        };
+#+end_src
+** Machines
+These are the codes that evaluates a NixOS configuration for tools like ~nixos-rebuild~ for each machines.
+It imports modules (that contains configuration for) for each machines.
+*** Desktop
+#+name: desktop1
+#+begin_src nix :noweb no-export
+        desktop1 = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules =
+            [
+              defaults
+              ./machines/maindesktop/configuration.nix
+              ./modules/common/xserver.nix
+              ./modules/hardware/ssd.nix
+              <<x11-defaults>>
+              home-manager.nixosModules.home-manager
+              ({
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users.btw = { ... }: {
+                  imports = [
+                    ./machines/maindesktop/home.nix
+                    <<home-manager-x11-defaults>>
+                    <<home-manager-defaults>>
+                  ];
+                };
+              })
+            ];
+          inherit pkgs;
+        };
+#+end_src
+
+*** Laptop
+#+name: laptop1
+#+begin_src nix :noweb no-export
+        laptop1 = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules =
+            [
+              defaults
+              ./machines/mainlaptop/configuration.nix
+              ./modules/common/xserverlaptop.nix
+              ./modules/hardware/ssd.nix
+              ./modules/hardware/tlp.nix
+              ./modules/hardware/thinkfan.nix
+              ./modules/hardware/libinput.nix
+              <<x11-defaults>>
+              home-manager.nixosModules.home-manager
+              ({
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users.x230 = { ... }: {
+                  imports = [
+                    ./machines/mainlaptop/home.nix
+                    <<home-manager-x11-defaults>>
+                    <<home-manager-defaults>>
+                  ];
+                };
+              })
+            ];
+          inherit pkgs;
+        };
+#+end_src
+
+*** Server
+#+name: server1
+#+begin_src nix :noweb no-export
+        server1 = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules =
+            [
+              defaults
+              ./machines/mainserver/configuration.nix
+              home-manager.nixosModules.home-manager
+              ({
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users.hac = { ... }: {
+                  imports = [
+                    ./machines/mainserver/home.nix
+                    <<home-manager-defaults>>
+                  ];
+                };
+              })
+            ];
+          inherit pkgs;
+        };
+#+end_src
+* Nix
+Configure Nix package manager
+#+begin_src nix :tangle modules/common/nix.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  <<nix-package>>
+
+  nix.extraOptions = ''
+    <<nix-enable-flakes>>
+    builders-use-substitutes = true
+  '';
+  <<nix-allowed-users>>
+  <<nix-trusted-users>>
+}
+#+end_src
+** Enable flakes
+Select Nix package that contains flakes
+#+name: nix-package
+#+begin_src nix
+nix.package = pkgs.nixFlakes;
+#+end_src
+Enable nix flakes(flakes is still a experimental feature.)
+#+name: nix-enable-flakes
+#+begin_src nix
+experimental-features = nix-command flakes
+#+end_src
+** Allowed users
+A list of names of users that are allowed to connect to the Nix daemon.
+#+name: nix-allowed-users
+#+begin_src nix
+nix.allowedUsers = [ "@wheel" ];
+#+end_src
+** Trusted users
+A list of names of users that have additional rights when connecting to the Nix daemon.
+Add user here to use cachix and run ~nixos-rebuild~ from that user.
+#+name: nix-trusted-users
+#+begin_src nix
+nix.trustedUsers = [ "root" "@wheel" ];
+#+end_src
+** Enable lorri
+lorri is a nix-shell replacement with fast direnv integration
+#+name: lorri-enable
+#+begin_src nix
+services.lorri.enable = true;
+#+end_src
+** Integrate lorri direnv with fish shell
+For direnv to work properly it needs to be hooked into the shell.
+Once the hook is configured, restart your shell for direnv to be activated.
+#+name: fish-direnv
+#+begin_src fish
+eval (direnv hook fish)
+#+end_src
+* Input
+** Keyboard
+*** Xorg repeat rate
+Default repeat rate is too slow. Change it
+#+name: xserver-autorepeat
+#+begin_src nix
+    autoRepeatDelay = 200;
+    autoRepeatInterval = 25;
+#+end_src
+*** Dvorak
+I use Dvorak layout on HHKB.
+Dvorak layout is a ergonomic alternative for qwerty layout that requires less movement.
+My keybinds are configured with HHKB Dvorak usage in mind. I didn't remapped vim(or evil-mode) keys(hjkl) because it already feels natural as is.
+
+Console config
+#+name: consolekeymap
+#+begin_src nix
+console.keyMap = "dvorak";
+#+end_src
+
+Xorg config
+#+name: xserver-keymap
+#+begin_src nix
+layout = "us";
+xkbVariant = "dvorak";
+#+end_src
+
+home-manager config
+#+name: home-manager-keymap
+#+begin_src nix
+home.keyboard = {
+  layout = "us";
+  variant = "dvorak";
+};
+#+end_src
+*** IME
+Install Japanese IME
+#+name: japanese-ime
+#+begin_src nix
+i18n.inputMethod.enabled = "fcitx";
+i18n.inputMethod.fcitx.engines = with pkgs.fcitx-engines; [ mozc ];
+#+end_src
+*** Thinkpad
+I can't live without HHKB-ish layout. I remap my ThinkPad layout:
+#+begin_src conf :tangle configs/thinkpadlayout.xkb
+xkb_keymap {
+ xkb_keycodes {
+  include "evdev+aliases(qwerty)"
+  <ESC> = 49;
+  <BKSP> = 51;
+  <LCTL> = 37;
+  <TLDE> = 9;
+  <BKSL> = 22;
+ };
+ xkb_types { include "complete"};
+ xkb_compatibility { include "complete"};
+ xkb_symbols { include "pc+us(dvorak)+us(dvorak):2+inet(evdev)+altwin(swap_alt_win)+ctrl(nocaps)" };
+ xkb_geometry { include "pc(pc104)"};
+};
+#+end_src
+
+Symlink it to /etc for convenience
+#+name: thinkpad-layout-file
+#+begin_src nix
+environment.etc."thinkpadlayout.xkb".source = ../../configs/thinkpadlayout.xkb;
+#+end_src
+
+Make a systemd service to execute everytime after waking up from restart/sleep
+#+name: thinkpad-layout-service
+#+begin_src nix
+  systemd.user.services.xkb-restore = {
+      description = "Restore keyboard layout after suspend";
+      after = [ "suspend.target" "graphical-session.target" ];
+      serviceConfig = {
+        Type = "simple";
+        Environment = "DISPLAY=:0";
+        ExecStartPre = "/usr/bin/env sleep 3";
+        ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/thinkpadlayout.xkb :0\"";
+      };
+      wantedBy = [ "suspend.target" "graphical-session.target" ];
+  };
+#+end_src
+** Trackpad
+I use libinput because the better palm detection.
+It's a minimal config because trackpad is mostly disabled.
+#+begin_src nix :tangle modules/hardware/libinput.nix
+# This file is generated from "README.org"
+{
+  services.xserver.libinput.enable = true;
+  services.xserver.libinput.naturalScrolling = true;
+  services.xserver.libinput.disableWhileTyping = true;
+  services.xserver.libinput.accelSpeed = "1.000000";
+}
+#+end_src
+** keynav
+keynav is a program that allows you to control the mouse with keyboard in a very efficient way.
+One of the big reasons I can live mostly without mouse
+#+name: keynav-enable
+#+begin_src nix
+services.keynav.enable = true;
+#+end_src
+
+Generate keynav config.
+Super-semicolon to start keynav
+s to warp cursor
+m,w,v,z to scroll, think like hjkl on QWERTY keyboard. it's positioned on bottom right of Dvorak layout
+#+name: keynav-config
+#+begin_src conf
+"keynav/keynavrc".text = ''
+  super+semicolon start
+  s warp
+  m click 6
+  w click 5
+  v click 4
+  z click 7
+'';
+#+end_src
+* Output
+** Monitor
+*** Brightness
+We need these kernel parameters to be able to control display brightness on ThinkPad
+#+name: configurationnix-laptop-brightness
+#+begin_src nix
+"acpi_osi='!Windows 2012'"
+"acpi_backlight=vendor"
+#+end_src
+*** Resolution
+Scale desktop monitor to 1440p
+#+name: xrandr-desktop-scale
+#+begin_src nix
+xsession.profileExtra = "xrandr --output DVI-D-0 --scale-from 2560x1440 --panning 2560x1440";
+#+end_src
+Scale laptop monitor to 1080p
+#+name: xrandr-laptop-scale
+#+begin_src nix
+xsession.profileExtra = "xrandr --output LVDS1 --scale-from 1920x1080 --panning 1920x1080";
+#+end_src
+** Sound
+*** Enable sound
+Enable ALSA sound in configuration.nix
+#+name: enable-sound
+#+begin_src nix
+sound.enable = true;
+#+end_src
+*** PulseAudio
+PulseAudio is a general purpose sound server intended to run as a middleware between your applications and your hardware devices, either using ALSA or OSS.
+It's required by many programs to play sound nowadays.
+#+begin_src nix :tangle modules/services/pulseaudio.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  <<pulseaudio-enable>>
+  <<pulseaudio-package>>
+  <<pulseaudio-support-32bit>>
+  <<pulseaudio-extramodules>>
+  <<pulseaudio-daemon-config>>
+}
+#+end_src
+**** Enable PulseAudio
+Whether to enable the PulseAudio sound server.
+#+name: pulseaudio-enable
+#+begin_src nix
+hardware.pulseaudio.enable = true;
+#+end_src
+**** PulseAudio 32bit support
+Include 32-bit pulseaudio libraries in the system. It's needed by certain programs(like wine 32bit, mainly used for games)
+#+name: pulseaudio-support-32bit
+#+begin_src nix
+hardware.pulseaudio.support32Bit = true;
+#+end_src
+**** PulseAudio package
+Select the PulseAudio derivation to use. This can be used to enable features (such as JACK support, Bluetooth) via the pulseaudioFull package
+#+name: pulseaudio-package
+#+begin_src nix
+hardware.pulseaudio.package = pkgs.pulseaudioFull;
+#+end_src
+**** PulseAudio extra modules
+Extra PulseAudio modules to use. This is intended for out-of-tree pulseaudio modules like extra bluetooth codecs.
+#+name: pulseaudio-extramodules
+#+begin_src nix
+hardware.pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
+#+end_src
+**** PulseAudio daemon config
+idk, this config is supposed to improve audio quality
+#+name: pulseaudio-daemon-config
+#+begin_src nix
+hardware.pulseaudio.daemon.config = {
+    default-sample-rate = "48000";
+    alternate-sample-rate = "44100";
+    default-sample-channels = "2";
+    default-channel-map = "front-left,front-right";
+    default-fragments = "2";
+    default-fragment-size-msec = "125";
+    enable-lfe-remixing = "no";
+    high-priority = "yes";
+    nice-level = "-11";
+    realtime-scheduling = "yes";
+    realtime-priority = "9";
+    rlimit-rtprio = "9";
+    resample-method = "soxr-vhq";
+    daemonize = "no";
+    default-sample-format = "float32le";
+};
+#+end_src
+* Other Hardwares
+** Bluetooth
+This module configures bluetooth for all machines.
+#+begin_src nix :tangle modules/hardware/bluetooth.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  <<bluetooth-enable>>
+  <<bluetooth-package>>
+  <<bluetooth-config>>
+}
+#+end_src
+*** Enable Bluetooth
+#+name: bluetooth-enable
+#+begin_src nix
+hardware.bluetooth.enable = true;
+#+end_src
+*** Bluetooth package
+bluezFull enables all bluez plugins. It's needed for many devices.
+#+name: bluetooth-package
+#+begin_src nix
+hardware.bluetooth.package = pkgs.bluezFull;
+#+end_src
+*** Bluetooth config
+Setting controller mode to ~"bredr"~ (disabling Bluetooth LE) is a workaround to fix airpods.
+#+name: bluetooth-config
+#+begin_src nix
+hardware.bluetooth.config = {
+    General = {
+        ControllerMode = "bredr";
+    };
+};
+#+end_src
+*** Enable blueman
+Blueman is a bluetooth manager written in GTK
+#+begin_src nix :tangle modules/gui/blueman.nix
+# This file is generated from "README.org"
+{
+  services.blueman.enable = true;
+}
+#+end_src
+** TLP
+TLP is a feature-rich command line utility for Linux, saving laptop battery power without the need to delve deeper into technical details.
+#+begin_src nix :tangle modules/hardware/tlp.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  services.tlp = {
+    <<tlp-enable>>
+    settings = {
+      <<tlp-settings>>
+    };
+  };
+}
+#+end_src
+*** Enable TLP
+#+name: tlp-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** TLP settings
+#+name: tlp-settings
+#+begin_src nix
+"SOUND_POWER_SAVE_ON_AC" = 0;
+"SOUND_POWER_SAVE_ON_BAT" = 1;
+"SOUND_POWER_SAVE_CONTROLLER" = "Y";
+"BAY_POWEROFF_ON_AC" = 0;
+"BAY_POWEROFF_ON_BAT" = 1;
+"DISK_APM_LEVEL_ON_AC" = "254 254";
+"DISK_APM_LEVEL_ON_BAT" = "128 128";
+"DISK_IOSCHED" = "none none";
+"SATA_LINKPWR_ON_AC" = "med_power_with_dipm max_performance";
+"SATA_LINKPWR_ON_BAT" = "min_power";
+"MAX_LOST_WORK_SECS_ON_AC" = 15;
+"MAX_LOST_WORK_SECS_ON_BAT" = 60;
+"NMI_WATCHDOG" = 0;
+"WIFI_PWR_ON_AC" = "off";
+"WIFI_PWR_ON_BAT" = "on";
+"WOL_DISABLE" = "Y";
+"CPU_SCALING_GOVERNOR_ON_AC" = "powersave";
+"CPU_SCALING_GOVERNOR_ON_BAT" = "powersave";
+"CPU_MIN_PERF_ON_AC" = 0;
+"CPU_MAX_PERF_ON_AC" = 100;
+"CPU_MIN_PERF_ON_BAT" = 0;
+"CPU_MAX_PERF_ON_BAT" = 50;
+"CPU_BOOST_ON_AC" = 1;
+"CPU_BOOST_ON_BAT" = 1;
+"SCHED_POWERSAVE_ON_AC" = 0;
+"SCHED_POWERSAVE_ON_BAT" = 1;
+"ENERGY_PERF_POLICY_ON_AC" = "performance";
+"ENERGY_PERF_POLICY_ON_BAT" = "power";
+"RESTORE_DEVICE_STATE_ON_STARTUP" = 0;
+"RUNTIME_PM_ON_AC" = "on";
+"RUNTIME_PM_ON_BAT" = "auto";
+"PCIE_ASPM_ON_AC" = "default";
+"PCIE_ASPM_ON_BAT" = "powersupersave";
+"USB_AUTOSUSPEND" = 1;
+#+end_src
+** Thinkfan
+Thinkfan is a simple, lightweight fan controler for IBM/Lenovo ThinkPads
+#+begin_src nix :tangle modules/hardware/thinkfan.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  services.thinkfan = {
+    <<thinkfan-enable>>
+    <<thinkfan-fan>>
+    levels = ''
+        <<thinkfan-levels>>
+    '';
+  };
+}
+#+end_src
+*** Enable Thinkfan
+#+name: thinkfan-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Select Fan
+Specify the fan to use.
+#+name: thinkfan-fan
+#+begin_src nix
+fan = "tp_fan /proc/acpi/ibm/fan";
+#+end_src
+*** Select sensors
+thinkfan can read temperatures from three possible sources:
+~/proc/acpi/ibm/thermal~ which is provided by thinkpad_acpi kernel module
+~/sys/class/humon/*/temp*_input~ which may be provided by any humon drivers
+S.M.A.R.T. which reads the temperature directly from the hard drive using libatasmart
+#+name: thinkfan-sensors
+#+begin_src nix
+sensors = ''
+    hwmon /sys/class/thermal/thermal_zone0/temp
+'';
+#+end_src
+*** Levels
+Configure fan speed
+#+name: thinkfan-levels
+#+begin_src nix
+(0, 0,  42)
+(1, 40, 47)
+(2, 45, 52)
+(3, 50, 57)
+(4, 55, 62)
+(5, 60, 72)
+(6, 65, 77)
+(7, 70, 80)
+(127, 75, 32767)
+#+end_src
+** ZRAM
+ZRAM is a linux kernel module that creates in-memory compressed devices and swap space. Literally download more RAM
+#+begin_src nix :tangle modules/hardware/zram.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  zramSwap = {
+    <<zram-enable>>
+    <<zram-algorithm>>
+    <<zram-memory-percent>>
+  };
+}
+#+end_src
+*** Enable ZRAM
+#+name: zram-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** ZRAM algorithm
+Compression algorithm. lzo has good compression, but is slow. lz4 has bad compression, but is fast.
+zstd is both good compression and fast, but requires newer kernel.
+#+name: zram-algorithm
+#+begin_src nix
+algorithm = "zstd";
+#+end_src
+*** ZRAM memory percent
+Maximum amount of memory that can be used by the zram swap devices.
+Defaults to 1/2 of total RAM.
+#+name: zram-memory-percent
+#+begin_src nix
+memoryPercent = 100;
+#+end_src
+** SSD
+Enable SSD trim and set better filesystem mounting options
+Make sure to only import for SSD devices.
+#+begin_src nix :tangle modules/hardware/ssd.nix
+# This file is generated from "README.org"
+{
+  services.fstrim.enable = true;
+  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
+}
+#+end_src
+** Early oom
+Enable early out of memory killing
+This is useful to prevent hang for example, when compiling
+#+begin_src nix :tangle modules/hardware/earlyoom.nix
+# This file is generated from "README.org"
+{
+  services.earlyoom.enable = true;
+}
+#+end_src
+* Look And Feel
+** Color Scheme/Themes
+I use material-palenight as colorscheme for everything from editor to browser.
+*** Color palette preview
+#+ATTR_HTML: :width 600
+#+ATTR_ORG: :width 600
+[[file:pictures/material-palenight-palette.png]]
+Color palette picture taken from [[https://www.material-theme.com/docs/reference/color-palette/][here]]
+*** TTY Colors
+The 16 colors palette used by TTY.
+Leave empty to use the default colors.
+Colors must be in hexademical format and listed in order from color 0 to color 15.
+#+name: consolecolors
+#+begin_src nix
+console.colors = [ "434759" "f07178" "c3e88d" "ffcb6b" "82aaff" "c792ea" "89ddff" "d0d0d0" "434758" "ff8b92" "ddffa7" "ffe585" "9cc4ff" "e1acff" "a3f7ff" "fefefe" ];
+#+end_src
+
+*** Emacs theme
+I use doom-palenight theme from [[https://github.com/hlissner/emacs-doom-themes][here]]
+#+name: emacs-theme
+#+begin_src elisp
+(setq doom-theme 'doom-palenight)
+#+end_src
+
+Choose colored treemacs(side bar file tree) theme
+#+name: emacs-treemacs-theme
+#+begin_src elisp
+(setq doom-themes-treemacs-theme "doom-colors")
+#+end_src
+*** Alacritty Colors
+Color codes taken from [[https://github.com/aaron-williamson/base16-alacritty/blob/master/colors/base16-material-palenight-256.yml][here]]
+#+name: alacritty-colors
+#+begin_src nix
+programs.alacritty.settings.colors = {
+  # Default colors
+  primary = {
+    background = "0x292d3e";
+    foreground = "0x959dcb";
+  };
+  cursor = {
+    text = "0x202331";
+    cursor = "0xc792ea";
+  };
+  # Normal colors
+  normal = {
+    black = "0x292d3e";
+    red = "0xf07178";
+    green = "0xc3e88d";
+    yellow = "0xffcb6b";
+    blue = "0x82aaff";
+    magenta = "0xc792ea";
+    cyan = "0x89ddff";
+    white = "0x959dcb";
+  };
+  # Bright colors
+  bright = {
+    black = "0x676e95";
+    red = "0xf07178";
+    green = "0xc3e88d";
+    yellow = "0xffcb6b";
+    blue = "0x82aaff";
+    magenta = "0xc792ea";
+    cyan = "0x89ddff";
+    white = "0xffffff";
+  };
+  indexed_colors = [
+    {
+      index = 16;
+      color = "0xf78c6c";
+    }
+    {
+      index = 17;
+      color = "0xff5370";
+    }
+    {
+      index = 18;
+      color = "0x444267";
+    }
+    {
+      index = 19;
+      color = "0x32374d";
+    }
+    {
+      index = 20;
+      color = "0x8796b0";
+    }
+    {
+      index = 21;
+      color = "0x959dcb";
+    }
+  ];
+};
+#+end_src
+*** xmonad prompt color
+Set xmonad prompt default bg/fg color, bg/fg when highlighted, and border color
+#+name: xmonad-prompt-color
+#+begin_src haskell
+, bgColor           = "#232635"
+, fgColor           = "#A6ACCD"
+, bgHLight          = "#444267"
+, fgHLight          = "#A6ACCD"
+, borderColor       = "#2b2a3e"
+#+end_src
+*** LightDM Colors
+Configure center dialog colors
+#+name: lightdm-greeter-colors
+#+begin_src nix
+text-color = "#A6ACCD"
+error-color = "#F07178"
+window-color = "#202331"
+border-color = "#202331"
+password-color = "#A6ACCD"
+password-background-color = "#202331"
+password-border-color = "#202331"
+#+end_src
+*** Notification Colors
+#+name: dunst-colors
+#+begin_src nix
+services.dunst.settings.global = {
+    frame_color = "#959DCB";
+    separator_color = "#959DCB";
+};
+services.dunst.settings.urgency_low = {
+    background = "#444267";
+    foreground = "#676E95";
+};
+services.dunst.settings.urgency_normal = {
+    background = "#32374D";
+    foreground = "#959DCB";
+};
+services.dunst.settings.urgency_critical = {
+    background = "#F07178";
+    foreground = "#959DCB";
+};
+#+end_src
+*** qutebrowser Colors
+
+Enable darkmode
+#+name: qutebrowser-darkmode
+#+begin_src nix
+settings.colors.webpage.darkmode.enabled = true;
+#+end_src
+
+Colors from base16-qutebrowser (https://github.com/theova/base16-qutebrowser)
+Base16 qutebrowser template by theova
+Material Palenight scheme by Nate Peterson
+#+name: qutebrowser-colors
+#+begin_src nix
+settings.colors = {
+  completion = {
+    fg = "#959DCB";
+    odd.bg = "#292D3E";
+    even.bg = "#292D3E";
+    category = {
+      fg = "#FFCB6B";
+      bg = "#292D3E";
+      border.top = "#292D3E";
+      border.bottom = "#292D3E";
+    };
+    item = {
+      selected.fg = "#444267";
+      selected.bg = "#FFCB6B";
+      selected.border.top = "#FFCB6B";
+      selected.border.bottom = "#FFCB6B";
+      selected.match.fg = "#F07178";
+    };
+    match.fg = "#C3E88D";
+    scrollbar = {
+      fg = "#959DCB";
+      bg = "#292D3E";
+    };
+  };
+  contextmenu = {
+    menu = {
+      bg = "#292D3E";
+      fg = "#959DCB";
+    };
+    selected = {
+      bg = "#FFCB6B";
+      fg = "#444267";
+    };
+  };
+  downloads = {
+    bar.bg = "#292D3E";
+    start = {
+      fg = "#292D3E";
+      bg = "#82AAFF";
+    };
+    stop = {
+      fg = "#292D3E";
+      bg = "#89DDFF";
+    };
+    error.fg = "#F07178";
+  };
+  hints = {
+    fg = "#292D3E";
+    bg = "#FFCB6B";
+    match.fg = "#959DCB";
+  };
+  keyhint = {
+    fg = "#959DCB";
+    suffix.fg = "#959DCB";
+    bg = "#292D3E";
+  };
+  messages = {
+    error = {
+      fg = "#292D3E";
+      bg = "#F07178";
+      border = "#F07178";
+    };
+    warning = {
+      fg = "#292D3E";
+      bg = "#C792EA";
+      border = "#C792EA";
+    };
+    info = {
+      fg = "#959DCB";
+      bg = "#292D3E";
+      border = "#292D3E";
+    };
+  };
+  prompts = {
+    fg = "#959DCB";
+    border = "#292D3E";
+    bg = "#292D3E";
+    selected.bg = "#FFCB6B";
+  };
+  statusbar = {
+    normal = {
+      fg = "#C3E88D";
+      bg = "#292D3E";
+    };
+    insert = {
+      fg = "#292D3E";
+      bg = "#82AAFF";
+    };
+    passthrough = {
+      fg = "#292D3E";
+      bg = "#89DDFF";
+    };
+    private = {
+      fg = "#292D3E";
+      bg = "#676E95";
+    };
+    command = {
+      fg = "#959DCB";
+      bg = "#292D3E";
+      private = {
+        fg = "#959DCB";
+        bg = "#292D3E";
+      };
+    };
+    caret = {
+      fg = "#292D3E";
+      bg = "#C792EA";
+      selection = {
+        fg = "#292D3E";
+        bg = "#82AAFF";
+      };
+    };
+    progress.bg = "#82AAFF";
+    url = {
+      fg = "#959DCB";
+      error.fg = "#F07178";
+      hover.fg = "#959DCB";
+      success = {
+        http.fg = "#89DDFF";
+        https.fg = "#C3E88D";
+      };
+      warn.fg = "#C792EA";
+    };
+  };
+  tabs = {
+    bar.bg = "#292D3E";
+    indicator = {
+      start = "#82AAFF";
+      stop = "#89DDFF";
+      error = "#F07178";
+    };
+    odd = {
+      fg = "#959DCB";
+      bg = "#292D3E";
+    };
+    even = {
+      fg = "#959DCB";
+      bg = "#292D3E";
+    };
+    pinned = {
+      even = {
+        bg = "#292D3E";
+        fg = "#959DCB";
+      };
+      odd = {
+        bg = "#292D3E";
+        fg = "#959DCB";
+      };
+      selected = {
+        even = {
+          bg = "#292D3E";
+          fg = "#959DCB";
+        };
+        odd = {
+          bg = "#292D3E";
+          fg = "#959DCB";
+        };
+      };
+    };
+    selected = {
+      odd = {
+        fg = "#FFFFFF";
+        bg = "#959DCB";
+      };
+      even = {
+        fg = "#FFFFFF";
+        bg = "#959DCB";
+      };
+    };
+  };
+}; # }}}
+#+end_src
+*** mpv background color
+Set mpv background color, color used to draw parts of the mpv window not covered by video.
+#+name: mpv-background-color
+#+begin_src nix
+programs.mpv.config.background = "#292D3E";
+#+end_src
+*** zathura colors
+Set zathura interface colors
+#+name: zathura-colors
+#+begin_src nix
+programs.zathura.options.default-bg = "#292D3E";
+programs.zathura.options.default-fg = "#A6ACCD";
+programs.zathura.options.statusbar-bg = "#202331";
+programs.zathura.options.statusbar-fg = "#A6ACCD";
+programs.zathura.options.inputbar-bg = "#202331";
+programs.zathura.options.inputbar-fg = "#A6ACCD";
+programs.zathura.options.highlight-color = "#444267";
+programs.zathura.options.highlight-active-color = "#82aaff";
+#+end_src
+Set colors to recolor the document
+#+name: zathura-recolor-colors
+#+begin_src nix
+programs.zathura.options.recolor-lightcolor = "#292D3E";
+programs.zathura.options.recolor-darkcolor = "#A6ACCD";
+#+end_src
+*** bat theme
+Set theme name
+#+name: bat-theme-config
+#+begin_src nix
+programs.bat.config.theme = "palenight";
+#+end_src
+
+[[bat]] can use Sublime Text 3 themes.
+Download theme:
+#+name: bat-theme-fetch
+#+begin_src nix
+programs.bat.themes = {
+    palenight = builtins.readFile (
+    pkgs.fetchgit
+        {
+        url = "https://github.com/equinusocio/material-theme";
+        rev = "614b7e8bc7369c32e852297d42253643ebf90d55";
+        sha256 = "1gjfisksvqa2d08na0yln7yxny4i16wrmvlfnwllbqrgwh26v94g";
+        } + "/schemes/Material-Theme-Palenight.tmTheme"
+    );
+};
+#+end_src
+*** fzf colors
+material-palenight applied to [[fzf]]
+#+name: fzf-colors
+#+begin_src nix
+"--color=bg+:0,bg:#292D3E,spinner:#89DDFF,hl:#82AAFF,fg:#8796B0,header:#82AAFF,info:#FFCB6B,pointer:#89DDFF,marker:#89DDFF,fg+:#959DCB,prompt:#c792ea,hl+:#82AAFF"
+#+end_src
+*** fish shell colors
+#+name: fish-colors
+#+begin_src fish
+set -U fish_color_autosuggestion 676e95
+set -U fish_color_cancel -r
+set -U fish_color_command green #white
+set -U fish_color_comment 32374D
+set -U fish_color_cwd green
+set -U fish_color_cwd_root red
+set -U fish_color_end brblack #blue
+set -U fish_color_error red
+set -U fish_color_escape yellow #green
+set -U fish_color_history_current --bold
+set -U fish_color_host normal
+set -U fish_color_match --background=brblue
+set -U fish_color_normal normal
+set -U fish_color_operator blue #green
+set -U fish_color_param 8796B0
+set -U fish_color_quote yellow #brblack
+set -U fish_color_redirection cyan
+set -U fish_color_search_match bryellow --background=32374D
+set -U fish_color_selection white --bold --background=32374D
+set -U fish_color_status red
+set -U fish_color_user brgreen
+set -U fish_color_valid_path --underline
+set -U fish_pager_color_completion normal
+set -U fish_pager_color_description yellow --dim
+set -U fish_pager_color_prefix white --bold #--underline
+set -U fish_pager_color_progress brwhite --background=cyan
+#+end_src
+*** tmux colors
+load colorscheme file
+#+name: tmux-colors-source
+#+begin_src conf
+source-file ./.palenight-tmux
+#+end_src
+** Style
+*** Emacs Centaur Tabs
+Set centaur tabs height
+#+name: centaur-tabs-height
+#+begin_src elisp
+(setq centaur-tabs-height 32)
+#+end_src
+Set the tab style to chamfer
+#+name: centaur-tabs-style
+#+begin_src elisp
+(setq centaur-tabs-style "chamfer")
+#+end_src
+
+Display themed icons from all the icons
+#+name: centaur-tabs-show-icons
+#+begin_src elisp
+(setq centaur-tabs-set-icons t)
+#+end_src
+
+Gray out icons for the unselected tabs
+#+name: centaur-tabs-grayout-icons
+#+begin_src elisp
+(setq centaur-tabs-gray-out-icons 'buffer)
+#+end_src
+
+Display underline below the selected tab
+#+name: centaur-tabs-underline
+#+begin_src elisp
+(setq centaur-tabs-set-bar 'under)
+#+end_src
+
+Display a marker indicating that a buffer has been modified
+#+name: centaur-tabs-modified-marker
+#+begin_src elisp
+(setq centaur-tabs-set-modified-marker t)
+#+end_src
+
+Set modified marker character
+#+name: centaur-tabs-modified-marker-character
+#+begin_src elisp
+(setq centaur-tabs-modified-marker "•")
+#+end_src
+
+Set close button character
+#+name: centaur-tabs-close-button
+#+begin_src elisp
+(setq centaur-tabs-close-button "✕")
+#+end_src
+
+** Fonts
+I use
+Apple Color Emoji for emojis (can be tested [[https://getemoji.com/][here]])
+[[file:pictures/screenshot-emojis.png]]
+Gohu Font Nerd Font for nerdfont
+[[file:pictures/screenshot-nerdfont.png]]
+Spleen as monospaced fixed-pitch font for editor, terminal, etc
+San Francisco as variable pitch font
+All The Icons is a nerdfont equivalent for emacs.
+Noto Fonts CJK is used as Japanese font.
+
+Install fonts:
+#+begin_src nix :tangle modules/common/fonts.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  fonts = {
+    <<system-font-config>>
+    <<enable-font-dir>>
+    <<enable-ghostscript-fonts>>
+    fonts = with pkgs; [
+      (nerdfonts.override { fonts = [ "Gohu" ]; })
+      unstable.dejavu_fonts
+      unstable.spleen
+      san-francisco-font
+      apple-color-emoji
+      noto-fonts-cjk
+      emacs-all-the-icons-fonts
+    ];
+  };
+}
+#+end_src
+*** System font config
+Set system-wide monospace/emoji font below. Note that setting emoji here is not sufficient to show emoji properly.
+#+name: system-font-config
+#+begin_src nix :noweb no-export
+    fontconfig = {
+      <<fontconfig-enable>>
+      <<fontconfig-allowbitmaps>>
+      <<use-embedded-bitmaps>>
+      defaultFonts = {
+        emoji = [ "Apple Color Emoji" ];
+        monospace = [ "Spleen" ];
+      };
+    };
+#+end_src
+**** Enable fontconfig
+If enabled, a fontconfig file will be built pointing to a set of default fonts.
+#+name: fontconfig-enable
+#+begin_src nix
+enable = true;
+#+end_src
+**** Allow bitmaps
+This option is needed to allow usage of bitmap fonts. Like Spleen I use.
+#+name: fontconfig-allowbitmaps
+#+begin_src nix
+allowBitmaps = true;
+#+end_src
+**** Use embedded bitmaps
+This option is necessary to make emacs show unicode emojis properly.
+#+name: use-embedded-bitmaps
+#+begin_src nix
+useEmbeddedBitmaps = true;
+#+end_src
+**** Enable Font Dir
+Create a directory with links to all fonts in ~/run/current-system/sw/share/X11-fonts~
+#+name: enable-font-dir
+#+begin_src nix
+enableFontDir = true;
+#+end_src
+**** Enable ghost script fonts
+Add the fonts provided by Ghostscript to the list of system fonts.
+#+name: enable-ghostscript-fonts
+#+begin_src nix
+enableGhostscriptFonts = true;
+#+end_src
+*** TTY Font
+Console fonts needs to be installed here via ~console.packages~ to be able to set.
+#+name: consolefont
+#+begin_src nix
+console.packages = with pkgs; [ unstable.spleen ];
+console.font = "spleen-6x12";
+#+end_src
+*** Emacs fonts
+Set doom fixed-pitch font and doom variable pitch font here:
+#+name: emacs-doom-fonts
+#+begin_src elisp
+(setq doom-font (font-spec :family "Spleen" :size 16)
+      doom-variable-pitch-font (font-spec :family "SFNS Display" :size 16 :weight 'Regular))
+#+end_src
+
+Enable bold and italic
+#+name: emacs-theme-bold
+#+begin_src elisp
+(setq doom-themes-enable-bold t)
+#+end_src
+#+name: emacs-theme-italic
+#+begin_src elisp
+(setq doom-themes-enable-italic t)
+#+end_src
+
+Set centaur-tabs tabline font
+#+name: centaur-tabs-font
+#+begin_src elisp
+(centaur-tabs-change-fonts "SFNS Display" 140)
+#+end_src
+
+Set custom set faces
+Use variable pitch font for doom-modeline and centaur-tabs
+#+name: emacs-custom-set-faces
+#+begin_src elisp
+(custom-set-faces!
+  '(mode-line :family "SFNS Display" :height 120)
+  '(mode-line-inactive :family "SFNS Display" :height 120)
+  '(variable-pitch :family "SFNS Display" :height 110))
+#+end_src
+
+Set emoji and nerdfont(extrafonts):
+#+name: emacs-extrafonts
+#+begin_src elisp
+(add-hook! 'doom-load-theme-hook
+           :append
+           (defun my/init-extra-fonts-h(&optional frame)
+             (with-selected-frame (or frame (selected-frame))
+               (set-fontset-font t 'symbol "Spleen" nil)
+               (set-fontset-font t 'symbol "Apple Color Emoji" nil 'append)
+               (set-fontset-font t 'symbol "GohuFont Nerd Font" nil 'append))))
+#+end_src
+
+Add this to config to use unicode emoji inside emacs
+#+name: emacs-emojify-display-style
+#+begin_src elisp
+(setq emojify-display-style 'unicode)
+#+end_src
+*** xmonad prompt fonts
+Set xmonad prompt font to San Francisco
+#+name: xmonad-prompt-font
+#+begin_src haskell
+myFont :: String
+myFont = "xft:SFNS Display:size=14"
+#+end_src
+Set xmonad emoji prompt font
+#+name: xmonad-prompt-emoji-font
+#+begin_src haskell
+myEmojiFont :: String
+myEmojiFont = "xft:Apple Color Emoji:size=14"
+#+end_src
+*** Alacritty Fonts
+I use Spleen font for Alacritty.
+The size is in point(pt)
+#+name: alacritty-fonts
+#+begin_src nix
+programs.alacritty.settings.font = {
+  normal = {
+    family = "Spleen";
+    style = "Regular";
+  };
+  bold = {
+    family = "Spleen";
+    style = "Bold";
+  };
+  italic = {
+    family = "Spleen";
+    style = "Regular";
+  };
+  size = 12;
+  offset = {
+    x = 0;
+    y = 0;
+  };
+  glyph_offset = {
+    x = 0;
+    y = 0;
+  };
+};
+#+end_src
+*** qutebrowser Fonts
+I use Spleen for browser itself's appearance and web fixed font,
+San Francisco for most web contents.
+The size is in point(pt)
+#+name: qutebrowser-fonts
+#+begin_src nix
+settings.fonts = {
+  default_family = "SFNS Display";
+  web.family.standard = "SFNS Display";
+  web.family.serif = "SFNS Display";
+  web.family.sans_serif = "SFNS Display";
+  web.family.fixed = "Spleen";
+  completion = {
+    category = "12pt Spleen";
+    entry = "12pt Spleen";
+  };
+  contextmenu = "12pt Spleen";
+  debug_console = "12pt Spleen";
+  default_size = "12pt";
+  downloads = "12pt Spleen";
+  hints = "12pt Spleen";
+  keyhint = "12pt Spleen";
+  messages = {
+    error = "12pt Spleen";
+    info = "12pt Spleen";
+    warning = "12pt Spleen";
+  };
+  prompts = "12pt Spleen";
+  statusbar = "12pt Spleen";
+  tabs.selected = "12pt Spleen";
+  tabs.unselected = "12pt Spleen";
+  #tabs = "12pt Spleen";
+};
+#+end_src
+*** fontconfig
+Font configs that can't be configured using nix options belongs here.
+**** 10-symbols.conf
+This allows to use nerdfont symbols while using Spleen as font. It's really useful on terminal.
+#+begin_src xml :tangle configs/fontconfig/10-symbols.conf
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+    <alias>
+        <family>Spleen</family>
+        <prefer>
+            <family>GohuFont Nerd Font</family>
+        </prefer>
+    </alias>
+</fontconfig>
+#+end_src
+**** 65-nonlatin.conf
+This configures Japanese font.
+This makes programs use *Noto Sans CJK JP* for Japanese automatically. Therefore no need to configure Japanese font as main font.
+#+begin_src xml :tangle configs/fontconfig/65-nonlatin.conf
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+    <!-- Default font for the ja_JP locale (no fc-match pattern) -->
+    <match>
+        <test compare="contains" name="lang">
+            <string>ja</string>
+        </test>
+        <edit mode="prepend" name="family">
+            <string>Noto Sans CJK JP</string>
+        </edit>
+    </match>
+    <alias>
+        <family>serif</family>
+        <prefer>
+            <family>Noto Sans CJK JP</family>
+        </prefer>
+    </alias>
+    <alias>
+        <family>sans-serif</family>
+        <prefer>
+            <family>Noto Sans CJK JP</family>
+        </prefer>
+    </alias>
+    <alias>
+        <family>monospace</family>
+        <prefer>
+            <family>Noto Sans CJK JP</family>
+        </prefer>
+    </alias>
+</fontconfig>
+#+end_src
+
+**** 10-prefer-emoji.conf
+Seems like this user-level config is needed to programs use Apple Color Emoji for every emojis.
+#+begin_src xml :tangle configs/fontconfig/10-prefer-emoji.conf
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+    <match>
+        <edit name="family" mode="prepend">
+            <string>Apple Color Emoji</string>
+        </edit>
+    </match>
+</fontconfig>
+#+end_src
+*** Dunst(Notifications) font
+#+name: dunst-font
+#+begin_src nix
+services.dunst.settings.global.font = "SFNS Display 14";
+#+end_src
+** Wallpapers
+Desktop wallpaper ~pictures/wallpaper1.png~
+#+ATTR_HTML: :width 300
+#+ATTR_ORG: :width 300
+[[file:pictures/wallpaper1.png]]
+Lock screen wallpaper ~pictures/wallpaper2.png~
+[[file:pictures/wallpaper2.png]]
+*** Wallpaper files
+Put (symlink) files into /etc. It makes easy to set wallpapers from any machines.
+#+name: etc-wallpaper-files
+#+begin_src nix
+"wallpapers/wallpaper1.png".source = ../../pictures/wallpaper1.png;
+"wallpapers/wallpaper2.png".source = ../../pictures/wallpaper2.png;
+"wallpapers/wallpaper2-1080.png".source = ../../pictures/wallpaper2-1080.png;
+#+end_src
+*** Lock screen
+Set 1440p lock screen wallpaper
+#+name: lightdm-wallpaper
+#+begin_src nix
+background-image = "/etc/wallpapers/wallpaper2.png"
+#+end_src
+
+Set a 1080p equivalent
+#+name: lightdm-fhd-wallpaper
+#+begin_src nix
+background-image = "/etc/wallpapers/wallpaper2-1080.png"
+#+end_src
+*** Set wallpaper
+First, set fallback wallpaper in case config isn't set
+#+name: xmonad-fallback-wallpaper
+#+begin_src haskell
+spawnOnce "feh --bg-fill /etc/wallpapers/wallpaper1.png &"
+#+end_src
+Then, apply nitrogen config
+#+name: xmonad-set-wallpaper
+#+begin_src haskell
+spawnOnce "nitrogen --restore &"
+#+end_src
+** Icons
+** Cursors
+*** Alacritty cursor
+Set cursor shape
+#+name: alacritty-cursor
+#+begin_src nix
+programs.alacritty.settings.cursor = {
+  style = "Beam";
+};
+#+end_src
+
+Enable custom cursor colors
+#+name: alacritty-custom-cursor-colors
+#+begin_src nix
+programs.alacritty.settings.custom_cursor_colors = true;
+#+end_src
+*** Set x11 cursor
+First, import this module in [[xmonad]]
+#+name: xmonad-import-cursor
+#+begin_src haskell
+import           XMonad.Util.Cursor             ( setDefaultCursor )
+#+end_src
+
+Use that module to set cursor at startuphook
+#+name: xmonad-set-cursor
+#+begin_src haskell
+setDefaultCursor xC_left_ptr
+#+end_src
+** Opacity
+#+ATTR_HTML: :width 300
+#+ATTR_ORG: :width 300
+[[file:pictures/screenshot-opacity.png]]
+Programs that doesn't have opacity option, or the opacity option doesn't work great(like PGTK emacs) can be set opacity using picom with following code:
+#+name: picom-opacity
+#+begin_src nix
+services.picom.opacityRule = [
+    "80:class_g  = 'Zathura'"
+    "80:class_g  = 'TelegramDesktop'"
+    "80:class_g  = 'Discord'"
+    "80:class_g  = 'Emacs'"
+    "100:class_g = 'keynav'"
+];
+#+end_src
+*** Blur
+Configure blur method and strength for translucent programs.
+I use dual kawase blur.
+#+name: picom-blur
+#+begin_src nix
+blur:
+{
+    method = "kawase";
+    strength = 8;
+    background = false;
+    background-frame = false;
+    background-fixed = false;
+};
+#+end_src
+*** Blur exclude
+Set programs to exclude from background blur here.
+Exclude keynav because it's not intended to be recognized as window and it becomes buggy.
+#+name: picom-blur-exclude
+#+begin_src nix
+blur-background-exclude = [
+    "class_g = 'keynav'"
+];
+#+end_src
+*** Alacritty opacity
+Set Alacritty opacity.
+Window opacity as a floating point number from ~0.0~ to ~1.0~
+The value ~0.0~ is completely transparent and ~1.0~ is opaque.
+#+name: alacritty-opacity
+#+begin_src nix
+programs.alacritty.settings.background_opacity = 0.8;
+#+end_src
+*** Emacs opacity
+Set to nil, let picom manage opacity because pure gtk emacs doesn't work great with opacity option.
+#+name: emacs-opacity
+#+begin_src elisp
+(set-frame-parameter nil 'alpha nil) ;; let picom manage it
+#+end_src
+** Border
+[[file:pictures/screenshot-border.png]]
+*** Border width
+Set the width of window border in px
+#+name: xmonad-border-width
+#+begin_src haskell
+myBorderWidth :: Dimension
+myBorderWidth = 2
+#+end_src
+*** Window border color
+Set border color for windows
+#+name: xmonad-normalborder-color
+#+begin_src haskell
+myNormalBorderColor :: String
+myNormalBorderColor = "#2b2a3e"
+#+end_src
+Set border color for focused window
+#+name: xmonad-focusedborder-color
+#+begin_src haskell
+myFocusedBorderColor :: String
+myFocusedBorderColor = "#c792ea"
+#+end_src
+*** Enable rounded borders
+Enable rounded borders in picom
+#+name: picom-enable-rounded-borders
+#+begin_src nix
+round-borders = 1;
+#+end_src
+*** Corner radius
+Set window corner radius
+#+name: picom-corner-radius
+#+begin_src nix
+corner-radius = 5;
+#+end_src
+*** Rounded corner exclude
+Programs to exclude from rounded corners.
+Exclude keynav and dock, full screen programs.
+#+name: picom-rounded-corners-exclude
+#+begin_src nix
+rounded-corners-exclude = [
+    "window_type = 'dock'",
+    "_NET_WM_STATE@:32a *= '_NET_WM_STATE_FULLSCREEN'",
+    "class_g = 'keynav'",
+];
+#+end_src
+*** Rounded borders exclude
+Exclude programs from rounded borders.
+Exclude keynav because it's not intended to be recognized as window and it becomes buggy.
+#+name: picom-round-borders-exclude
+#+begin_src nix
+round-borders-exclude = [
+    "class_g = 'keynav'"
+];
+#+end_src
+
+* Terminal/Shell
+** Alacritty
+Alacritty is a GPU-accelerated terminal emulator, written in Rust.
+I use as default terminal.
++ [[Alacritty Colors][Colors]]
++ [[Alacritty Fonts][Fonts]]
++ [[Alacritty cursor][Cursor style]]
+#+begin_src nix :tangle modules/terminal/alacritty.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  <<alacritty-enable>>
+  <<alacritty-colors>>
+  <<alacritty-fonts>>
+  <<alacritty-enable-true-color>>
+  <<alacritty-window-padding>>
+  <<alacritty-window-dynamicpadding>>
+  <<alacritty-window-decorations>>
+  <<alacritty-window-startup-mode>>
+  <<alacritty-scrolling>>
+  <<alacritty-boldtext-bright-colors>>
+  <<alacritty-opacity>>
+  <<alacritty-keybinds>>
+  <<alacritty-cursor>>
+  <<alacritty-custom-cursor-colors>>
+}
+#+end_src
+*** Install Alacritty
+Whether to enable Alacritty
+#+name: alacritty-enable
+#+begin_src nix
+programs.alacritty.enable = true;
+#+end_src
+*** Enable true color
+xterm-256color describes Xterm with support for 256 colors enabled.
+set TERM environment variable.
+#+name: alacritty-enable-true-color
+#+begin_src nix
+programs.alacritty.settings.env.TERM = "xterm-256color";
+#+end_src
+*** Alacritty padding
+Blank space added around the window in pixels.
+#+name: alacritty-window-padding
+#+begin_src nix
+programs.alacritty.settings.window.padding = {
+    x = 12;
+    y = 0;
+};
+#+end_src
+Dynamic padding
+#+name: alacritty-window-dynamicpadding
+#+begin_src nix
+programs.alacritty.settings.window.dynamic_padding = false;
+#+end_src
+*** Window decorations
+- full : Borders and title bar
+- none: Neither borders nor title bar
+#+name: alacritty-window-decorations
+#+begin_src nix
+programs.alacritty.settings.window.decorations = "none";
+#+end_src
+*** Window startup mode
+- Windowed
+- Maximized
+- Fullscreen
+#+name: alacritty-window-startup-mode
+#+begin_src nix
+programs.alacritty.settings.window.startup_mode = "Windowed";
+#+end_src
+*** Scrolling
+History sets maximum number of lines in the scrollback buffer.
+Multiplier sets scrolling distance multiplier.
+#+name: alacritty-scrolling
+#+begin_src nix
+programs.alacritty.settings.scrolling = {
+    history = 10000;
+    multiplier = 3;
+};
+#+end_src
+*** Draw bold text with bright colors
+If ~true~, bold text is drawn using the bright color variants.
+Maybe usable for bitmap fonts?
+#+name: alacritty-boldtext-bright-colors
+#+begin_src nix
+programs.alacritty.settings.draw_bold_text_with_bright_colors = true;
+#+end_src
+*** Key bindings
+~C-S-c~ to copy, ~C-S-v~ to paste
+~C-S-Up~ to scroll upwards.
+~C-S-Down~ to scroll downwards.
+#+name: alacritty-keybinds
+#+begin_src nix
+programs.alacritty.settings.key_bindings = [
+  {
+    key = "V";
+    mods = "Control|Shift";
+    action = "Paste";
+  }
+  {
+    key = "C";
+    mods = "Control|Shift";
+    action = "Copy";
+  }
+  {
+    key = "Up";
+    mods = "Control|Shift";
+    action = "ScrollPageUp";
+  }
+  {
+    key = "Down";
+    mods = "Control|Shift";
+    action = "ScrollPageDown";
+  }
+];
+#+end_src
+** TTY
+Configure TTY console.
++ [[TTY Colors][Colors]]
++ [[TTY Font][Font]]
++ [[Dvorak][Layout]]
+
+#+begin_src  nix :tangle modules/common/console.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+<<consolecolors>>
+<<consoleearlysetup>>
+<<consolefont>>
+<<consolekeymap>>
+}
+#+end_src
+
+*** Early Setup
+Load console configurations early at initrd
+#+name: consoleearlysetup
+#+begin_src nix
+console.earlySetup = true;
+#+end_src
+** vterm
+vterm is fully-fledged terminal emulator inside GNU Emacs based on libvterm, a C library.
+As a result of using compiled code (instead of elisp), emacs-libvterm is fully capable, fast, and it can seamlessly handle large outputs.
+Just think like running Konsole or Gnome Terminal inside emacs
+*** Install vterm
+vterm uses extrenal compiled code, unlike other emacs packages.
+So, you need to install vterm package to use.
+#+name: vterm-install
+#+begin_src nix
+programs.emacs.extraPackages = (epkgs: [ epkgs.vterm ]);
+#+end_src
+
+Enable doom-emacs module [[doom-initel-term][here]]
+** fish shell
+fish is a Unix shell that attempts to be more interactive and user-friendly
+#+begin_src nix :tangle modules/terminal/fish.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+
+{
+  <<fish-enable>>
+
+  programs.fish.shellAbbrs = {
+    <<fish-common-abbrs>>
+    <<fish-lazygit>>
+    <<fish-sshadd-git>>
+    <<fish-git-abbrs>>
+    <<fish-screenshots>>
+    <<fish-programs>>
+    <<fish-nixos>>
+    <<fish-misc-commands>>
+  };
+
+  programs.fish.plugins =
+    [
+      <<fish-plugin-z>>
+      <<fish-plugin-ssh-agent>>
+    ];
+
+  programs.fish.interactiveShellInit = ''
+      <<fish-vi-binds>>
+      <<fish-greeting>>
+      <<fish-esc-delay>>
+      <<fish-colors>>
+      <<fish-lazygit-neovim>>
+      <<fish-direnv>>
+      # vifm image preview
+      alias vifm="bash -c 'vifmrun'"
+
+    '';
+}
+#+end_src
+*** Enable fish
+Turn on to install fish shell
+#+name: fish-enable
+#+begin_src nix
+programs.fish.enable = true;
+#+end_src
+*** Abbreviations
+**** Common commands
+
+#+name: fish-common-abbrs
+#+begin_src nix :noweb no-export
+<<fish-clear>>
+<<fish-lsd>>
+<<fish-sudoedit>>
+<<fish-bat>>
+<<fish-diff>>
+<<fish-tar>>
+<<fish-uefi>>
+#+end_src
+
+clear the terminal with *c*
+#+name: fish-clear
+#+begin_src nix
+"c" = "clear";
+#+end_src
+
+As I use Dvorak, it's really painful to type *ls* with pinky everytime. I use *s* and equivalents instead.
+I use [[lsd]] instead of ls command
+#+name: fish-lsd
+#+begin_src nix
+"s" = "lsd";
+"sa" = "lsd -aF";
+"ss" = "lsd -alF";
+#+end_src
+
+sudoedit
+#+name: fish-sudoedit
+#+begin_src nix
+"suv" = "sudoedit";
+#+end_src
+
+Use [[bat]] instead of cat command
+#+name: fish-bat
+#+begin_src nix
+"cat" = "bat";
+#+end_src
+
+Use diff-so-fancy instead of diff command
+#+name: fish-diff
+#+begin_src nix
+"diff" = "diff-so-fancy";
+#+end_src
+
+Turn colorization on always for tree command
+#+name: fish-tree
+#+begin_src nix
+"tree" = "tree -C";
+#+end_src
+
+
+Extract tar easier
+#+name: fish-tar
+#+begin_src nix
+"untar" = "tar -xvzf";
+#+end_src
+
+Restart to uefi easier
+#+name: fish-uefi
+#+begin_src nix
+"uefi" = "systemctl reboot --firmware-setup";
+#+end_src
+
+**** Commands to launch programs
+#+name: fish-programs
+#+begin_src nix :noweb no-export
+<<fish-editors>>
+<<fish-btm>>
+<<fish-vifm>>
+<<fish-ncpamixer>>
+#+end_src
+
+Launch editors from terminal easier
+#+name: fish-editors
+#+begin_src nix
+"v" = "nvim";
+"em" = "emacsclient -c";
+#+end_src
+
+Use bottom instead of top
+#+name: fish-btm
+#+begin_src nix
+"top" = "btm";
+#+end_src
+
+vifm(filemanager)
+#+name: fish-vifm
+#+begin_src nix
+"vf" = "vifm";
+#+end_src
+
+ncpamixer(TUI pulseaudio mixer)
+#+name: fish-ncpamixer
+#+begin_src nix
+"ncpa" = "ncpamixer";
+#+end_src
+**** Git commands
+
+lazygit(terminal Git UI)
+#+name: fish-lazygit
+#+begin_src nix
+"lg" = "lazygit";
+#+end_src
+
+Add GitHub SSH key to SSH agent
+#+name: fish-sshadd-git
+#+begin_src nix
+"sshgit" = "ssh-add ~/.ssh/githubkey";
+#+end_src
+
+Typical command line Git abbrs
+#+name: fish-git-abbrs
+#+begin_src nix
+"g" = "git";
+"ga" = "git add";
+"gall" = "git add --all";
+"gc" = "git clone";
+"gmc" = "gitmoji -c";
+"gco" = "git commit";
+"gp" = "git push";
+"gb" = "git branch";
+"gd" = "git diff";
+"gdst" = "git diff --staged";
+"gst" = "git status";
+"gch" = "git checkout";
+"gf" = "git fetch";
+"gmv" = "git mv";
+"gl" = "git log --graph --color=always";
+"glo" = "git log --graph --color=always --oneline";
+#+end_src
+**** Screenshot commands
+Take screenshot and copy to clipboard
+#+name: fish-screenshots
+#+begin_src nix
+"scrotclipsel" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
+"scrotclip" = "scrot ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
+#+end_src
+**** NixOS commands
+Commands for Nix package manager
+
+#+name: fish-nixos
+#+begin_src nix
+"nixre" = "doas nixos-rebuild switch --flake";
+"nixrt" = "doas nixos-rebuild test --flake";
+"dnixtrash" = "doas nix-collect-garbage -d";
+"nixtrash" = "nix-collect-garbage -d";
+#+end_src
+**** Misc commands
+#+name: fish-misc-commands
+#+begin_src nix
+"tty-clock" = "tty-clock -C 1 -c";
+"rickroll" = "curl -s -L https://raw.githubusercontent.com/keroserene/rickrollrc/master/roll.sh | bash";
+#+end_src
+*** Plugins
+Z is a replacement for cd that learns your habit, tracks the directories you visit to make you jump to the directory you frequently use easier
+#+name: fish-plugin-z
+#+begin_src nix
+{
+    name = "z";
+    src = pkgs.fetchFromGitHub {
+    owner = "jethrokuan";
+    repo = "z";
+    rev = "ddeb28a7b6a1f0ec6dae40c636e5ca4908ad160a";
+    sha256 = "0c5i7sdrsp0q3vbziqzdyqn4fmp235ax4mn4zslrswvn8g3fvdyh";
+    };
+}
+#+end_src
+
+Integrate SSH agent with fish shell
+#+name: fish-plugin-ssh-agent
+#+begin_src nix
+{
+    name = "fish-ssh-agent";
+    src = pkgs.fetchFromGitHub {
+    owner = "danhper";
+    repo = "fish-ssh-agent";
+    rev = "ce90d80aa9549c626f9c5fc5a964536de015a192";
+    sha256 = "03zj5g7dxkhqpp9lijxxlnyx4cc7nqpapj5iqfv7swavyximicyi";
+    };
+}
+#+end_src
+*** Enable vi key bindings
+#+name: fish-vi-binds
+#+begin_src fish
+fish_vi_key_bindings
+#+end_src
+*** Startup message
+Disable fish shell startup message
+#+name: fish-greeting
+#+begin_src fish
+set fish_greeting
+#+end_src
+*** Esc key delay
+Set esc key delay
+#+name: fish-esc-delay
+#+begin_src fish
+set -U fish_escape_delay_ms 10
+#+end_src
+** starship
+starship is a minimal, blazing fast, and infinitely customizable prompt for any shell
+#+begin_src nix :tangle modules/terminal/starship.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+<<starship-enable>>
+<<starship-fish-integration>>
+<<starship-package>>
+<<starship-add-newline>>
+<<starship-prompt-character>>
+<<starship-directory>>
+<<starship-nix-shell>>
+}
+#+end_src
+*** Enable starship
+Turn on to install starship
+#+name: starship-enable
+#+begin_src nix
+programs.starship.enable = true;
+#+end_src
+*** Enable fish shell integration
+#+name: starship-fish-integration
+#+begin_src nix
+programs.starship.enableFishIntegration = true;
+#+end_src
+*** starship package
+#+name: starship-package
+#+begin_src nix
+programs.starship.package = pkgs.unstable.starship;
+#+end_src
+*** Add newline at the start of the prompt
+#+name: starship-add-newline
+#+begin_src nix
+programs.starship.settings.add_newline = true;
+#+end_src
+*** Prompt Character
+Set prompt symbols and colors
+#+name: starship-prompt-character
+#+begin_src nix
+programs.starship.settings.character = {
+  success_symbol = "[𝝺](#c792ea)";
+  vicmd_symbol = "[ ](bold green)";
+  error_symbol = "[☓ ](bold red)";
+};
+#+end_src
+*** Directory
+The directory module  shows the path to your current directory.
+#+name: starship-directory
+#+begin_src nix
+programs.starship.settings.directory = {
+  style = "bold cyan";
+};
+#+end_src
+*** Nix shell
+The nix_shell module shows the nix-shell environment.
+The module will be shown when inside a nix-shell environment
+#+name: starship-nix-shell
+#+begin_src nix
+programs.starship.settings.nix_shell = {
+  disabled = false;
+  symbol = " ";
+};
+#+end_src
+** Shell utilities
+*** Git
+This directory is a git repository, nixpkgs is a git repository, Emacs, Linux is developed in git repository, most free(as in freedom) softwares uses Git nowadays.
+Git is a free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
+#+begin_src nix :tangle modules/terminal/git.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  <<git-enable>>
+  <<git-package>>
+  <<git-default-branch>>
+  <<git-push-ssh>>
+  <<git-name-mail>>
+}
+#+end_src
+**** Enable Git
+Turn on to install Git
+#+name: git-enable
+#+begin_src nix
+programs.git.enable = true;
+#+end_src
+**** Git Package
+I use Git from nixos-unstable
+#+name: git-package
+#+begin_src nix
+programs.git.package = pkgs.unstable.git;
+#+end_src
+**** Git Default Branch
+Many communities are renaming Default Git Branch from ~master~ to ~main~ to remove racially-charged language from software.
+[[https://github.com/github/renaming][github/renaming]]
+[[https://www.zdnet.com/article/github-to-replace-master-with-alternative-term-to-avoid-slavery-references/][Github to replace "master" with alternative term to avoid slavery references]]
+It's very easy to do that on user-level. Why not start using main from today? There aren't any reason to not start using ~main~ for new personal projects.
+#+name: git-default-branch
+#+begin_src nix
+programs.git.extraConfig.init.defaultBranch = "main";
+#+end_src
+**** Use SSH only when pushing
+I use SSH to push into Git repository.
+This config Git default to SSH to push.
+Note that it is ~pushinsteadOf~
+If you use just ~insteadOf~, it will ask SSH key even when cloning.
+
+#+name: git-push-ssh
+#+begin_src nix
+programs.git.extraConfig.url."git@github.com:" = {
+    pushinsteadOf = "https://github.com/";
+};
+#+end_src
+**** User name,Email
+Git uses email to identify your commits, and associate commits with your accounts e.g. GitHub GitLab
+Email and User Name will be visible in any your commits.
+If you want to keep your real name private, use any text like GitHub user name.
+To GitHub/GitLab be able to associate your commits with your accounts, you have to either:
+- Use your real mail address register on GitHub/GitLab
+- Use noreply mail addres
+I'm still not ready to migrate to GitLab, so I use GitHub noreply mail address
+#+name: git-name-mail
+#+begin_src nix
+programs.git.userName = "btwiusegentoo";
+programs.git.userEmail = "66811008+btwiusegentoo@users.noreply.github.com";
+#+end_src
+*** bat
+A cat Linux command clone with syntax highlighting and Git integration
++ [[bat theme][Theme]]
+#+begin_src nix :tangle modules/terminal/bat.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+
+{
+  <<bat-enable>>
+  <<bat-italic-text>>
+  <<bat-theme-config>>
+  <<bat-theme-fetch>>
+}
+#+end_src
+**** Enable bat
+Turn on to install bat
+#+name: bat-enable
+#+begin_src nix
+programs.bat.enable = true;
+#+end_src
+**** Use italic text on the terminal
+(Note, it isn't supported on all terminals)
+#+name: bat-italic-text
+#+begin_src nix
+programs.bat.config.italic-text = "always";
+#+end_src
+**** Customize bat style
+Show line numbers, Git modifications and file header
+#+name: bat-style
+#+begin_src nix
+programs.bat.config.style = "numbers,changes,header";
+#+end_src
+*** fzf
+fzf is a general-purpose command line fuzzy finder.
++ [[fzf colors][Colors]]
+#+begin_src nix :tangle modules/terminal/fzf.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  <<fzf-enable>>
+  <<fzf-fish-integration>>
+  <<fzf-use-fd>>
+
+  programs.fzf.defaultOptions = [
+    <<fzf-colors>>
+  ];
+}
+#+end_src
+**** Enable fzf
+Turn on to install fzf
+#+name: fzf-enable
+#+begin_src nix
+programs.fzf.enable = true;
+#+end_src
+**** Fish shell integration
+Turn on to enable fish shell integration.
+Most usable one is <C-t> to search current directory.
+#+name: fzf-fish-integration
+#+begin_src nix
+programs.fzf.enableFishIntegration = true;
+#+end_src
+**** Use fd instead of default find
+Requires fd installed.
+It is faster than default find
+#+name: fzf-use-fd
+#+begin_src nix
+programs.fzf.defaultCommand = "fd --type f";
+#+end_src
+*** lsd
+Simply put, lsd is a better ~ls~ command with colors, nerdfont icons, written in Rust
+#+begin_src nix :tangle modules/terminal/lsd.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  <<lsd-enable>>
+  <<lsd-aliases>>
+}
+#+end_src
+**** Enable lsd
+Enable to install lsd
+#+name: lsd-enable
+#+begin_src nix
+programs.lsd.enable = true;
+#+end_src
+**** lsd aliases
+Turn on to enable lsd aliases.
+I want to use my own aliases, so I disable it.
+#+name: lsd-aliases
+#+begin_src nix
+programs.lsd.enableAliases = false;
+#+end_src
+***  tmux
+tmux is a terminal multiplexer.
+It lets you switch easily between several programs in one terminal,
+detach them (they keep running in the background) and reattach them to a different terminal.
+#+begin_src nix :tangle modules/terminal/tmux.nix :noweb no-export
+{ pkgs, ... }:
+
+{
+  <<tmux-enable>>
+  programs.tmux.plugins = with pkgs; [
+    <<vim-tmux-navigator>>
+    <<tmux-prefix-highlight>>
+  ];
+  <<tmux-vi-keymode>>
+  programs.tmux.extraConfig = ''
+      <<tmux-truecolor>>
+      <<tmux-colors-source>>
+      <<tmux-keybinds>>
+  '';
+}
+#+end_src
+**** Enable tmux
+#+name: tmux-enable
+#+begin_src nix
+programs.tmux.enable = true;
+#+end_src
+**** Vim tmux navigator
+This plugin provides the following mappings which allow you to move between Vim panes and tmux splits seamlessly like this:
+#+begin_src conf
+<ctrl-h> => Left
+<ctrl-j> => Down
+<ctrl-k> => Up
+<ctrl-l> => Right
+<ctrl-\> => Previous split
+#+end_src
+
+install plugin
+#+name: vim-tmux-navigator
+#+begin_src nix
+tmuxPlugins.vim-tmux-navigator
+#+end_src
+**** prefix highlight
+Plugin that highlights when you press tmux prefix key.
+Install:
+#+name: tmux-prefix-highlight
+#+begin_src nix
+tmuxPlugins.prefix-highlight
+#+end_src
+**** vi key mode
+Enable a set of vi-like bindings for navigating a buffer in a window
+#+name: tmux-vi-keymode
+#+begin_src nix
+programs.tmux.keyMode = "vi";
+#+end_src
+**** Enable true color
+This is necessary to make neovim true color work inside tmux
+#+name: tmux-truecolor
+#+begin_src conf
+set-option -g default-terminal "screen-256color"
+set -ga terminal-overrides ",*256col*:Tc"
+#+end_src
+**** keybinds
+I use Ctrl Space as prefix
+#+name: tmux-keybinds
+#+begin_src conf
+set-option -g prefix C-Space
+bind C-Space send-prefix
+bind s split-window -h
+bind v split-window -v
+#+end_src
+* xmonad
+I use xmonad, the very hackable dynamically tiling window manager written/configured in Haskell
+Tiling window manager automates the window organization
+** Install xmonad/ Set config file path
+home-manager have a xmonad module. install it:
+#+begin_src nix :tangle modules/common/xmonad.nix
+# This file is generated from "README.org"
+{
+  xsession.windowManager.xmonad = {
+    enable = true;
+    enableContribAndExtras = true;
+    config = ../../haskell/xmonad.hs;
+  };
+}
+#+end_src
+** imports
+These are the modules that I import so I can use that functionality later
+It's always a better practice to use explicit imports for Haskell
+#+name: xmonad-imports
+#+begin_src haskell :noweb no-export
+import           Control.Arrow                  ( first )
+import qualified Data.Map                      as M
+import           System.Exit                    ( exitSuccess )
+import           XMonad                  hiding ( (|||) )
+import           XMonad.Actions.Navigation2D    ( Direction2D(L, R)
+                                                , windowGo
+                                                , withNavigation2DConfig
+                                                )
+import           XMonad.Hooks.DynamicLog
+import           XMonad.Hooks.EwmhDesktops      ( ewmh
+                                                , fullscreenEventHook
+                                                )
+import           XMonad.Hooks.ManageDocks       ( avoidStruts
+                                                , docks
+                                                )
+import           XMonad.Hooks.ManageHelpers     ( doFullFloat
+                                                , isFullscreen
+                                                )
+import           XMonad.Layout.BinarySpacePartition
+                                                ( emptyBSP
+                                                , Rotate(Rotate)
+                                                , Swap(Swap)
+                                                )
+import           XMonad.Layout.LayoutCombinators
+                                                ( (|||)
+                                                , JumpToLayout(JumpToLayout)
+                                                )
+import           XMonad.Layout.NoBorders        ( smartBorders )
+import           XMonad.Layout.Spacing          ( spacingRaw
+                                                , Border(Border)
+                                                )
+import           XMonad.Layout.Spiral           ( spiral )
+import           XMonad.Prompt
+import           XMonad.Prompt.ConfirmPrompt    ( confirmPrompt )
+import           XMonad.Prompt.FuzzyMatch       ( fuzzyMatch )
+import           XMonad.Prompt.Man              ( manPrompt )
+import           XMonad.Prompt.Shell            ( shellPrompt )
+import           XMonad.Prompt.Unicode          ( mkUnicodePrompt )
+import qualified XMonad.StackSet               as W
+<<xmonad-import-cursor>>
+<<xmonad-import-scratchpads>>
+import           XMonad.Util.Run                ( hPutStrLn
+                                                , spawnPipe
+                                                )
+import           XMonad.Util.SpawnOnce          ( spawnOnce )
+<<xmonad-import-ezconfig>>
+#+end_src
+** Workspaces
+Set workspace names to zero-width space.
+This makes possible to show workspaces as nerd font orb symbol in xmobar
+#+name: xmonad-workspaces-names
+#+begin_src haskell
+myWorkspaces :: [String]
+myWorkspaces =
+  [ "\8203"
+  , "\8203\8203"
+  , "\8203\8203\8203"
+  , "\8203\8203\8203\8203"
+  , "\8203\8203\8203\8203\8203"
+  , "\8203\8203\8203\8203\8203\8203"
+  , "\8203\8203\8203\8203\8203\8203\8203"
+  , "\8203\8203\8203\8203\8203\8203\8203\8203"
+  , "\8203\8203\8203\8203\8203\8203\8203\8203\8203"
+  ]
+#+end_src
+
+Show workspace names as purple/pink orb in xmobar
+#+name: xmonad-loghook
+#+begin_src haskell
+myLogHook h = dynamicLogWithPP xmobarPP
+  { ppOutput          = hPutStrLn h
+  , ppSort            = fmap (namedScratchpadFilterOutWorkspace .) (ppSort def) -- hide nsp
+  , ppCurrent         = xmobarColor "#c792ea" "" . wrap "\61713" " "  -- Current workspace
+  , ppVisible         = xmobarColor "#ab47bc" "" . wrap "\61842" " "
+  , ppHidden          = xmobarColor "#ab47bc" "" . wrap "\61842" " "
+  , ppHiddenNoWindows = xmobarColor "#FFFFFF" "" . wrap "\61915" " "
+  , ppLayout          = xmobarColor "#82aaff" ""
+  , ppSep             = "  |  "
+  , ppTitle           = mempty
+  }
+#+end_src
+** xmonad prompt
+xmonad prompt is a prompt library like dmenu.
+Can be used to launch apps, search manpage, select emojis, etc
++ [[xmonad prompt fonts][Fonts]]
++ [[xmonad prompt color][Colors]]
+*** Set prompt height
+#+name: xmonad-prompt-height
+#+begin_src haskell
+myPromptHeight :: Dimension
+myPromptHeight = 30
+#+end_src
+*** keymap
+Very basic keymap
+#+name: xmonad-prompt-keymap
+#+begin_src haskell
+myXPKeymap =
+  M.fromList
+    $  map
+         (first $ (,) 0)
+         [ (xK_Return   , setSuccess True >> setDone True)
+         , (xK_KP_Enter , setSuccess True >> setDone True)
+         , (xK_BackSpace, deleteString Prev)
+         , (xK_Delete   , deleteString Prev)
+         , (xK_Left     , moveCursor Prev)
+         , (xK_Right    , moveCursor Next)
+         , (xK_Down     , moveHistory W.focusUp')
+         , (xK_Up       , moveHistory W.focusDown')
+         , (xK_Escape   , quit)
+         ]
+    ++ map (first $ (,) controlMask) [(xK_v, pasteString)]
+#+end_src
+*** Config
+Set xmonad prompt attributes
+See [[https://hackage.haskell.org/package/xmonad-contrib-0.16/docs/XMonad-Prompt.html#t:XPConfig][here]] for documentation
+
+#+name: xmonad-prompt-config
+#+begin_src haskell :noweb no-export
+myXPConfig = def { font              = myFont
+                 <<xmonad-prompt-color>>
+                 , promptKeymap      = myXPKeymap
+                 , promptBorderWidth = 0
+                 , position          = Top
+                 , height            = myPromptHeight
+                 , autoComplete      = Nothing
+                 , searchPredicate   = fuzzyMatch
+                 , alwaysHighlight   = True
+                 }
+#+end_src
+
+Same config as above, but with emoji font for unicode prompt
+#+name: xmonad-emojiprompt-config
+#+begin_src haskell :noweb no-export
+myEmojiXPConfig = def { font              = myEmojiFont
+                      <<xmonad-prompt-color>>
+                      , promptKeymap      = myXPKeymap
+                      , promptBorderWidth = 0
+                      , position          = Top
+                      , height            = myPromptHeight
+                      , autoComplete      = Nothing
+                      , searchPredicate   = fuzzyMatch
+                      , alwaysHighlight   = True
+                      }
+#+end_src
+** Set default terminal
+Set [[Alacritty]] as default terminal in xmonad
+#+name: xmonad-default-terminal
+#+begin_src haskell
+myTerminal :: String
+myTerminal = "alacritty"
+#+end_src
+** Set gaps
+Set the gap between windows.
+spacingRaw adds spacing to windows.
+This function needs to be applied to the layout at layoutHook.
+I don't apply it to Full screen layout
+#+name: xmonad-gaps-config
+#+begin_src haskell
+myGaps = spacingRaw False (Border 4 4 4 4) True (Border 4 4 4 4) True
+#+end_src
+** Keybindings
+Set Super key as xmonad mod key
+#+name: xmonad-mod-key
+#+begin_src haskell
+myModMask :: KeyMask
+myModMask = mod4Mask
+#+end_src
+
+I use EZConfig that allows simpler, emacs-style keybinding description
+See [[https://hackage.haskell.org/package/xmonad-contrib-0.16/docs/XMonad-Util-EZConfig.html#v:mkKeymap][here]] for further information
+#+name: xmonad-import-ezconfig
+#+begin_src haskell
+import           XMonad.Util.EZConfig           ( additionalKeysP )
+#+end_src
+
+#+name: xmonad-keybinds
+#+begin_src haskell
+myKeys :: [(String, X ())]
+myKeys =
+  [
+    ("M-<Return>", spawn myTerminal)
+  , ("M-S-c", kill) -- Close focused application
+  , ("M-o", spawn "light-locker-command -l") -- lock screen
+  , ("M-S-q", confirmPrompt myXPConfig "exit" $ io exitSuccess) -- prompt to kill xmonad
+  , ("M-q", spawn "xmonad --recompile; xmonad --restart") -- Recompile and restart xmonad
+
+  , ("M-v", spawn $ myTerminal ++ " -e nvim")
+  , ("M-z", spawn "emacsclient -c -a emacs ~/")
+  , ("M-w", spawn "emacsclient -c -a emacs")
+  , ("M-b", spawn "qutebrowser")
+  , ("M-e", spawn "~/.emacs_anywhere/bin/run")
+
+  , ("M-C-t", namedScratchpadAction myScratchPads "terminal")
+  , ("M-C-s", namedScratchpadAction myScratchPads "mixer")
+  , ("M-C-h", namedScratchpadAction myScratchPads "bottom")
+  , ("M-C-n", namedScratchpadAction myScratchPads "vifm")
+
+  , ("M-d", shellPrompt myXPConfig)
+  , ("M-C-m", manPrompt myXPConfig)
+  , ("M-C-e", mkUnicodePrompt "xsel" ["-b"] "/etc/UnicodeData.txt" myEmojiXPConfig) -- copy emoji to clipboard
+
+  , ("<XF86AudioLowerVolume>", spawn "amixer -q sset Master 2%-") -- fn+a on HHKB Dvorak
+  , ("<XF86AudioRaiseVolume>", spawn "amixer -q sset Master 2%+") -- fn+o on HHKB Dvorak
+  , ("<XF86AudioMute>", spawn "amixer set Master toggle") -- fn+e on HHKB Dvorak
+
+  , ("<XF86MonBrightnessUp", spawn "xbacklight -inc 5")
+  , ("<XF86MonBrightnessDown", spawn "xbacklight -dec 5")
+
+  , ("C-<Print>", spawn "scrot -s screen_%Y-%m-%d-%H-%M-%S.png -e 'mv $f ~/Pictures/'") -- ctrl+fn+c on HHKB Dvorak
+  , ("M-<Print>", spawn "scrot tmp.png -e 'xclip $f && rm $f'") -- mod+fn+c on HHKB Dvorak
+
+  , ("M-S-<F1>", spawn "setxkbmap dvorak") -- Switch to Dvorak layout
+  , ("M-S-<F2>", spawn "setxkbmap us") -- Switch to qwerty layout
+  , ("M-S-<F3>", spawn "xinput --disable 11") -- Disable trackpad on laptop
+  , ("M-S-<F4>", spawn "xinput --enable 11") -- Enable trackpad on laptop
+
+  , ("M-<Space>", sendMessage NextLayout) -- Change to next layout in order
+
+  , ("M-t", sendMessage $ JumpToLayout "Spacing Tall")
+  , ("M-f", sendMessage $ JumpToLayout "Full")
+  , ("M-m", sendMessage $ JumpToLayout "Mirror Spacing Tall")
+  , ("M-n", sendMessage $ JumpToLayout "Spacing BSP")
+  , ("M-s", sendMessage $ JumpToLayout "Spacing Spiral")
+
+  , ("M-S-t", withFocused $ windows . W.sink) -- unfloat window
+
+  , ("M-r", refresh)
+
+  -- focus horizontally like i3wm
+  , ("M-h", windowGo L False)
+  , ("M-l", windowGo R False)
+
+  , ("M-j", windows W.focusDown)
+  , ("M-k", windows W.focusUp)
+  , ("M-g", windows W.focusMaster)
+  , ("M-S-j", windows W.swapDown)
+  , ("M-S-k", windows W.swapUp)
+  , ("M-S-g", windows W.swapMaster)
+
+  , ("M-S-h", sendMessage Shrink)
+  , ("M-S-l", sendMessage Expand)
+
+  , ("M-,", do
+        layout <- getActiveLayoutDescription
+        case layout of
+          "Spacing BSP" -> sendMessage Swap
+          _             -> sendMessage $ IncMasterN 1
+    )
+  , ("M-.", do
+        layout <- getActiveLayoutDescription
+        case layout of
+          "Spacing BSP" -> sendMessage Rotate
+          _             -> sendMessage $ IncMasterN (-1)
+    )
+  ]
+#+end_src
+** Layouts
+Set the layouts avaliable to use.
+Make sure to apply gaps(spacingRaw) from [[Set gaps][here]]
+#+name: xmonad-layouts
+#+begin_src haskell
+myLayout = avoidStruts $ smartBorders
+  (tiledgaps ||| bspgaps ||| Mirror tiledgaps ||| spiralgaps ||| Full)
+ where
+  tiledgaps  = myGaps $ Tall nmaster delta ratio
+
+  -- window number in master pane
+  nmaster    = 1
+
+  -- percent of screen to increment by when resizing panes
+  delta      = 2 / 100
+
+  -- default proportion of screen occupied by master pane
+  ratio      = 1 / 2
+
+  bspgaps    = myGaps emptyBSP
+  spiralgaps = myGaps $ spiral (6 / 7)
+#+end_src
+** Startups(autostart)
+These are the commands that xmonad executes on startup. Set the wallpaper, cursor, etc here
+I run compositor(picom) and few programs like keynav as systemd service because home-manager module does that.
+But usually we start all these programs here
+#+name: xmonad-startuphook
+#+begin_src haskell :noweb no-export
+myStartupHook = do
+  <<xmonad-fallback-wallpaper>>
+  <<xmonad-set-wallpaper>>
+  <<xmonad-set-cursor>>
+  -- spawn Japanese IME
+  spawnOnce "fcitx -d &"
+  -- start screen locker
+  spawnOnce "light-locker --lock-on-suspend &"
+  -- window animation
+  spawnOnce "flashfocus &"
+#+end_src
+** Scratchpads
+Import scratchpad module
+#+name: xmonad-import-scratchpads
+#+begin_src haskell
+import           XMonad.Util.NamedScratchpad
+#+end_src
+
+This configures floating scratchpads for several programs:
+#+name: xmonad-scratchpads-config
+#+begin_src haskell
+myScratchPads =
+  [ NS "terminal" spawnTerm   findTerm   manageTerm
+  , NS "mixer"    spawnMixer  findMixer  manageMixer
+  , NS "bottom"   spawnbottom findbottom managebottom
+  , NS "vifm"     spawnvifm   findvifm   managevifm
+  ]
+ where
+  centralh   = 0.9
+  centralw   = 0.9
+  centralt   = 0.95 - centralh
+  centrall   = 0.95 - centralw
+
+  spawnTerm  = myTerminal ++ " --title=terminalScratchpad"
+  findTerm   = title =? "terminalScratchpad"
+  manageTerm = customFloating $ W.RationalRect l t w h
+   where
+    h = 0.3
+    w = 1
+    t = 0
+    l = (1 - w) / 2
+
+  spawnMixer = myTerminal ++ " --title=mixerScratchpad" ++ " -e ncpamixer"
+  findMixer  = title =? "mixerScratchpad"
+  manageMixer =
+    customFloating $ W.RationalRect centrall centralt centralw centralh
+
+  spawnbottom = myTerminal ++ " --title=bottomScratchpad" ++ " -e btm"
+  findbottom  = title =? "bottomScratchpad"
+  managebottom =
+    customFloating $ W.RationalRect centrall centralt centralw centralh
+
+  spawnvifm =
+    myTerminal ++ " --title=vifmScratchpad" ++ " -e bash -c 'vifmrun'"
+  findvifm = title =? "vifmScratchpad"
+  managevifm =
+    customFloating $ W.RationalRect centrall centralt centralw centralh
+#+end_src
+** ManageHook
+Set rules for certain programs.
+e.g.Make certain program always appear at certain workspace, Force certain program(GIMP here) to always float
+#+name: xmonad-managehook
+#+begin_src haskell
+myManageHook =
+  composeAll
+      [ className =? "Gimp" --> doFloat
+      , resource =? "desktop_window" --> doIgnore
+      , isFullscreen --> doFullFloat
+      ]
+    <+> namedScratchpadManageHook myScratchPads
+#+end_src
+** Mouse
+Mouse configuration. I rarely use it, my mouse is mostly disabled so I won't document it.
+#+name: xmonad-mouse-config
+#+begin_src haskell
+myFocusFollowsMouse :: Bool
+myFocusFollowsMouse = True
+myClickJustFocuses :: Bool
+myClickJustFocuses = False
+
+myMouseBindings XConfig { XMonad.modMask = modm } = M.fromList
+
+    -- mod-button1, Set the window to floating mode and move by dragging
+  [ ( (modm, button1)
+    , \w -> focus w >> mouseMoveWindow w >> windows W.shiftMaster
+    )
+
+    -- mod-button2, Raise the window to the top of the stack
+  , ((modm, button2), \w -> focus w >> windows W.shiftMaster)
+
+    -- mod-button3, Set the window to floating mode and resize by dragging
+  , ( (modm, button3)
+    , \w -> focus w >> mouseResizeWindow w >> windows W.shiftMaster
+    )
+
+    -- you may also bind events to the mouse scroll wheel (button4 and button5)
+  ]
+#+end_src
+** Function to get active layout description
+Get active layout.
+This used by ~M-.~ ~"M-,"~ keybind to determine if it's BSP layout or not.
+#+name: xmonad-getactivelayout
+#+begin_src haskell
+getActiveLayoutDescription :: X String
+getActiveLayoutDescription = do
+  workspaces <- gets windowset
+  return $ description . W.layout . W.workspace . W.current $ workspaces
+#+end_src
+** xmonad.hs base code
+#+begin_src haskell :tangle haskell/xmonad.hs :noweb no-export
+-- This file is generated from "README.org"
+<<xmonad-imports>>
+<<xmonad-mod-key>>
+<<xmonad-default-terminal>>
+<<xmonad-prompt-font>>
+<<xmonad-prompt-emoji-font>>
+<<xmonad-workspaces-names>>
+<<xmonad-border-width>>
+<<xmonad-prompt-height>>
+<<xmonad-normalborder-color>>
+<<xmonad-focusedborder-color>>
+<<xmonad-gaps-config>>
+<<xmonad-keybinds>>
+<<xmonad-prompt-keymap>>
+<<xmonad-prompt-config>>
+<<xmonad-emojiprompt-config>>
+<<xmonad-mouse-config>>
+<<xmonad-layouts>>
+<<xmonad-scratchpads-config>>
+<<xmonad-managehook>>
+<<xmonad-startuphook>>
+<<xmonad-loghook>>
+myEventHook = handleEventHook def <+> fullscreenEventHook
+<<xmonad-getactivelayout>>
+
+main :: IO ()
+main = do
+  h <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
+  xmonad $ docks $ withNavigation2DConfig def $ ewmh
+    def { handleEventHook = handleEventHook def <+> fullscreenEventHook }
+      {
+      -- simple stuff
+        terminal           = myTerminal
+      , focusFollowsMouse  = myFocusFollowsMouse
+      , clickJustFocuses   = myClickJustFocuses
+      , borderWidth        = myBorderWidth
+      , modMask            = myModMask
+      , workspaces         = myWorkspaces
+      , normalBorderColor  = myNormalBorderColor
+      , focusedBorderColor = myFocusedBorderColor
+      -- key bindings
+      -- , keys               = myKeys
+      , mouseBindings      = myMouseBindings
+      -- hooks, layouts
+      , layoutHook         = myLayout
+      , manageHook         = myManageHook
+      , handleEventHook    = myEventHook
+      , logHook            = myLogHook h
+      , startupHook        = myStartupHook
+      } `additionalKeysP` myKeys
+#+end_src
+* Emacs
+I use emacs (specifically, *doom-emacs*) as main text editor
+
+doom-emacs is an Emacs framework, which is preconfigured with evil-mode(vim keybindings) that allows me to use heavily customized emacs ootb
+Doom starts up really quickly,because it tries to lazy load a lot of packages, byte compiles your configuration.
+
+My emacs config is still work in progress, I change it often.
+So, I choose to install doom-emacs in traditional way instead of using [[https://github.com/vlaci/nix-doom-emacs][nix-doom-emacs]]
+~git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d~
+~~/.emacs.d/bin/doom install~
+
++ [[Emacs theme][Theme]]
++ [[Emacs fonts][Fonts]]
+
+** Install Emacs nativecomp pgtk
+Install emacs itself
+#+name: emacs-install
+#+begin_src nix
+programs.emacs.enable = true;
+#+end_src
+Choose to install emacs native comp pgtk from [[Flake inputs][Overlay here]]
+#+name: emacs-package
+#+begin_src nix
+programs.emacs.package = pkgs.emacsGccPgtk;
+#+end_src
+
+You have to add this to init.el and config.el to fix nativecomp in Nix
+#+name: emacs-fix-nativecomp
+#+begin_src elisp
+(setq comp-async-env-modifier-form "")
+#+end_src
+** Enable Emacs daemon
+I use emacs as daemon.
+This allows to use emacs in a very flexible way(e.g.[[Edit text on qutebrowser using emacs]] )
+Note that enabling socketActivation produces error when running ~nixos-rebuild~ with latest unstable emacs
+#+name: emacs-enable-daemon
+#+begin_src nix
+services.emacs = {
+  enable = true;
+  client = {
+    enable = true;
+    arguments = [ "-c" ];
+  };
+  socketActivation.enable = false;
+};
+#+end_src
+
+** Select doom-emacs modules
+Control what Doom modules are enabled and what order they load in.
+Run ~doom sync~ after modifying it
+*** base code
+#+begin_src elisp :tangle doom.d/init.el :noweb no-export
+;;; init.el -*- lexical-binding: t; -*-
+;This file is generated from "README.org"
+
+<<emacs-fix-nativecomp>>
+
+(doom! :input
+       <<doom-initel-input>>
+       :completion
+       <<doom-initel-completion>>
+       :ui
+       <<doom-initel-ui>>
+       :editor
+       <<doom-initel-editor>>
+       :emacs
+       <<doom-initel-emacs>>
+       :term
+       <<doom-initel-term>>
+       :checkers
+       <<doom-initel-checkers>>
+       :tools
+       <<doom-initel-tools>>
+       :os
+       <<doom-initel-os>>
+       :lang
+       <<doom-initel-lang>>
+       :email
+       <<doom-initel-email>>
+       :app
+       <<doom-initel-app>>
+       :config
+       <<doom-initel-config>>
+#+end_src
+*** input modules
+#+name: doom-initel-input
+#+begin_src elisp :noweb no-export
+;;chinese
+japanese
+;;layout
+#+end_src
+*** completion modules
+#+name: doom-initel-completion
+#+begin_src elisp :noweb no-export
+(company +childframe +tng)          ; the ultimate code completion backend
+;; (company +tng)          ; the ultimate code completion backend
+;;helm              ; the *other* search engine for love and life
+;;ido               ; the other *other* search engine...
+(ivy +fuzzy +prescient +childframe +icons)              ; a search engine for love and life
+;; (ivy +fuzzy +prescient +icons)              ; a search engine for love and life
+#+end_src
+*** UI modules
+#+name: doom-initel-ui
+#+begin_src elisp :noweb no-export
+;;deft              ; notational velocity for Emacs
+doom              ; what makes DOOM look the way it does
+doom-dashboard    ; a nifty splash screen for Emacs
+doom-quit         ; DOOM quit-message prompts when you quit Emacs
+(emoji +unicode +github +ascii)  ;🙂
+;;fill-column       ; a `fill-column' indicator
+hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+;;hydra
+<<emacs-indent-guide-enable>>
+minimap           ; show a map of the code on the side
+modeline          ; snazzy, Atom-inspired modeline, plus API
+nav-flash         ; blink cursor line after big motions
+;;neotree           ; a project drawer, like NERDTree for vim
+ophints           ; highlight the region an operation acts on
+(popup +defaults)   ; tame sudden yet inevitable temporary windows
+ligatures       ; ligatures or substitute text with pretty symbols
+<<initel-centaur-tabs>>
+treemacs          ; a project drawer, like neotree but cooler
+unicode           ; extended unicode support for various languages
+vc-gutter         ; vcs diff in the fringe
+;;vi-tilde-fringe   ; fringe tildes to mark beyond EOB   THIS IS THE ANNOYING VIM TILDES MAKE SURE ITS TURNED OFF!!!
+;;window-select     ; visually switch windows
+workspaces        ; tab emulation, persistence & separate workspaces
+;;zen               ; distraction-free coding or writing
+#+end_src
+*** editor modules
+#+name: doom-initel-editor
+#+begin_src elisp :noweb no-export
+(evil +everywhere); come to the dark side, we have cookies
+file-templates    ; auto-snippets for empty files
+fold              ; (nigh) universal code folding
+;;(format +onsave)  ; automated prettiness
+;;god               ; run Emacs commands without modifier keys
+;;lispy             ; vim for lisp, for people who don't like vim
+multiple-cursors  ; editing in many places at once
+;;objed             ; text object editing for the innocent
+;; parinfer          ; turn lisp into python, sort of
+;;rotate-text       ; cycle region at point between text candidates
+snippets          ; my elves. They type so I don't have to
+;;word-wrap         ; soft wrapping with language-aware indent
+#+end_src
+*** emacs modules
+#+name: doom-initel-emacs
+#+begin_src elisp :noweb no-export
+(dired +ranger +icons)             ; making dired pretty [functional]
+electric          ; smarter, keyword-based electric-indent
+(ibuffer +icons)         ; interactive buffer management
+undo              ; persistent, smarter undo for your inevitable mistakes
+vc                ; version-control and Emacs, sitting in a tree
+#+end_src
+*** term modules
+#+name: doom-initel-term
+#+begin_src elisp :noweb no-export
+;;eshell            ; the elisp shell that works everywhere
+;;shell             ; simple shell REPL for Emacs
+;;term              ; basic terminal emulator for Emacs
+vterm             ; the best terminal emulation in Emacs
+#+end_src
+*** checkers modules
+#+name: doom-initel-checkers
+#+begin_src elisp :noweb no-export
+syntax              ; tasing you for every semicolon you forget
+;;spell             ; tasing you for misspelling mispelling
+;;grammar           ; tasing grammar mistake every you make
+#+end_src
+*** tools modules
+#+name: doom-initel-tools
+#+begin_src elisp :noweb no-export
+;;ansible
+;;debugger          ; FIXME stepping through code, to help you add bugs
+direnv
+;;docker
+editorconfig      ; let someone else argue about tabs vs spaces
+;;ein               ; tame Jupyter notebooks with emacs
+(eval +overlay)     ; run code, run (also, repls)
+;;gist              ; interacting with github gists
+lookup              ; navigate your code and its documentation
+lsp
+;;macos             ; MacOS-specific commands
+magit             ; a git porcelain for Emacs
+;;make              ; run make tasks from Emacs
+;;pass              ; password manager for nerds
+;;pdf               ; pdf enhancements
+;;prodigy           ; FIXME managing external services & code builders
+rgb               ; creating color strings
+;;taskrunner        ; taskrunner for all your projects
+;;terraform         ; infrastructure as code
+;;tmux              ; an API for interacting with tmux
+;;upload            ; map local to remote projects via ssh/ftp
+#+end_src
+*** OS modules
+#+name: doom-initel-os
+#+begin_src elisp :noweb no-export
+;;tty               ; improve the terminal Emacs experience
+#+end_src
+*** lang modules
+#+name: doom-initel-lang
+#+begin_src elisp :noweb no-export
+;;agda              ; types of types of types of types...
+;;cc                ; C/C++/Obj-C madness
+;;clojure           ; java with a lisp
+;;common-lisp       ; if you've seen one lisp, you've seen them all
+;;coq               ; proofs-as-programs
+;;crystal           ; ruby at the speed of c
+;;csharp            ; unity, .NET, and mono shenanigans
+;;data              ; config/data formats
+;;(dart +flutter)   ; paint ui and not much else
+;;elixir            ; erlang done right
+;;elm               ; care for a cup of TEA?
+emacs-lisp        ; drown in parentheses
+;;erlang            ; an elegant language for a more civilized age
+;;ess               ; emacs speaks statistics
+;;faust             ; dsp, but you get to keep your soul
+;;fsharp            ; ML stands for Microsoft's Language
+;;fstar             ; (dependent) types and (monadic) effects and Z3
+;;gdscript          ; the language you waited for
+;;(go +lsp)         ; the hipster dialect
+(haskell +lsp)  ; a language that's lazier than I am
+;;hy                ; readability of scheme w/ speed of python
+;;idris             ;
+json              ; At least it ain't XML
+;;(java +meghanada) ; the poster child for carpal tunnel syndrome
+(javascript +lsp)       ; all(hope(abandon(ye(who(enter(here))))))
+;;julia             ; a better, faster MATLAB
+;;kotlin            ; a better, slicker Java(Script)
+;;latex             ; writing papers in Emacs has never been so fun
+;;lean
+;;factor
+;;ledger            ; an accounting system in Emacs
+;;lua               ; one-based indices? one-based indices
+markdown          ; writing docs for people to ignore
+;;nim               ; python + lisp at the speed of c
+nix               ; I hereby declare "nix geht mehr!"
+;;ocaml             ; an objective camel
+(org +pretty)               ; organize your plain life in plain text
+;;php               ; perl's insecure younger brother
+;;plantuml          ; diagrams for confusing people more
+;;purescript        ; javascript, but functional
+(python +lsp)            ; beautiful is better than ugly
+;;qt                ; the 'cutest' gui framework ever
+;;racket            ; a DSL for DSLs
+;;raku              ; the artist formerly known as perl6
+;;rest              ; Emacs as a REST client
+;;rst               ; ReST in peace
+;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
+rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+;;scala             ; java, but good
+;;scheme            ; a fully conniving family of lisps
+sh                ; she sells {ba,z,fi}sh shells on the C xor
+;;sml
+;;solidity          ; do you need a blockchain? No.
+;;swift             ; who asked for emoji variables?
+;;terra             ; Earth and Moon in alignment for performance.
+web               ; the tubes
+yaml              ; JSON, but readable
+#+end_src
+*** email modules
+#+name: doom-initel-email
+#+begin_src elisp :noweb no-export
+;;(mu4e +gmail)
+;;notmuch
+;;(wanderlust +gmail)
+#+end_src
+*** app modules
+#+name: doom-initel-app
+#+begin_src elisp :noweb no-export
+calendar
+;;irc               ; how neckbeards socialize
+;;(rss +org)        ; emacs as an RSS reader
+twitter           ; twitter client https://twitter.com/vnought
+#+end_src
+*** config modules
+#+name: doom-initel-config
+#+begin_src elisp :noweb no-export
+;;literate
+(default +bindings +smartparens))
+#+end_src
+
+** Install custom packages
+Install custom packages that aren't included in doom-emacs here
+#+begin_src elisp :tangle doom.d/packages.el :noweb no-export
+;; -*- no-byte-compile: t; -*-
+;;; $DOOMDIR/packages.el
+
+;; Basic stuffs
+<<centaur-tabs-package>>
+<<magit-delta-package>>
+
+;; org-mode
+<<emacs-org-mixed-pitch-install>>
+
+;; Filetypes
+(package! vimrc-mode)
+(package! fish-mode)
+
+;; company(autocompletion) packages
+;; (package! company-tabnine)
+;; (package! company-emoji)
+
+#+end_src
+*** Commentary
+To install a package with Doom you must declare them here and run 'doom sync'
+on the command line, then restart Emacs for the changes to take effect -- or
+use 'M-x doom/reload'.
+
+To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
+#+begin_src elisp
+(package! some-package)
+#+end_src
+
+To install a package directly from a remote git repo, you must specify a
+~:recipe~. You'll find documentation on what `:recipe' accepts here:
+https://github.com/raxod502/straight.el#the-recipe-format
+#+begin_src elisp
+(package! another-package
+  :recipe (:host github :repo "username/repo"))
+#+end_src
+
+If the package you are trying to install does not contain a PACKAGENAME.el
+file, or is located in a subdirectory of the repo, you'll need to specify
+~:files~ in the ~:recipe~
+#+begin_src elisp
+(package! this-package
+  :recipe (:host github :repo "username/repo"
+           :files ("some-file.el" "src/lisp/*.el")))
+#+end_src
+
+If you'd like to disable a package included with Doom, you can do so here
+with the ~:disable~ property:
+#+begin_src elisp
+(package! builtin-package :disable t)
+#+end_src
+
+You can override the recipe of a built in package without having to specify
+all the properties for ~:recipe~. These will inherit the rest of its recipe
+from Doom or MELPA/ELPA/Emacsmirror:
+#+begin_src elisp
+(package! builtin-package :recipe (:nonrecursive t))
+(package! builtin-package-2 :recipe (:repo "myfork/package"))
+#+end_src
+
+Specify a ~:branch~ to install a package from a particular branch or tag.
+This is required for some packages whose default branch isn't 'master' (which
+our package manager can't deal with; see https://github.com/raxod502/straight.el/issues/279
+#+begin_src elisp
+(package! builtin-package :recipe (:branch "develop"))
+#+end_src
+
+Use ~:pin~ to specify a particular commit to install.
+#+begin_src elisp
+(package! builtin-package :pin "1a2b3c4d5e")
+#+end_src
+
+Doom's packages are pinned to a specific commit and updated from release to
+release. The `unpin!' macro allows you to unpin single packages...
+#+begin_src elisp
+(unpin! pinned-package)
+#+end_src
+...or multiple packages
+#+begin_src elisp
+(unpin! pinned-package another-pinned-package)
+#+end_src
+...Or *all* packages (NOT RECOMMENDED; will likely break things)
+#+begin_src elisp
+(unpin! t)
+#+end_src
+
+** Disable line number
+Disable line number mode because it causes lag
+#+name: emacs-disable-line-number
+#+begin_src elisp
+(setq display-line-numbers-type nil)
+#+end_src
+** Indent
+Disable tab and use 4 space
+#+name: emacs-indent-space
+#+begin_src elisp
+(setq-default
+ indent-tabs-mode nil
+ tab-width 4
+ evil-shift-width 4
+ standard-indent 4
+ line-spacing 4
+ )
+#+end_src
+
+Force it for haskell-mode as well
+#+name: emacs-haskell-mode-indent
+#+begin_src elisp
+(setq-hook! 'haskell-mode-hook
+  tab-width 4
+  evil-shift-width 4
+  standard-indent 4
+  indent-tabs-mode nil
+  )
+#+end_src
+
+Enable indent guide module
+#+name: emacs-indent-guide-enable
+#+begin_src elisp
+indent-guides     ; highlighted indent columns
+#+end_src
+Set indent guide to bitmap
+#+name: emacs-indent-guide-config
+#+begin_src elisp
+(after! highlight-indent-guides
+  (setq highlight-indent-guides-method 'bitmap
+        highlight-indent-guides-responsive t
+        highlight-indent-guides-bitmap-function 'highlight-indent-guides--bitmap-line))
+#+end_src
+** History length
+Set history length to 1000
+#+name: emacs-history-length
+#+begin_src elisp
+(setq-default
+ history-length 1000
+ prescient-history-length 1000
+ )
+#+end_src
+** Enable auto saving
+#+name: emacs-auto-save
+#+begin_src elisp
+(setq auto-save-default t)
+#+end_src
+** Delete files to trash
+#+name: emacs-delete-trash
+#+begin_src elisp
+(setq-default delete-by-moving-to-trash t)
+#+end_src
+** Stretch cursor
+Make the cursor stretch to cover wide characters
+#+name: emacs-x-stretch-cursor
+#+begin_src elisp
+(setq-default x-stretch-cursor t)
+#+end_src
+** Centaur Tabs
+Centaur tabs is a functional, efficient, customizable tab plugin for emacs
+
+Install fork compatible with emacs daemon(packages.el)
+#+name: centaur-tabs-package
+#+begin_src elisp
+(package! centaur-tabs
+  :recipe(:host github :repo "MoritzMaxeiner/centaur-tabs" :branch "daemon"))
+#+end_src
+
+Comment to disable default tabs module from doom emacs(init.el)
+#+name: initel-centaur-tabs
+#+begin_src elisp
+;; tabs              ; a tab bar for Emacs
+#+end_src
+
++ [[Emacs Centaur Tabs][Customize Appearance]]
++ [[centaur-tabs-font][Fonts]]
+
+Hook centaur tabs at doom startup
+#+name: centaur-tabs-hook-startup
+#+begin_src elisp
+:hook (doom-first-file . centaur-tabs-mode)
+#+end_src
+
+Scrolling (with the mouse wheel) past the end of the tab list replaces the tab list with that of another Doom workspace.
+This prevents that:
+#+name: centaur-tabs-cycle-scope
+#+begin_src elisp
+(setq centaur-tabs-cycle-scope 'tabs)
+#+end_src
+
+Disable centaur tabs in certain buffers(doom-dashboard and popup buffer here)
+#+name: centaur-tabs-buffer-exclude
+#+begin_src elisp
+(add-hook '+doom-dashboard-mode-hook #'centaur-tabs-local-mode)
+(add-hook '+popup-buffer-mode-hook #'centaur-tabs-local-mode)
+#+end_src
+
+Integrate with projectile
+You can group your tabs by Projectile’s project. Just use the following function in your configuration:
+#+name: centaur-tabs-projectile
+#+begin_src elisp
+(centaur-tabs-group-by-projectile-project)
+#+end_src
+
+base code:
+#+name: centaur-tabs-config
+#+begin_src elisp :noweb no-export
+(use-package! centaur-tabs
+  <<centaur-tabs-hook-startup>>
+  :init
+  <<centaur-tabs-show-icons>>
+  <<centaur-tabs-grayout-icons>>
+  <<centaur-tabs-style>>
+  <<centaur-tabs-underline>>
+  <<centaur-tabs-modified-marker>>
+  <<centaur-tabs-modified-marker-character>>
+  <<centaur-tabs-close-button>>
+  <<centaur-tabs-cycle-scope>>
+  :config
+  <<centaur-tabs-buffer-exclude>>
+  <<centaur-tabs-font>>
+  <<centaur-tabs-projectile>>
+  <<centaur-tabs-show-icons>>
+  <<centaur-tabs-modified-marker>>
+  <<centaur-tabs-underline>>
+  <<centaur-tabs-height>>
+  (centaur-tabs-mode t)
+  )
+#+end_src
+** Company auto completion/LSP
+Enable company module [[doom-initel-completion][here]]
+Enable LSP module [[tools modules][here]]
+You also have to enable/install lsp per each language
+
+Trigger completion immediately
+#+name: company-idle-delay
+#+begin_src elisp
+(setq company-idle-delay 0)
+#+end_src
+
+Start company completion with single character
+#+name: company-minimum-prefix-length
+#+begin_src elisp
+(setq company-minimum-prefix-length 1)
+#+end_src
+
+Don't show completion numbers
+#+name: company-show-numbers
+#+begin_src elisp
+(setq company-show-numbers nil)
+#+end_src
+
+Show completion for files
+#+name: company-files-add
+#+begin_src elisp
+(set-company-backend! '(c-mode
+                        c++-mode
+                        haskell-mode
+                        lisp-mode
+                        sh-mode
+                        css-mode
+                        web-mode
+                        js-mode
+                        python-mode
+                        rust-mode
+                        org-mode
+                        nix-mode)
+  '(:separate company-files))
+#+end_src
+
+Add rnix-lsp language server
+#+name: lsp-add-rnix
+#+begin_src elisp
+(add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+                  :major-modes '(nix-mode)
+                  :server-id 'nix))
+#+end_src
+
+Disable lsp modeline diagnostics and sideline because it causes lag
+#+name: lsp-modeline-diagnostics
+#+begin_src elisp
+(setq lsp-modeline-diagnostics-enable nil)
+#+end_src
+#+name: lsp-ui-sideline-enable
+#+begin_src elisp
+(setq lsp-ui-sideline-enable nil)
+#+end_src
+
+#+name: emacs-company-config
+#+begin_src elisp :noweb no-export
+;; Company completion
+(after! company
+  <<company-idle-delay>>
+  <<company-minimum-prefix-length>>
+  <<company-show-numbers>>
+  )
+<<company-files-add>>
+
+;; LSP language server
+(after! lsp-mode
+  <<lsp-add-rnix>>
+  <<lsp-modeline-diagnostics>>
+  <<lsp-ui-sideline-enable>>
+  )
+#+end_src
+** Projectile
+Projectile is a project interaction library for Emacs.
+
+Set project search path to ~$HOME/code~
+#+name: projectile-add-searchpath
+#+begin_src elisp
+(setq projectile-project-search-path '("~/code"))
+#+end_src
+
+Add this repository(~$HOME/.nixconfig~) to projectile
+#+name: projectile-add-nixconfig
+#+begin_src elisp
+(projectile-add-known-project "~/.nixconfig")
+#+end_src
+** Magit
+Magit is a complete text-based user interface to Git inside emacs.
+
+Configure magit
+
+Enable magit syntax highlight
+Needs ~pkgs.gitAndTools.delta~ installed
+Install magit-delta:
+#+name: magit-delta-package
+#+begin_src elisp
+(package! magit-delta)
+#+end_src
+Enable it:
+#+name: magit-delta-enable
+#+begin_src elisp
+(after! magit
+  (magit-delta-mode +1))
+#+end_src
+** Dired
+Set dired default to ranger mode
+#+name: emacs-dired-ranger
+#+begin_src elisp
+(use-package! ranger
+    :config (setq ranger-override-dired 'ranger))
+#+end_src
+** org-mode
+Configure org-mode
+
+Set org-mode directory
+#+name: emacs-org-directory
+#+begin_src elisp
+(setq org-directory "~/org/")
+#+end_src
+
+Start every org-mode files folded.
+It can be set per-file, but better also set here:
+#+name: emacs-org-startup-folded
+#+begin_src elisp
+(setq org-startup-folded t)
+#+end_src
+
+Start every org-mode files with inline images
+#+name: emacs-org-startup-inline-images
+#+begin_src elisp
+(setq org-startup-with-inline-images t)
+#+end_src
+
+Enable variable pitch font in org-mode using a package called mixed-pitch
+Install it:
+#+name: emacs-org-mixed-pitch-install
+#+begin_src elisp
+(package! mixed-pitch)
+#+end_src
+Hook it into org-mode:
+#+name: emacs-org-mixed-pitch-enable
+#+begin_src elisp
+(use-package! mixed-pitch
+  :hook
+  (org-mode . mixed-pitch-mode))
+#+end_src
+You have to set variable pitch font from link below
++ [[Emacs fonts][Fonts]]
+company-mode becomes zig zag in org-mode using this package. Use company-box(childframe) to fix it.
+
+** Evil-mode
+Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions.
+It comes with doom-emacs.
+Configure it:
+
+Disable evil-escape
+evil-escape is a customizable key sequence to escape from insert state and everything else in Emacs.
+It's binded in "jk" by default. I don't use it.
+#+name: evil-escape-disable
+#+begin_src elisp
+(after! evil-escape (evil-escape-mode -1))
+#+end_src
+
+Set evil-mode substitute(search and replace) to global by default
+#+name: evil-substitute-global
+#+begin_src elisp
+(after! evil (setq evil-ex-substitute-global t))
+#+end_src
+** Rainbow mode
+Enable rainbow mode(RGB code preview) for all files
+#+name: emacs-rainbow-mode-hook
+#+begin_src elisp
+(add-hook 'text-mode-hook 'rainbow-mode)
+(add-hook 'prog-mode-hook 'rainbow-mode)
+#+end_src
+** Haskell mode
+Use brittany to format haskell file
+#+name: emacs-haskell-brittany
+#+begin_src elisp
+(use-package! haskell-mode
+  :config
+  (setq haskell-mode-stylish-haskell-path "brittany")
+)
+#+end_src
+
+Set haskell-language-server as LSP
+#+name: emacs-haskell-language-server
+#+begin_src elisp
+(use-package! lsp-haskell
+ :config
+ (setq lsp-haskell-process-path-hie "haskell-language-server-wrapper")
+)
+#+end_src
+** Twittering mode
+Display icons
+Requires imagemagick
+#+name: emacs-twittering-mode-icon
+#+begin_src elisp
+(after! twittering-mode
+  (setq twittering-icon-mode t)
+  )
+#+end_src
+** Performance (optimize, remove the clutter)
+Disable modeline word
+#+name: doom-modeline-disable-word-count
+#+begin_src elisp
+(setq doom-modeline-enable-word-count nil)
+#+end_src
+
+Faster childframe performance
+#+name: emacs-posframe-resizemode
+#+begin_src elisp
+(setq posframe-gtk-resize-child-frames 'resize-mode)
+#+end_src
+
+Fast but imprecise scrolling
+#+name: emacs-fast-but-imprecise-scrolling
+#+begin_src elisp
+(setq fast-but-imprecise-scrolling t)
+#+end_src
+
+Enable Pixel Scroll Mode for smoother (jk) scroll
+#+name: emacs-pixel-scroll-mode
+#+begin_src elisp
+(add-hook 'prog-mode-hook 'pixel-scroll-mode)
+(add-hook 'text-mode-hook 'pixel-scroll-mode)
+#+end_src
+
+Never go back to the old scrolling behaviour
+#+name: emacs-pixel-dead-line
+#+begin_src elisp
+(setq pixel-dead-time 0)
+#+end_src
+
+Scroll by number of pixels instead of lines
+#+name: emacs-pixel-resolution-fine-flag
+#+begin_src elisp
+(setq pixel-resolution-fine-flag t)
+#+end_src
+
+Disable line highlight
+#+name: emacs-disable-hl-line-mode
+#+begin_src elisp
+(remove-hook! doom-first-buffer #'global-hl-line-mode)
+#+end_src
+** emacs.nix base code
+#+begin_src nix :tangle modules/editors/emacs.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ...}:
+{
+  <<emacs-install>>
+  <<emacs-package>>
+  <<vterm-install>>
+  <<emacs-enable-daemon>>
+}
+#+end_src
+** doom-emacs config.el base code
+#+begin_src elisp :tangle doom.d/config.el :noweb no-export
+;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+;This file is generated from "README.org"
+<<emacs-fix-nativecomp>>
+<<emacs-doom-fonts>>
+<<emacs-extrafonts>>
+<<emacs-custom-set-faces>>
+<<emacs-emojify-display-style>>
+<<emacs-theme>>
+<<emacs-theme-bold>>
+<<emacs-theme-italic>>
+<<emacs-treemacs-theme>>
+<<emacs-disable-line-number>>
+<<emacs-indent-space>>
+<<emacs-indent-guide-config>>
+<<projecile-add-searchpath>>
+<<projectile-add-nixconfig>>
+<<doom-modeline-disable-word-count>>
+<<emacs-posframe-resizemode>>
+<<emacs-fast-but-imprecise-scrolling>>
+<<emacs-pixel-scroll-mode>>
+<<emacs-pixel-dead-line>>
+<<emacs-pixel-resolution-fine-flag>>
+<<emacs-disable-hl-line-mode>>
+<<centaur-tabs-config>>
+<<emacs-company-config>>
+<<emacs-haskell-mode-indent>>
+<<emacs-history-length>>
+<<emacs-rainbow-mode-hook>>
+<<emacs-org-directory>>
+<<emacs-org-startup-folded>>
+<<emacs-org-startup-inline-images>>
+<<emacs-org-mixed-pitch-enable>>
+<<magit-delta-enable>>
+<<evil-escape-disable>>
+<<evil-substitute-global>>
+<<emacs-auto-save>>
+<<emacs-delete-trash>>
+<<emacs-x-stretch-cursor>>
+<<emacs-dired-ranger>>
+<<emacs-haskell-brittany>>
+<<emacs-haskell-language-server>>
+<<emacs-opacity>>
+<<emacs-twittering-mode-icon>>
+#+end_src
+* neovim
+** Open lazygit commit window inside neovim
+#+name: fish-lazygit-neovim
+#+begin_src fish
+# Open lazygit commit window inside neovim
+if [ -n "$NVIM_LISTEN_ADDRESS" ];
+    alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+end
+
+if [ -n "$NVIM_LISTEN_ADDRESS" ];
+    export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+    export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+else
+    export VISUAL="nvim"
+    export EDITOR="nvim"
+end
+#+end_src
+* Dev environment
+** Haskell
+Haskell packages to install on home environment
+We need haskell-language-server to use in emacs
+#+name: haskell-packages
+#+begin_src nix
+haskell-env = pkgs.unstable.haskellPackages.ghcWithHoogle (
+  hp: with hp; [
+    xmonad
+    xmonad-contrib
+    xmonad-extras
+    apply-refact
+    haskell-language-server
+    brittany
+    cabal-install
+    hlint
+    xmobar
+  ]
+);
+#+end_src
+
+put these packages at ~home.packages~ to install like this:
+#+name: haskell-packages-env
+#+begin_src nix
+haskell-env
+#+end_src
+* Web Browser
+** qutebrowser
+I use qutebrowser as main browser.
+qutebrowser is a keyboard-focused(Vim-style key bindings) browser with a minimal GUI based on Chromium(qtwebengine).
++ [[qutebrowser Colors][Colors]]
++ [[qutebrowser Fonts][Fonts]]
+#+begin_src nix :tangle modules/gui/qutebrowser.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  programs.qutebrowser = {
+    <<qutebrowser-enable>>
+    <<qutebrowser-searchengine>>
+    <<qutebrowser-gpu-acceleration>>
+    <<qutebrowser-mpv>>
+    <<qutebrowser-mpv-hint>>
+    <<qutebrowser-start-page>>
+    <<qutebrowser-default-zoom>>
+    <<qutebrowser-fonts>>
+    <<qutebrowser-darkmode>>
+    <<qutebrowser-colors>>
+    <<qutebrowser-history-max-completion>>
+    extraConfig = ''
+      <<qutebrowser-emacs-editor>>
+    '';
+
+  };
+}
+#+end_src
+*** Install qutebrowser
+Turn on this option to install qutebrowser
+#+name: qutebrowser-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Search engine
+While the default option (DuckDuckGo) is great, I'm still not ready to switch to it.
+So, I choose to use Google as default search engine
+qutebrowser can set multiple search engines, but I don't use it.
+#+name: qutebrowser-searchengine
+#+begin_src nix
+searchEngines = {
+    DEFAULT = "https://google.com/search?q={}";
+};
+#+end_src
+*** GPU acceleration
+Idk why, these gpu acceleration flags are disabled in qtwebengine by default (See [[https://github.com/qutebrowser/qutebrowser/issues/5378][Issue 5378]])
+These flags makes a significant difference in perfomance, CPU usage, and battery life. Especially usable for laptop. Enable it.
+#+name: qutebrowser-gpu-acceleration
+#+begin_src nix
+settings.qt.args = [ "enable-native-gpu-memory-buffers" "enable-gpu-rasterization" "use-gl=egl" "ignore-gpu-blacklist" "num-raster-threads=4" ];
+#+end_src
+*** Youtube playback with mpv
+Youtube video uses vp9 codec nowadays, that can't be playbacked in Linux with GPU acceleration.
+That can be workaronuded by using Plugin to force h264 in Firefox.
+But, qutebrowser can't. So, just play the video in mpv as alternative workaround.
+Press ~yd~ to open current youtube video URL in mpv
+#+name: qutebrowser-mpv
+#+begin_src nix
+keyBindings.normal."yd" = "spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' {url}";
+#+end_src
+Or, ~yf~ use hints to select and open youtube video in mpv
+#+name: qutebrowser-mpv-hint
+#+begin_src nix
+keyBindings.normal."yf" = "hint links spawn mpv --ytdl-format='bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best' --force-window yes {hint-url}";
+#+end_src
+*** Qutebrowser start page
+Set my own start page
+#+name: qutebrowser-start-page
+#+begin_src nix
+settings.url.start_pages = [ "https://btwiusegentoo.github.io/start.html" ];
+settings.url.default_page = "https://btwiusegentoo.github.io/start.html";
+#+end_src
+*** Max completion history items
+Set qutebrowser max completion items from history to 30
+#+name: qutebrowser-history-max-completion
+#+begin_src nix
+settings.completion.web_history.max_items = 30;
+#+end_src
+*** Default zoom
+Even with 1080p xrandr scale in laptop or 1440p xrandr scale in desktop, I feel everything is too big(possibly I'm weird)
+So I have to set default zoom to 90%
+#+name: qutebrowser-default-zoom
+#+begin_src nix
+settings.zoom.default = "90%";
+#+end_src
+*** Edit text on qutebrowser using emacs
+You can write text in qutebrowser using emacs.
+This is really useful when using Reddit, or writing GitHub issue,etc.
+Requires [[Emacs daemon]]
+#+name: qutebrowser-emacs-editor
+#+begin_src python :tangle no
+c.editor.command = ["emacsclient", "-c", "--eval", "(find-file \"{}\")", "(org-mode)"]
+#+end_src
+** Firefox
+Firefox is my backup browser.
+I Use for certain websites that qutebrowser can't access(like widevine websites in NixOS), or games, etc.
+#+begin_src nix :tangle modules/gui/firefox.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  programs.firefox = {
+    <<firefox-enable>>
+    <<firefox-package>>
+    <<firefox-extensions>>
+    profiles = {
+      default = {
+        isDefault = true;
+        name = "Default";
+        settings = {
+          <<firefox-startpage>>
+          <<firefox-search-isus>>
+        };
+      };
+    };
+  };
+}
+#+end_src
+*** Install Firefox
+Turn on to install Firefox
+#+name: firefox-enable
+#+begin_src nix
+enable = true;
+#+end_src
+*** Firefox package
+I like to use Firefox from nixpkgs-unstable
+#+name: firefox-package
+#+begin_src nix
+package = pkgs.unstable.firefox;
+#+end_src
+*** Extensions
+Extensions to install goes here:
+#+name: firefox-extensions
+#+begin_src nix :noweb no-export
+extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+  <<firefox-tridactyl-install>>
+  ublock-origin
+];
+#+end_src
+*** Tridactyl
+Tridactyl is a Firefox plugin that provides Vim key bindings. Makes Firefox usable.
+Replaces Firefox’s control mechanism with one modelled on Vim.
+
+Let's install it:
+#+name: firefox-tridactyl-install
+#+begin_src nix
+tridactyl
+#+end_src
+
+**** TODO Configuration
+Idk why, file based configuration doesn't work now.
+Configuration to make it behave like qutebrowser
+#+name: tridactylrc
+#+begin_src vimrc :tangle no
+
+" Remove local config
+sanitise tridactyllocal tridactylsync
+
+" Adjust scroll speed
+bind j scrollline -2
+bind k scrollline 2
+" Set tab move direction same as qutebrowser
+bind J tabnext
+bind K tabprev
+" Use qutebrowser like behavior for new tab :open
+bind O fillcmdline tabopen
+#+end_src
+Install tridactyl configuration into ~$HOME/.config/tridactyl/tridactylrc~
+#+name: tridactylrc-symlink
+#+begin_src nix
+"tridactyl/tridactylrc".text = ''
+    <<tridactylrc>>
+'';
+#+end_src
+
+*** Start page
+Set my own startpage
+#+name: firefox-startpage
+#+begin_src nix
+"browser.startup.homepage" = "https://btwiusegentoo.github.io/start.html";
+#+end_src
+*** Use US google search engine
+#+name: firefox-search-isus
+#+begin_src nix
+"browser.search.isUS" = true;
+#+end_src
+* Multimedia
+** mpv
+mpv is a FOSS, lightweight command line media player. It supports a wide variety of media file formats.
+I mostly use it to play Youtube videos [[Youtube playback with mpv][spawning from qutebrowser]] , Thanks to [[ https://github.com/ytdl-org/youtube-dl][youtube-dl]]
++ [[mpv background color][Background Color]]
+#+begin_src nix :tangle modules/gui/mpv.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  <<mpv-install>>
+  <<mpv-background-color>>
+  <<mpv-hardware-decoding>>
+  <<mpv-bindings>>
+}
+#+end_src
+*** Install mpv
+Turn on to install mpv
+#+name: mpv-install
+#+begin_src nix
+programs.mpv.enable = true;
+#+end_src
+*** Enable hardware decoding
+Hardware decoding is not enabled by default because it's likely to cause issues like tearing, stutter, etc on Low Power GPUs
+My GPUs are totally fine. Enable it:
+#+name: mpv-hardware-decoding
+#+begin_src nix
+programs.mpv.config.hwdec = "auto";
+programs.mpv.config.hwdec-codecs = "all";
+#+end_src
+*** mpv default volume
+Set the startup volume. 0 means silence, 100 means no volume reduction or ampififacion.
+Negative values can be passed for compatibility, but are treated as 0.
+#+name: mpv-default-volume
+#+begin_src nix
+programs.mpv.config.volume = 80;
+#+end_src
+*** mpv key bindings
+Even though I use [[Dvorak]], I'm vim keybinding user.
+*hjkl* feels much better than arrow key.
+It's a great idea to control volume and seek video/music with *hjkl*
+*l* already have set to ab-loop for default. So I have to change it.
+#+name: mpv-bindings
+#+begin_src nix
+programs.mpv.bindings = {
+    h = "seek -10";
+    j = "add volume -2";
+    k = "add volume 2";
+    l = "seek 10";
+    "Ctrl+l" = "ab-loop";
+};
+#+end_src
+** zathura
+zathura is a highly customizable and functional document viewer based on the girara user interface library and several document libraries.
++ [[zathura colors][Colors]]
+#+begin_src nix :tangle modules/gui/zathura.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  <<zathura-enable>>
+  <<zathura-recolor>>
+  <<zathura-recolor-colors>>
+  <<zathura-colors>>
+}
+#+end_src
+*** Enable zathura
+Turn on to install zathura
+#+name: zathura-enable
+#+begin_src nix
+programs.zathura.enable = true;
+#+end_src
+*** Recolor
+Turn on to recolor the document
+#+name: zathura-recolor
+#+begin_src nix
+programs.zathura.options.recolor = "true";
+#+end_src
+* Security
+** doas
+The *doas* utility is a program originally written for OpenBSD, that can be used as alternative for *sudo*
+The following code disables *sudo*, enables *doas*, permits ~@wheel~ group users to use doas with password.
+~keepEnv~ makes retain the environment variables when creating the environment for the new process.
+~persist~ means it literally. After running doas successfully, do not ask password again for some time.
+#+begin_src nix :tangle modules/common/doas.nix
+# This file is generated from "README.org"
+{
+  security.sudo.enable = false;
+  security.doas = {
+    enable = true;
+    wheelNeedsPassword = true;
+    extraRules = [
+      { groups = [ "wheel" ]; noPass = false; keepEnv = true; persist = true; }
+    ];
+  };
+}
+#+end_src
+
+** ClamAV
+Clam AntiVirus is a FOSS antivirus software toolkit able to detect many types of malicious software, including viruses.
+#+begin_src nix :tangle modules/services/clamav.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  <<clamav-daemon-enable>>
+  <<clamav-daemon-config>>
+  <<clamav-updater-enable>>
+  <<clamav-updater-frequency>>
+  <<clamav-updater-interval>>
+  <<clamav-updater-config>>
+}
+#+end_src
+*** Enable ClamAV daemon
+#+name:clamav-daemon-enable
+#+begin_src nix
+services.clamav.daemon.enable = true;
+#+end_src
+*** ClamAV daemon configs
+#+name: clamav-daemon-config
+#+begin_src nix
+services.clamav.daemon.extraConfig = ''
+
+'';
+#+end_src
+*** Enable ClamAV updater
+Enable ClamAV freshclam updater
+#+name: clamav-updater-enable
+#+begin_src nix
+services.clamav.updater.enable = true;
+#+end_src
+*** ClamAV update frequency
+Number of database checks per day
+#+name: clamav-updater-frequency
+#+begin_src nix
+services.clamav.updater.frequency = 24;
+#+end_src
+*** ClamAV updater interval
+How often freshclam is invoked
+#+name: clamav-updater-interval
+#+begin_src nix
+services.clamav.updater.interval = "hourly";
+#+end_src
+*** ClamAV updater configs
+#+name: clamav-updater-config
+#+begin_src nix
+services.clamav.updater.extraConfig = ''
+
+'';
+#+end_src
+** GnuPG
+GnuPG is a complete and free implementation of the OpenPGP standard.
+GnuPG allows to encrypt and sign your data and communication, features a versatile key management system as well as access modules for all kinds of public key directories.
+#+begin_src nix :tangel modules/services/gpg.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  <<gpg-enable>>
+  <<gpg-settings>>
+  <<gpg-agent-enable>>
+  <<gpg-agent-ssh>>
+  <<gpg-agent-grabkbmouse>>
+  <<gpg-agent-pinentry-flavor>>
+}
+#+end_src
+*** Enable GPG
+Install GnuPG
+#+name: gpg-enable
+#+begin_src nix
+programs.gpg.enable = true;
+#+end_src
+*** GPG settings
+#+name: gpg-settings
+#+begin_src nix
+programs.settings = {
+};
+#+end_src
+*** Enable GPG agent
+whether to install GnuPG private key agent
+#+name: gpg-agent-enable
+#+begin_src nix
+services.gpg-agent.enable = true;
+#+end_src
+*** Enable SSH support
+Use GPG agent for SSH keys
+#+name: gpg-agent-ssh
+#+begin_src nix
+services.gpg-agent.enableSshSupport = true;
+#+end_src
+*** Grab the keyboard and mouse
+Tell the pinentry to grab the keyboard and mouse. This option should in general be used to avoid X-sniffing attacks.
+#+name: gpg-agent-grabkbmouse
+#+begin_src nix
+services.gpg-agent.grabKeyboardAndMouse = true;
+#+end_src
+*** Select pinentry interface
+Use "curses" to be able to use GPG-agent without X11
+#+name: gpg-agent-pinentry-flavor
+#+begin_src nix
+services.gpg-agent.pinentryFlavor = "curses";
+#+end_src
+* Common configs
+** X server
+This module configures common stuff of xserver and displaymanager.
+Change layout [[#dvorak][here]] and repeat rate [[#xorg-repeat-rate][here]]
+
+Enable xserver
+#+name: xserver-enable
+#+begin_src nix
+enable = true;
+#+end_src
+
+Auto start xserver
+#+name: xserver-autorun
+#+begin_src nix
+autorun = true;
+#+end_src
+
+Xorg dpi
+#+name: xserver-dpi
+#+begin_src nix
+dpi = 96;
+#+end_src
+
+Following code goes to ~xserver.nix~ file
+#+begin_src  nix :tangle modules/common/xserver.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, config, ... }:
+{
+  services.xserver = {
+    <<xserver-enable>>
+    <<xserver-autorun>>
+    <<xserver-keymap>>
+    <<xserver-autorepeat>>
+    <<xserver-dpi>>
+    desktopManager.session = [
+      {
+        name = "home-manager";
+        start = ''
+          ${pkgs.runtimeShell} $HOME/.hm-xsession &
+          waitPID=$!
+        '';
+      }
+    ];
+    <<xserver-lightdm>>
+  };
+}
+#+end_src
+
+And this is for laptop
+#+begin_src  nix :tangle modules/common/xserverlaptop.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, config, ... }:
+{
+  services.xserver = {
+    <<xserver-enable>>
+    <<xserver-autorun>>
+    <<xserver-keymap>>
+    <<xserver-autorepeat>>
+    <<xserver-dpi>>
+    desktopManager.session = [
+      {
+        name = "home-manager";
+        start = ''
+          ${pkgs.runtimeShell} $HOME/.hm-xsession &
+          waitPID=$!
+        '';
+      }
+    ];
+    <<xserver-lightdm-laptop>>
+  };
+}
+#+end_src
+** LightDM
+The following code configures lightdm with mini greeter.
+I use LightDM because mini greeter is minimal, and it's easy to use as lockscreen with ~light-locker~.
+[[#lightdm-colors][Colors]]
+[[#lock-screen][Wallpaper]]
+#+name: xserver-lightdm
+#+begin_src nix :noweb no-export
+displayManager = {
+    lightdm = {
+    enable = true;
+    greeters.mini = {
+        enable = true;
+        extraConfig = ''
+        [greeter]
+        show-password-label = false
+        [greeter-theme]
+        <<lightdm-greeter-colors>>
+        border-width = 6px
+        <<lightdm-wallpaper>>
+        '';
+    };
+    };
+};
+#+end_src
+
+laptop config
+#+name: xserver-lightdm-laptop
+#+begin_src nix :noweb no-export
+displayManager = {
+    lightdm = {
+    enable = true;
+    greeters.mini = {
+        enable = true;
+        extraConfig = ''
+        [greeter]
+        show-password-label = false
+        [greeter-theme]
+        <<lightdm-greeter-colors>>
+        border-width = 6px
+        <<lightdm-fhd-wallpaper>>
+        '';
+    };
+    };
+};
+#+end_src
+** Locale
+Module to config locale related stuff
++ [[IME]]
+#+begin_src nix :tangle modules/common/globallocale.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, config, ... }:
+
+{
+  i18n.defaultLocale = "en_US.UTF-8";
+  <<japanese-ime>>
+}
+#+end_src
+** XDG
+Configure XDG(X Desktop Group) stuff.
+This module is imported from home-manager
+#+begin_src nix :tangle modules/common/xdg.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+
+{
+  <<xdg-enable>>
+  <<xdg-userdirs>>
+  <<xdg-mime-enable>>
+  <<xdg-mimeapps>>
+  xdg.configFile = import ./xdg-configfiles.nix { inherit pkgs; };
+}
+#+end_src
+
+*** Enable XDG module
+#+name: xdg-enable
+#+begin_src nix
+xdg.enable = true;
+#+end_src
+*** Enable XDG user dirs
+XDG user dirs is a tool to manager "well known" user directories like the Desktop folder, Pictures folder, and the Music folder.
+These directories are created by enabling this.
+#+name: xdg-userdirs
+#+begin_src nix
+xdg.userDirs.enable = true;
+#+end_src
+*** Enable XDG mime
+Install files to support the XDG Shared MIME-info specification and the XDG MIME Applications specification.
+#+name: xdg-mime-enable
+#+begin_src nix
+xdg.mime.enable = true;
+#+end_src
+*** XDG mimeapps
+Configure default applications/associations of applications with mimetypes
+#+name: xdg-mimeapps
+#+begin_src nix
+xdg.mimeApps = {
+  enable = true;
+  defaultApplications = {
+    "text/html" = "org.qutebrowser.qutebrowser.desktop";
+    "x-scheme-handler/http" = "org.qutebrowser.qutebrowser.desktop";
+    "x-scheme-handler/https" = "org.qutebrowser.qutebrowser.desktop";
+    "x-scheme-handler/about" = "org.qutebrowser.qutebrowser.desktop";
+    "x-scheme-handler/unknown" = "org.qutebrowser.qutebrowser.desktop";
+  };
+};
+#+end_src
+* Services
+** OpenSSH
+This module configures OpenSSH, a suite of secure networking utilities based on the Secure Shell (SSH) protocol, which provides a secure channel over an unsecured network in a client–server architecture.
+#+begin_src nix :tangle modules/services/openssh.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  <<ssh-enable>>
+  <<ssh-challenge-response-authentication>>
+  <<ssh-x11-forward>>
+  <<ssh-open-firewall>>
+  <<ssh-password-authentication>>
+  <<ssh-root-login>>
+}
+#+end_src
+*** Enable SSH
+#+name: ssh-enable
+#+begin_src nix
+services.openssh.enable = true;
+#+end_src
+*** Challenge Response Authentication
+challenge response authentication uses a cryptographic protocol that allows to prove that the user knows the password without revealing the password itself.
+thus, makes the authentication more secure.
+#+name: ssh-challenge-response-authentication
+#+begin_src nix
+services.openssh.challengeResponseAuthentication = true;
+#+end_src
+*** X11 forwarding
+X11 forwarding is a method to start a graphical apllication installed on a remote system and forward that application to the local system.
+#+name: ssh-x11-forward
+#+begin_src nix
+services.openssh.forwardX11 = false;
+#+end_src
+*** Open firewall
+Whether to automatically open the ssh ports in the firewall.
+#+name: ssh-open-firewall
+#+begin_src nix
+services.openssh.openFirewall = true;
+#+end_src
+*** Password authentication
+Disable this to use Public Key Authentication
+#+name: ssh-password-authentication
+#+begin_src nix
+services.openssh.passwordAuthentication = false;
+#+end_src
+*** Root login
+Whether the root user can login using ssh.
+#+name: ssh-root-login
+#+begin_src nix
+services.openssh.permitRootLogin = "no";
+#+end_src
+** Dunst
+Dunst is a minimal notification daemon. Mostly used by WM users.
+This module is imported from home-manager
++  [[Dunst(Notifications) font][Fonts]]
++ [[Notification Colors][Colors]]
+#+begin_src nix :tangle modules/services/dunst.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  <<dunst-enable>>
+  <<dunst-settings>>
+  <<dunst-font>>
+  <<dunst-colors>>
+}
+#+end_src
+*** Enable dunst
+#+name: dunst-enable
+#+begin_src nix
+services.dunst.enable = true;
+#+end_src
+*** Dunst Settings
+#+name: dunst-settings
+#+begin_src nix :noweb no-export
+services.dunst.settings = {
+    global.transparency = 10;
+    global.alignment = "left";
+    global.geometry = "300x5-30+20";
+    urgency_low.timeout = 10;
+    urgency_normal.timeout = 10;
+    urgency_critical.timeout = 10;
+};
+#+end_src
+** Picom
+Picom is a X11 compositor.
+It can be used to configure opacity of programs, blur,etc.
+This module is imported from home-manager
+#+begin_src nix :tangle modules/services/picom.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  <<picom-enable>>
+  <<picom-package>>
+  <<picom-backend>>
+  <<picom-experimental-backends>>
+  <<picom-opacity>>
+  services.picom.extraOptions = ''
+    <<picom-client-opacity>>
+    <<picom-detect-rounded-corners>>
+    <<picom-blur>>
+    <<picom-blur-exclude>>
+    <<picom-corner-radius>>
+    <<picom-rounded-corners-exclude>>
+    <<picom-enable-rounded-borders>>
+    <<picom-round-borders-exclude>>
+  '';
+}
+#+end_src
+
+*** Enable picom
+#+name: picom-enable
+#+begin_src nix
+services.picom.enable = true;
+#+end_src
+*** Picom package
+This fork contains dual kawase blur(KDE-like fancy blur) and rounded borders.
+Requires NUR.
+#+name: picom-package
+#+begin_src nix
+services.picom.package = pkgs.nur.repos.reedrw.picom-next-ibhagwan;
+#+end_src
+*** Picom backend
+xrender backend uses software rendering.
+glx uses GPU rendering.
+It's obviously that glx is better.
+round-borders was originally written for xrender backend, but it's ported to glx
+kawase-blur was originally written for glx backend.
+Just use glx.
+#+name: picom-backend
+#+begin_src nix
+services.picom.backend = "glx";
+#+end_src
+*** Experimental backends
+Whether to use the new experimental backends.
+Currently, new backends feature better vsync with the xrender backend and improved input lag with the glx backend(for non-NVIDIA users).
+Also, I think dual_kawase blur and rounded borders have better implementation within the experimental backends code.
+#+name: picom-experimental-backends
+#+begin_src nix
+services.picom.experimentalBackends = true;
+#+end_src
+
+*** Detect Client Opacity
+Detect _NET_WM_OPACITY on client windows.
+This prevents opacity being ignored for some apps.
+#+name: picom-client-opacity
+#+begin_src nix
+detect-client-opacity = true;
+#+end_src
+*** Detect rounded corners
+Detect rounded corners and treat them as rectangular
+#+name: picom-detect-rounded-corners
+#+begin_src nix
+detect-rounded-corners = true;
+#+end_src
+* Machines
+** Common Defaults
+Import files on each machine directories
+#+name: configurationnix-defaultimports
+#+begin_src nix
+# Include the results of the hardware scan.
+./hardware-configuration.nix
+# import encrypted user settings/secrets
+./usersettings.nix
+#+end_src
+
+This is required to enable various firmwares like WiFi
+#+name: hardware-redistributable-firmware
+#+begin_src nix
+hardware.enableRedistributableFirmware = true;
+#+end_src
+
+** Boot/kernel/initrd
+Boot faster
+#+name: configurationnix-faster-boot
+#+begin_src nix
+systemd.services.systemd-udev-settle.serviceConfig.TimeoutSec = 5;
+systemd.services.NetworkManager-wait-online.enable = false;
+#+end_src
+
+Enable latest kernel from nixos-unstable
+#+name: configurationnix-latest-kernel
+#+begin_src nix
+boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+#+end_src
+
+Enable plymouth(boot screen splash)
+#+name: configurationnix-plymouth-enable
+#+begin_src nix
+boot.plymouth.enable = true;
+#+end_src
+
+*** Grub
+Enable legacy bios grub(laptop and server)
+#+name: configurationnix-enable-grub
+#+begin_src nix
+boot.loader.grub.enable = true;
+boot.loader.grub.version = 2;
+#+end_src
+
+Disable grub timeout(basically boot straight to NixOS), show grub only when shift key is holded
+#+name: configurationnix-grub-timeout
+#+begin_src nix
+boot.loader.timeout = 0;
+boot.loader.grub.extraConfig = ''
+if keystatus --shift ; then
+    set timeout=-1
+else
+    set timeout=0
+fi
+'';
+#+end_src
+
+Copy kernels and initrds to /boot. This is enabled automatically if /boot is on a different partition than / .
+#+name: configurationnix-grub-copykernels
+#+begin_src nix
+boot.loader.grub.copyKernels = true;
+#+end_src
+*** systemd-boot
+SystemD-boot is used on desktop.
+Enable it:
+#+name: configurationnix-systemdboot-enable
+#+begin_src nix
+boot.loader.systemd-boot.enable = true;
+boot.loader.efi.canTouchEfiVariables = true;
+#+end_src
+*** filesystem path/luks
+**** Desktop
+#+name: configurationnix-desktop-fspath
+#+begin_src nix
+
+# Luks encrypted partition
+boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/02d555e3-f8d2-4617-860e-06c08bec521b";
+
+# Root partition after unlocking luks
+fileSystems."/" =
+{
+    device = "/dev/disk/by-uuid/ba342cbb-2d6c-453d-8d25-df8fad829c37";
+    fsType = "xfs";
+};
+
+# Boot partition
+fileSystems."/boot" =
+{
+    device = "/dev/disk/by-uuid/E5A7-FB2A";
+    fsType = "vfat";
+};
+
+# Swap partition uuid
+swapDevices =
+[{ device = "/dev/disk/by-uuid/aedff2c4-f34c-410c-9612-aa9df0dd3cef"; }];
+#+end_src
+**** Laptop
+#+name: configurationnix-laptop-fspath
+#+begin_src nix
+# Luks encrypted partition
+boot.loader.grub.enableCryptodisk = true;
+boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/27740e7b-5bb7-482a-94dc-72df547f1f66";
+
+# Set what drive to install grub
+boot.loader.grub.device = "/dev/sda";
+
+# Root partition after unlocking luks
+fileSystems."/" =
+  {
+    device = "/dev/disk/by-uuid/b904a3b9-a30e-425c-9e6c-6f8a56cedbf9";
+    fsType = "xfs";
+  };
+
+# Boot partition
+fileSystems."/boot" =
+  {
+    device = "/dev/disk/by-uuid/f548cd01-269e-4b56-8aab-2cf06f278f88";
+    fsType = "ext2";
+  };
+
+# Swap partition uuid
+swapDevices =
+  [{ device = "/dev/disk/by-uuid/1c57f70d-7083-4109-8cd5-f407a51d39cf"; }];
+#+end_src
+**** Server
+#+name: configurationnix-server-fspath
+#+begin_src nix
+# Luks encrypted partition
+boot.loader.grub.enableCryptodisk = true;
+boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/29e93967-944e-4306-adb2-8d2441ca5ed5";
+
+# Set what drive to install grub
+boot.loader.grub.device = "/dev/sda";
+
+# Root partition after unlocking luks
+fileSystems."/" =
+  {
+    device = "/dev/disk/by-uuid/4979bbc1-28e8-4505-9a3e-2d2fc0f41fa3";
+    fsType = "xfs";
+  };
+
+# Boot partition
+fileSystems."/boot" =
+  {
+    device = "/dev/disk/by-uuid/f5979f75-d494-49ba-a149-82a612dcf543";
+    fsType = "ext2";
+  };
+
+# Swap partition uuid
+swapDevices =
+  [{ device = "/dev/disk/by-uuid/8bb10870-d71d-484b-a861-d702a2f55484"; }];
+#+end_src
+** Hardware
+Update Intel micro code(laptop, server)
+#+name: configurationnix-intel-microcode
+#+begin_src nix
+hardware.cpu.intel.updateMicrocode = true;
+#+end_src
+
+Update AMD micro code(desktop)
+#+name: configurationnix-amd-microcode
+#+begin_src nix
+hardware.cpu.amd.updateMicrocode = true;
+#+end_src
+
+Enable opengl
+32bit is required for some programs like lutris/wine
+#+name: configurationnix-opengl-enable
+#+begin_src nix
+hardware.opengl.enable = true;
+hardware.opengl.driSupport = true;
+hardware.opengl.driSupport32Bit = true;
+#+end_src
+*** xserver AMDGPU driver
+This belongs to desktop config
+#+name: configurationnix-amdgpu-driver
+#+begin_src nix
+services.xserver.videoDrivers = [ "amdgpu" ];
+services.xserver.deviceSection = ''
+Option "TearFree" "true"
+'';
+#+end_src
+*** xserver intel gpu driver
+This belongs to laptop config
+#+name: configurationnix-intelgpu-driver
+#+begin_src nix
+services.xserver.videoDrivers = [ "intel" ];
+services.xserver.deviceSection = ''
+Option "TearFree" "true"
+'';
+#+end_src
+** Desktop
+*** Set desktop hostname
+#+name: configurationnix-desktop-hostname
+#+begin_src nix
+networking.hostName = "desktop1";
+#+end_src
+*** configuration.nix
+#+begin_src nix :tangel machines/maindesktop/configuration.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, fetchgit, ... }:
+{
+
+  imports =
+    [
+      <<configurationnix-defaultimports>>
+    ];
+
+  # Boot{{{
+  # Use the systemd-boot EFI boot loader.
+  boot = {
+    extraModulePackages = with config.boot.kernelPackages; [ xpadneo ];
+    extraModprobeConfig = ''
+      options bluetooth disable_ertm=Y
+    '';
+  };
+  # }}}
+  <<configurationnix-systemdboot-enable>>
+  <<configurationnix-faster-boot>>
+  <<configurationnix-latest-kernel>>
+  <<configurationnix-plymouth-enable>>
+  <<configurationnix-desktop-fspath>>
+
+  <<hardware-redistributable-firmware>>
+  <<enable-sound>>
+  <<configurationnix-amd-microcode>>
+  <<configurationnix-opengl-enable>>
+  hardware.opengl.extraPackages32 = with pkgs.unstable.pkgsi686Linux; [ libva ];
+
+  programs = {
+    dconf.enable = true;
+    adb.enable = true;
+    java.enable = true;
+    java.package = pkgs.unstable.jdk;
+  };
+
+  <<configurationnix-desktop-hostname>>
+  # Networking{{{
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking = {
+    dhcpcd.enable = false;
+    useNetworkd = true;
+    useDHCP = false;
+    interfaces.enp9s0.useDHCP = true;
+    networkmanager = {
+      enable = true;
+      dns = "systemd-resolved";
+    };
+  };
+  #}}}
+
+  environment.variables = (import ../../modules/common/globalvars.nix);
+
+  virtualisation = import (../../modules/virtualisation/default.nix);
+  <<configurationnix-amdgpu-driver>>
+  services.xserver.wacom.enable = true;
+
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "20.03"; # Did you read the comment?
+
+}
+#+end_src
+*** Packages to install on desktop home environment
+#+name: home-manager-desktop-packages
+#+begin_src nix
+home.packages = with pkgs; [
+  <<haskell-packages-env>>
+  trash-cli
+  tree
+  bc
+  gitAndTools.diff-so-fancy
+  gitAndTools.delta
+  unstable.ripgrep
+  unstable.fd
+  unstable.fzf
+  unstable.mosh
+  binutils
+  killall
+  neofetch
+  pfetch
+  nodePackages.node2nix
+  cabal2nix
+  nix-index
+  niv
+  rnix-lsp
+  scrot
+  feh
+  tty-clock
+  appimage-run
+  lightlocker
+  circleci-cli
+  fontforge
+  palenight-gtk-theme
+  unstable.pop-icon-theme
+  unstable.hicolor-icon-theme # fallback gtk theme
+  unstable.pandoc
+  unstable.nitrogen
+  unstable.chafa
+  unstable.ueberzug
+  # nixpkgs
+  nixfmt
+  nixpkgs-fmt
+  nixpkgs-review
+  nix-prefetch-git
+  nix-prefetch-github
+  pypi2nix
+  # rust
+  unstable.cargo
+  # lua
+  unstable.luajit
+  unstable.luajitPackages.lua-lsp
+  # tui apps
+  cava
+  unstable.vifm-full
+  vifmimg
+  htop
+  unstable.bottom
+  ncpamixer
+  unstable.mps-youtube
+  unstable.lazygit
+  # gui apps
+  gimp
+  krita
+  kdenlive
+  olive-editor
+  blender
+  master.discord
+  tdesktop
+  pavucontrol
+  spotify
+  sxiv
+  unstable.retroarch
+  unstable.steam
+  unstable.virt-manager
+  unstable.pulseeffects
+  # node packages
+  nodePackages.gitmoji-cli
+  # dependencies
+  ffmpeg-full
+  unstable.ffmpegthumbnailer
+  frei0r
+  unstable.universal-ctags
+  libnotify
+  xsel # used by xmonad emoji prompt
+  unstable.youtube-dl
+  unstable.neovim-remote
+  unstable.direnv
+  unstable.imagemagick
+  unstable.zstd
+  unstable.editorconfig-core-c
+  unstable.sqlite
+  # misc
+  glxinfo
+  xclip
+  qt5.qttools
+  xkb-switch
+  unstable.libinput-gestures
+  unstable.xdotool
+  unstable.xorg.xwininfo
+  unstable.xfontsel
+  unstable.xorg.libXext
+  unstable.steam-run
+  xorg.xev
+  file
+  catimg
+  # joke command
+  cowsay
+  cmatrix
+  espeak
+  figlet
+  fortune
+  asciiquarium
+];
+#+end_src
+*** home.nix
+#+begin_src nix :tangle machines/maindesktop/home.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, lib, ... }:
+let
+  <<haskell-packages>>
+
+in
+{
+  <<home-manager-desktop-packages>>
+
+  <<lorri-enable>>
+  <<keynav-enable>>
+
+  # programs {{{
+  programs = {
+
+    home-manager.enable = true;
+
+    neovim = (import ../../modules/editors/neovim.nix) { inherit pkgs; };
+  };
+  #}}}
+
+  <<home-manager-keymap>>
+  <<xrandr-desktop-scale>>
+
+  # home files{{{
+  home.file = {
+
+    # xmobar{{{
+    ".xmonad/xmobar.hs".source = ../../haskell/xmobar.hs;
+    ".xmonad/xmobar.hs".onChange = ''
+      if [[ -v DISPLAY ]] ; then
+          echo "Recompiling xmobar"
+          xmobar -r ~/.xmonad/xmobar.hs &
+          sleep 2
+          disown
+          killall xmobar
+          echo "Restarting"
+          xmonad --restart
+      fi
+    ''; # }}}
+
+    # tmux theme
+    ".palenight-tmux".source = ../../.palenight-tmux;
+
+    # neovim dashboard logo
+    "Pictures/neovimlogo.png".source = (pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/neovim/neovim.github.io/master/logos/neovim-logo-flat.png";
+      sha256 = "1vl7mi87wisqhd9zigg24y2ksjyyjk6225bvw9qk4s6gfv62w4jm";
+    });
+
+    # emacs-anywhere
+    ".emacs_anywhere".source = (pkgs.fetchFromGitHub {
+      owner = "btwiusegentoo";
+      repo = "emacs-anywhere";
+      rev = "e739c8bf1930eeb68ecaf312a885f5788942154c";
+      sha256 = "0k0iay6pd01k2nyjm2n648n8ja36mgarvb9677ky2d758xkzgckv";
+    });
+
+    # doom emacs
+    # ".emacs.d/init.el".text = ''
+    #     (load "default.el")
+    # '';
+    ".doom.d/init.el".source = ../../doom.d/init.el;
+    ".doom.d/config.el".source = ../../doom.d/config.el;
+    ".doom.d/packages.el".source = ../../doom.d/packages.el;
+
+    ".ghc/ghci.conf".text = ''
+      :set prompt "%s λ: "
+    '';
+
+  };
+  #}}}
+
+  # xsession{{{
+  xsession = {
+    enable = true;
+    scriptPath = ".hm-xsession";
+
+    pointerCursor = {
+      package = pkgs.bibata-cursors;
+      name = "bibata-cursors";
+      size = 16;
+    };
+
+  }; #}}}
+
+  # xresources config{{{
+  xresources.properties = {
+    "Xft.dpi" = 96;
+  };
+  # }}}
+
+  # Home Manager config{{{
+  # Home Manager needs a bit of information about you and the
+  # paths it should manage.
+  home.username = "btw";
+  home.homeDirectory = "/home/btw";
+
+  # This value determines the Home Manager release that your
+  # configuration is compatible with. This helps avoid breakage
+  # when a new Home Manager release introduces backwards
+  # incompatible changes.
+  #
+  # You can update Home Manager without changing this value. See
+  # the Home Manager release notes for a list of state version
+  # changes in each release.
+  home.stateVersion = "20.03";
+
+  #}}}
+
+  # local env variables{{{
+  home.sessionVariables = {
+    "XDG_CONFIG_HOME" = "$HOME/.config";
+    "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
+    "COLORTERM" = "truecolor";
+  }; # }}}
+
+}
+#+end_src
+** Laptop
+*** Set laptop hostname
+#+name: configurationnix-laptop-hostname
+#+begin_src nix
+networking.hostName = "laptop1";
+#+end_src
+*** configuration.nix
+#+begin_src nix :tangle machines/mainlaptop/configuration.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, fetchgit, ... }:
+{
+
+  imports =
+    [
+      <<configurationnix-defaultimports>>
+    ];
+
+  boot = {
+    kernelModules = [ "i915" "tpm-rng" ];
+    extraModulePackages = with config.boot.kernelPackages; [ acpi_call ];
+    extraModprobeConfig = ''
+      options bluetooth disable_ertm=Y
+      options iwlwifi 11n_disable=8 bt_coex_active=N
+      options thinkpad_acpi experimental=1 fan_control=1
+    '';
+    kernelParams = [
+      <<configurationnix-laptop-brightness>>
+    ];
+  };
+  <<configurationnix-enable-grub>>
+  <<configurationnix-grub-timeout>>
+  <<configurationnix-grub-copykernels>>
+  <<configurationnix-faster-boot>>
+  <<configurationnix-latest-kernel>>
+  <<configurationnix-plymouth-enable>>
+  <<configurationnix-laptop-fspath>>
+
+  <<hardware-redistributable-firmware>>
+  <<enable-sound>>
+  <<configurationnix-intel-microcode>>
+  <<configurationnix-opengl-enable>>
+  hardware.opengl.extraPackages = with pkgs; [
+    vaapiIntel
+    vaapiVdpau
+    libvdpau-va-gl
+    intel-media-driver
+  ];
+
+  programs = {
+    dconf.enable = true;
+    adb.enable = true;
+    java.enable = true;
+    java.package = pkgs.unstable.jdk;
+  };
+
+  <<configurationnix-laptop-hostname>>
+  # Networking{{{
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking = {
+    dhcpcd.enable = false;
+    useDHCP = false;
+    interfaces.wlan0.useDHCP = false;
+    networkmanager = {
+      enable = true;
+      wifi = {
+        backend = "iwd";
+        macAddress = "random";
+        scanRandMacAddress = true;
+      };
+    };
+  };
+  #}}}
+
+  environment.variables = (import ../../modules/common/globalvars.nix);
+
+  virtualisation = import (../../modules/virtualisation/default.nix);
+
+  <<thinkpad-layout-service>>
+
+  <<configurationnix-intelgpu-driver>>
+
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "20.03"; # Did you read the comment?
+
+}
+#+end_src
+*** Packages to install on laptop home environment
+#+name: home-manager-laptop-packages
+#+begin_src nix :noweb no-export
+home.packages = with pkgs; [
+  <<haskell-packages-env>>
+  trash-cli
+  tree
+  bc
+  gitAndTools.diff-so-fancy
+  gitAndTools.delta
+  unstable.ripgrep
+  unstable.fd
+  unstable.fzf
+  killall
+  neofetch
+  pfetch
+  nodePackages.node2nix
+  cabal2nix
+  nix-index
+  niv
+  rnix-lsp
+  scrot
+  feh
+  tty-clock
+  appimage-run
+  lightlocker
+  circleci-cli
+  fontforge
+  palenight-gtk-theme
+  unstable.pop-icon-theme
+  unstable.hicolor-icon-theme # fallback gtk theme
+  unstable.pandoc
+  unstable.nitrogen
+  unstable.chafa
+  unstable.ueberzug
+  # nixpkgs
+  nixfmt
+  nixpkgs-fmt
+  nixpkgs-review
+  nix-prefetch-git
+  nix-prefetch-github
+  pypi2nix
+  # rust
+  unstable.cargo
+  # tui apps
+  cava
+  unstable.vifm-full
+  vifmimg
+  htop
+  unstable.powertop
+  unstable.bottom
+  ncpamixer
+  unstable.mps-youtube
+  unstable.lazygit
+  # gui apps
+  master.discord
+  tdesktop
+  pavucontrol
+  spotify
+  sxiv
+  unstable.pulseeffects
+  # node packages
+  nodePackages.gitmoji-cli
+  # dependencies
+  unstable.universal-ctags
+  libnotify
+  xsel # used by xmonad emoji prompt
+  unstable.youtube-dl
+  unstable.neovim-remote
+  unstable.direnv
+  unstable.imagemagick
+  unstable.xdotool
+  unstable.xorg.xwininfo
+  unstable.zstd
+  unstable.editorconfig-core-c
+  unstable.sqlite
+  # misc
+  glxinfo
+  xclip
+  file
+  catimg
+  steam-run
+  # joke command
+  cmatrix
+  figlet
+  fortune
+  asciiquarium
+];
+#+end_src
+*** home.nix
+#+begin_src nix :tangle machines/mainlaptop/home.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, lib, ... }:
+let
+
+  <<haskell-packages>>
+
+in
+{
+  <<home-manager-laptop-packages>>
+
+  <<lorri-enable>>
+  <<keynav-enable>>
+
+  # programs {{{
+  programs = {
+    home-manager.enable = true;
+    neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; };
+  };
+  #}}}
+
+  <<home-manager-keymap>>
+  <<xrandr-laptop-scale>>
+
+  # home files{{{
+  home.file = {
+
+    # xmobar{{{
+    ".xmonad/xmobar.hs".source = ../../haskell/xmobarlaptop.hs;
+    ".xmonad/xmobar.hs".onChange = ''
+      if [[ -v DISPLAY ]] ; then
+          echo "Recompiling xmobar"
+          xmobar -r ~/.xmonad/xmobar.hs &
+          sleep 2
+          disown
+          killall xmobar
+          echo "Restarting"
+          xmonad --restart
+      fi
+    ''; # }}}
+
+    # tmux theme
+    ".palenight-tmux".source = ../../.palenight-tmux;
+
+    # neovim dashboard logo
+    "Pictures/neovimlogo.png".source = (pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/neovim/neovim.github.io/master/logos/neovim-logo-flat.png";
+      sha256 = "1vl7mi87wisqhd9zigg24y2ksjyyjk6225bvw9qk4s6gfv62w4jm";
+    });
+
+    # emacs-anywhere
+    ".emacs_anywhere".source = (pkgs.fetchFromGitHub {
+      owner = "btwiusegentoo";
+      repo = "emacs-anywhere";
+      rev = "e739c8bf1930eeb68ecaf312a885f5788942154c";
+      sha256 = "0k0iay6pd01k2nyjm2n648n8ja36mgarvb9677ky2d758xkzgckv";
+    });
+
+    # doom emacs
+    # ".emacs.d/init.el".text = ''
+    #     (load "default.el")
+    # '';
+    ".doom.d/init.el".source = ../../doom.d/init.el;
+    ".doom.d/config.el".source = ../../doom.d/config.el;
+    ".doom.d/packages.el".source = ../../doom.d/packages.el;
+
+    ".ghc/ghci.conf".text = ''
+      :set prompt "%s 𝛌: "
+    '';
+
+  };
+  #}}}
+
+  # xsession{{{
+  xsession = {
+    enable = true;
+    scriptPath = ".hm-xsession";
+    #initExtra = ''
+    #${pkgs.xorg.xkbcomp}/bin/xkbcomp /etc/.jislayoutremap.xkb $DISPLAY
+    #'';
+    pointerCursor = {
+      package = pkgs.bibata-cursors;
+      name = "Bibata Ice";
+      size = 16;
+    };
+
+  }; #}}}
+
+  # xresources config{{{
+  xresources.properties = {
+    "Xft.dpi" = 96;
+  };
+  # }}}
+
+  # Home Manager config{{{
+  # Home Manager needs a bit of information about you and the
+  # paths it should manage.
+  home.username = "x230";
+  home.homeDirectory = "/home/x230";
+
+  # This value determines the Home Manager release that your
+  # configuration is compatible with. This helps avoid breakage
+  # when a new Home Manager release introduces backwards
+  # incompatible changes.
+  #
+  # You can update Home Manager without changing this value. See
+  # the Home Manager release notes for a list of state version
+  # changes in each release.
+  home.stateVersion = "20.03";
+
+  #}}}
+
+  # local env variables{{{
+  home.sessionVariables = {
+    "XDG_CONFIG_HOME" = "$HOME/.config";
+    "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
+    "COLORTERM" = "truecolor";
+    "EDITOR" = "emacsclient -c";
+  }; # }}}
+
+}
+#+end_src
+** Server
+*** Set server hostname
+#+name: configurationnix-server-hostname
+#+begin_src nix
+networking.hostName = "server1";
+#+end_src
+*** configuration.nix
+#+begin_src nix :tangle machines/mainserver/configuration.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, fetchgit, ... }:
+{
+
+  imports =
+    [
+      <<configurationnix-defaultimports>>
+    ];
+
+  <<configurationnix-enable-grub>>
+  <<configurationnix-grub-timeout>>
+  <<configurationnix-grub-copykernels>>
+  <<configurationnix-faster-boot>>
+  <<configurationnix-latest-kernel>>
+  <<configurationnix-plymouth-enable>>
+
+  <<configurationnix-server-fspath>>
+
+  <<hardware-redistributable-firmware>>
+  <<enable-sound>>
+  <<configurationnix-intel-microcode>>
+
+  <<configurationnix-server-hostname>>
+  # Networking{{{
+
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking = {
+    dhcpcd.enable = false;
+    useNetworkd = true;
+    useDHCP = false;
+    interfaces.wlp0s4f1u3u4.useDHCP = true;
+    networkmanager = {
+      enable = true;
+      dns = "systemd-resolved";
+    };
+  };
+  #}}}
+
+  environment.variables = (import ../../modules/common/globalvars.nix);
+
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "20.03"; # Did you read the comment?
+
+}
+#+end_src
+*** Packages to install on server home environment
+#+name: home-manager-server-packages
+#+begin_src nix :noweb no-export
+home.packages = with pkgs; [
+  trash-cli
+  unstable.fd
+  gitAndTools.diff-so-fancy
+  ripgrep
+  unstable.fzf
+  binutils
+  killall
+  neofetch
+  unstable.mosh
+  nix-index
+  niv
+  scrot
+  feh
+  lightlocker
+  circleci-cli
+  # nixpkgs
+  nix-prefetch-git
+  nix-prefetch-github
+  # tui apps
+  htop
+  # dependencies
+  libnotify
+  unstable.youtube-dl
+  unstable.neovim-remote
+  unstable.direnv
+  unstable.imagemagick
+  # misc
+  file
+  catimg
+  # joke command
+  cowsay
+  cmatrix
+  espeak
+  figlet
+  fortune
+  asciiquarium
+];
+#+end_src
+*** home.nix
+#+begin_src nix :tangle machines/mainserver/home.nix :noweb no-export
+# This file is generated from "README.org"
+{ config, pkgs, lib, ... }:
+{
+  <<home-manager-server-packages>>
+  <<lorri-enable>>
+
+  # programs {{{
+  programs = {
+
+    home-manager.enable = true;
+
+    neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; }; # don't compile
+  };
+  #}}}
+
+  # home files{{{
+  home.file = {
+
+    # tmux theme
+    ".palenight-tmux".source = ../../.palenight-tmux;
+
+    # neovim dashboard logo
+    "Pictures/neovimlogo.png".source = (pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/neovim/neovim.github.io/master/logos/neovim-logo-flat.png";
+      sha256 = "1vl7mi87wisqhd9zigg24y2ksjyyjk6225bvw9qk4s6gfv62w4jm";
+    });
+
+    ".ghc/ghci.conf".text = ''
+      :set prompt "%s λ: "
+    '';
+
+  };
+  #}}}
+
+  # .config files{{{
+  xdg.configFile = {
+
+    "nvim/coc-settings.json".source = ../../configs/coc-settings.json;
+    "neofetch/config.conf".source = ../../configs/neofetch.conf;
+    "ncpamixer.conf".source = ../../configs/ncpamixer.conf;
+
+    # nixpkgs{{{
+    "nixpkgs/config.nix".text = ''
+      { allowUnfree = true; }
+    '';
+    # }}}
+
+    "vifm/vifmrc".source = ../../configs/vifmrc.vim;
+
+  };
+  # }}}
+
+  xsession.enable = false;
+
+
+  # Home Manager config{{{
+  # Home Manager needs a bit of information about you and the
+  # paths it should manage.
+  home.username = "hac";
+  home.homeDirectory = "/home/hac";
+
+  # This value determines the Home Manager release that your
+  # configuration is compatible with. This helps avoid breakage
+  # when a new Home Manager release introduces backwards
+  # incompatible changes.
+  #
+  # You can update Home Manager without changing this value. See
+  # the Home Manager release notes for a list of state version
+  # changes in each release.
+  home.stateVersion = "20.03";
+
+  #}}}
+
+  # local env variables{{{
+  home.sessionVariables = {
+    "XDG_CONFIG_HOME" = "$HOME/.config";
+    "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
+    "COLORTERM" = "truecolor";
+  }; # }}}
+
+}
+#+end_src
+* Symlinks
+Nix modules to symlink various files included config files
+** /etc files
+This module symlinks files that belongs in /etc.
+I like to use this path to store icons and wallpapers because this directory */etc* is not machine dependent like user's home folder.
+That makes possible to share same config that uses these files for more than one machines.
+#+begin_src nix :tangle modules/common/etcfiles.nix :noweb no-export
+# This file is generated from "README.org"
+{
+  environment.etc = {
+    <<etc-wallpaper-files>>
+    # icons
+    "icons/cpu.xpm".source = ../../icons/cpu.xpm;
+    "icons/ram.xpm".source = ../../icons/ram.xpm;
+    "icons/battery.xpm".source = ../../icons/battery.xpm;
+    "icons/battery-charging.xpm".source = ../../icons/battery-charging.xpm;
+    "icons/calendar.xpm".source = ../../icons/calendar.xpm;
+    "icons/volume.xpm".source = ../../icons/volume.xpm;
+    "icons/volume-mute.xpm".source = ../../icons/volume-mute.xpm;
+    "icons/clock.xpm".source = ../../icons/clock.xpm;
+    # misc
+    # emojis
+    "UnicodeData.txt".source = ../../textfiles/UnicodeData.txt;
+  };
+  <<thinkpad-layout-file>>
+}
+#+end_src
+
+** ~/.config files
+Specify files to symlink into $HOME/.config here.
+Usable for programs that Nix options doesn't exist.
+This module is imported from home-manager
+#+begin_src nix :tangle modules/common/xdg-configfiles.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+
+{
+  "nvim/coc-settings.json".source = ../../configs/coc-settings.json;
+  "neofetch/config.conf".source = ../../configs/neofetch.conf;
+  "ncpamixer.conf".source = ../../configs/ncpamixer.conf;
+
+  "fontconfig/conf.d/10-prefer-emoji.conf".source = ../../configs/fontconfig/10-prefer-emoji.conf;
+  "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
+  "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
+
+  <<tridactylrc-symlink>>
+
+  <<keynav-config>>
+
+  # flashfocus
+  "flashfocus/flashfocus.yml".source = ../../configs/flashfocus.yml;
+
+  # nixpkgs{{{
+  "nixpkgs/config.nix".text = ''
+    { allowUnfree = true; }
+  '';
+  # }}}
+
+  "vifm/vifmrc".source = ../../configs/vifmrc.vim;
+
+  "PulseEffects/output/Perfect EQ.json".source = pkgs.fetchurl {
+    url = "https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/Perfect%20EQ.json";
+    name = "perfecteq.json";
+    sha256 = "04mjqsiajqdzp43fn16j6sfz3972yfpqq6s2vw0cnim5bp9a642b";
+  };
+}
+#+end_src
+* Credits
+- [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in lock screen wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]
+- [[https://wallhaven.cc/w/45xkj1][Wallpaper]]
+- Icons from [[https://remixicon.com][Remix Icon]]
