@@ -18,7 +18,7 @@ let
 in
 {
   home.packages = with pkgs; [
-    <<haskell-packages-env>>
+    haskell-env
     trash-cli
     tree
     bc

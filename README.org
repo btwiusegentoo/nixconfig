@@ -4766,7 +4766,7 @@ networking.hostName = "desktop1";
 #+end_src
 *** Packages to install on desktop home environment
 #+name: home-manager-desktop-packages
-#+begin_src nix
+#+begin_src nix :noweb no-export
 home.packages = with pkgs; [
   <<haskell-packages-env>>
   trash-cli
