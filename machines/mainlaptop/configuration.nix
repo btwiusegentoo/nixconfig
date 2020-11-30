@@ -76,62 +76,62 @@
     intel-media-driver
   ];
 
-programs = {
-  dconf.enable = true;
-  adb.enable = true;
-  java.enable = true;
-  java.package = pkgs.unstable.jdk;
-};
+  programs = {
+    dconf.enable = true;
+    adb.enable = true;
+    java.enable = true;
+    java.package = pkgs.unstable.jdk;
+  };
 
-networking.hostName = "laptop1";
-# Networking{{{
-# networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.hostName = "laptop1";
+  # Networking{{{
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-# The global useDHCP flag is deprecated, therefore explicitly set to false here.
-# Per-interface useDHCP will be mandatory in the future, so this generated config
-# replicates the default behaviour.
-networking = {
-  dhcpcd.enable = false;
-  useDHCP = false;
-  interfaces.wlan0.useDHCP = false;
-  networkmanager = {
-    enable = true;
-    wifi = {
-      backend = "iwd";
-      macAddress = "random";
-      scanRandMacAddress = true;
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking = {
+    dhcpcd.enable = false;
+    useDHCP = false;
+    interfaces.wlan0.useDHCP = false;
+    networkmanager = {
+      enable = true;
+      wifi = {
+        backend = "iwd";
+        macAddress = "random";
+        scanRandMacAddress = true;
+      };
     };
   };
-};
-#}}}
+  #}}}
 
-environment.variables = (import ../../modules/common/globalvars.nix);
+  environment.variables = (import ../../modules/common/globalvars.nix);
 
-virtualisation = import (../../modules/virtualisation/default.nix);
+  virtualisation = import (../../modules/virtualisation/default.nix);
 
-  systemd.user.services.xkb-restore = {
-      description = "Restore keyboard layout after suspend";
-      after = [ "suspend.target" "graphical-session.target" ];
-      serviceConfig = {
-        Type = "simple";
-        Environment = "DISPLAY=:0";
-        ExecStartPre = "/usr/bin/env sleep 3";
-        ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/thinkpadlayout.xkb :0\"";
-      };
-      wantedBy = [ "suspend.target" "graphical-session.target" ];
-  };
+    systemd.user.services.xkb-restore = {
+        description = "Restore keyboard layout after suspend";
+        after = [ "suspend.target" "graphical-session.target" ];
+        serviceConfig = {
+          Type = "simple";
+          Environment = "DISPLAY=:0";
+          ExecStartPre = "/usr/bin/env sleep 3";
+          ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/thinkpadlayout.xkb :0\"";
+        };
+        wantedBy = [ "suspend.target" "graphical-session.target" ];
+    };
 
-services.xserver.videoDrivers = [ "intel" ];
-services.xserver.deviceSection = ''
-Option "TearFree" "true"
-'';
+  services.xserver.videoDrivers = [ "intel" ];
+  services.xserver.deviceSection = ''
+  Option "TearFree" "true"
+  '';
 
-# This value determines the NixOS release from which the default
-# settings for stateful data, like file locations and database versions
-# on your system were taken. It‘s perfectly fine and recommended to leave
-# this value at the release version of the first install of this system.
-# Before changing this value read the documentation for this option
-# (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-system.stateVersion = "20.03"; # Did you read the comment?
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "20.03"; # Did you read the comment?
 
 }

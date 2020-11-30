@@ -129,3 +129,6 @@
  (setq lsp-haskell-process-path-hie "haskell-language-server-wrapper")
 )
 (set-frame-parameter nil 'alpha nil) ;; let picom manage it
+(after! twittering-mode
+  (setq twittering-icon-mode t)
+  )

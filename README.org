@@ -26,6 +26,14 @@ You can install this config running this command at repository root ~nixos-rebui
 Note that you need [[#nix][flakes enabled to install]].
 Use ~SPC m .~ in doom-emacs to move faster to headlines.
 
+* [0/7]TODOs :noexport:
+- [ ] Document xmobar
+- [ ] Document overlays
+- [ ] Document packages
+- [ ] Document emacs-anywhere
+- [ ] Document neovim and coc-settings.json
+- [ ] Document flashfocus
+- [ ] Document vifm
 * Table of Contents :TOC_2_gh:
 - [[#flake][Flake]]
   - [[#flake-inputs][Flake inputs]]
@@ -48,6 +56,7 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#keynav][keynav]]
 - [[#output][Output]]
   - [[#monitor][Monitor]]
+  - [[#sound][Sound]]
 - [[#other-hardwares][Other Hardwares]]
   - [[#bluetooth][Bluetooth]]
   - [[#tlp][TLP]]
@@ -106,6 +115,7 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#evil-mode][Evil-mode]]
   - [[#rainbow-mode][Rainbow mode]]
   - [[#haskell-mode][Haskell mode]]
+  - [[#twittering-mode][Twittering mode]]
   - [[#performance-optimize-remove-the-clutter][Performance (optimize, remove the clutter)]]
   - [[#emacsnix-base-code][emacs.nix base code]]
   - [[#doom-emacs-configel-base-code][doom-emacs config.el base code]]
@@ -117,7 +127,6 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
   - [[#qutebrowser][qutebrowser]]
   - [[#firefox][Firefox]]
 - [[#multimedia][Multimedia]]
-  - [[#pulseaudio][PulseAudio]]
   - [[#mpv][mpv]]
   - [[#zathura][zathura]]
 - [[#security][Security]]
@@ -557,8 +566,8 @@ services.keynav.enable = true;
 #+end_src
 
 Generate keynav config.
-Super-; to start keynav
-s to  warp cursor
+Super-semicolon to start keynav
+s to warp cursor
 m,w,v,z to scroll, think like hjkl on QWERTY keyboard. it's positioned on bottom right of Dvorak layout
 #+name: keynav-config
 #+begin_src conf
@@ -590,6 +599,73 @@ Scale laptop monitor to 1080p
 #+name: xrandr-laptop-scale
 #+begin_src nix
 xsession.profileExtra = "xrandr --output LVDS1 --scale-from 1920x1080 --panning 1920x1080";
+#+end_src
+** Sound
+*** Enable sound
+Enable ALSA sound in configuration.nix
+#+name: enable-sound
+#+begin_src nix
+sound.enable = true;
+#+end_src
+*** PulseAudio
+PulseAudio is a general purpose sound server intended to run as a middleware between your applications and your hardware devices, either using ALSA or OSS.
+It's required by many programs to play sound nowadays.
+#+begin_src nix :tangle modules/services/pulseaudio.nix :noweb no-export
+# This file is generated from "README.org"
+{ pkgs, ... }:
+{
+  <<pulseaudio-enable>>
+  <<pulseaudio-package>>
+  <<pulseaudio-support-32bit>>
+  <<pulseaudio-extramodules>>
+  <<pulseaudio-daemon-config>>
+}
+#+end_src
+**** Enable PulseAudio
+Whether to enable the PulseAudio sound server.
+#+name: pulseaudio-enable
+#+begin_src nix
+hardware.pulseaudio.enable = true;
+#+end_src
+**** PulseAudio 32bit support
+Include 32-bit pulseaudio libraries in the system. It's needed by certain programs(like wine 32bit, mainly used for games)
+#+name: pulseaudio-support-32bit
+#+begin_src nix
+hardware.pulseaudio.support32Bit = true;
+#+end_src
+**** PulseAudio package
+Select the PulseAudio derivation to use. This can be used to enable features (such as JACK support, Bluetooth) via the pulseaudioFull package
+#+name: pulseaudio-package
+#+begin_src nix
+hardware.pulseaudio.package = pkgs.pulseaudioFull;
+#+end_src
+**** PulseAudio extra modules
+Extra PulseAudio modules to use. This is intended for out-of-tree pulseaudio modules like extra bluetooth codecs.
+#+name: pulseaudio-extramodules
+#+begin_src nix
+hardware.pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
+#+end_src
+**** PulseAudio daemon config
+idk, this config is supposed to improve audio quality
+#+name: pulseaudio-daemon-config
+#+begin_src nix
+hardware.pulseaudio.daemon.config = {
+    default-sample-rate = "48000";
+    alternate-sample-rate = "44100";
+    default-sample-channels = "2";
+    default-channel-map = "front-left,front-right";
+    default-fragments = "2";
+    default-fragment-size-msec = "125";
+    enable-lfe-remixing = "no";
+    high-priority = "yes";
+    nice-level = "-11";
+    realtime-scheduling = "yes";
+    realtime-priority = "9";
+    rlimit-rtprio = "9";
+    resample-method = "soxr-vhq";
+    daemonize = "no";
+    default-sample-format = "float32le";
+};
 #+end_src
 * Other Hardwares
 ** Bluetooth
@@ -1137,14 +1213,14 @@ programs.zathura.options.recolor-darkcolor = "#A6ACCD";
 Set theme name
 #+name: bat-theme-config
 #+begin_src nix
-config.theme = "palenight";
+programs.bat.config.theme = "palenight";
 #+end_src
 
 [[bat]] can use Sublime Text 3 themes.
 Download theme:
 #+name: bat-theme-fetch
 #+begin_src nix
-themes = {
+programs.bat.themes = {
     palenight = builtins.readFile (
     pkgs.fetchgit
         {
@@ -2096,7 +2172,7 @@ Set esc key delay
 #+begin_src fish
 set -U fish_escape_delay_ms 10
 #+end_src
-** TODO starship
+** starship
 starship is a minimal, blazing fast, and infinitely customizable prompt for any shell
 #+begin_src nix :tangle modules/terminal/starship.nix :noweb no-export
 # This file is generated from "README.org"
@@ -2105,27 +2181,10 @@ starship is a minimal, blazing fast, and infinitely customizable prompt for any 
 <<starship-enable>>
 <<starship-fish-integration>>
 <<starship-package>>
-  programs.starship = {
-    settings = {
-      add_newline = true;
-
-      character = {
-        success_symbol = "[𝝺](#c792ea)";
-        vicmd_symbol = "[ ](bold green)";
-        error_symbol = "[☓ ](bold red)";
-      };
-
-      directory = {
-        style = "bold cyan";
-      };
-
-      nix_shell = {
-        disabled = false;
-        symbol = " ";
-      };
-
-    };
-  };
+<<starship-add-newline>>
+<<starship-prompt-character>>
+<<starship-directory>>
+<<starship-nix-shell>>
 }
 #+end_src
 *** Enable starship
@@ -2144,6 +2203,39 @@ programs.starship.enableFishIntegration = true;
 #+begin_src nix
 programs.starship.package = pkgs.unstable.starship;
 #+end_src
+*** Add newline at the start of the prompt
+#+name: starship-add-newline
+#+begin_src nix
+programs.starship.settings.add_newline = true;
+#+end_src
+*** Prompt Character
+Set prompt symbols and colors
+#+name: starship-prompt-character
+#+begin_src nix
+programs.starship.settings.character = {
+  success_symbol = "[𝝺](#c792ea)";
+  vicmd_symbol = "[ ](bold green)";
+  error_symbol = "[☓ ](bold red)";
+};
+#+end_src
+*** Directory
+The directory module  shows the path to your current directory.
+#+name: starship-directory
+#+begin_src nix
+programs.starship.settings.directory = {
+  style = "bold cyan";
+};
+#+end_src
+*** Nix shell
+The nix_shell module shows the nix-shell environment.
+The module will be shown when inside a nix-shell environment
+#+name: starship-nix-shell
+#+begin_src nix
+programs.starship.settings.nix_shell = {
+  disabled = false;
+  symbol = " ";
+};
+#+end_src
 ** Shell utilities
 *** Git
 This directory is a git repository, nixpkgs is a git repository, Emacs, Linux is developed in git repository, most free(as in freedom) softwares uses Git nowadays.
@@ -2152,26 +2244,24 @@ Git is a free and open source distributed version control system designed to han
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
-  programs.git = {
-    <<git-enable>>
-    <<git-package>>
-    <<git-default-branch>>
-    <<git-push-ssh>>
-    <<git-name-mail>>
-  };
+  <<git-enable>>
+  <<git-package>>
+  <<git-default-branch>>
+  <<git-push-ssh>>
+  <<git-name-mail>>
 }
 #+end_src
 **** Enable Git
 Turn on to install Git
 #+name: git-enable
 #+begin_src nix
-enable = true;
+programs.git.enable = true;
 #+end_src
 **** Git Package
 I use Git from nixos-unstable
 #+name: git-package
 #+begin_src nix
-package = pkgs.unstable.git;
+programs.git.package = pkgs.unstable.git;
 #+end_src
 **** Git Default Branch
 Many communities are renaming Default Git Branch from ~master~ to ~main~ to remove racially-charged language from software.
@@ -2180,7 +2270,7 @@ Many communities are renaming Default Git Branch from ~master~ to ~main~ to remo
 It's very easy to do that on user-level. Why not start using main from today? There aren't any reason to not start using ~main~ for new personal projects.
 #+name: git-default-branch
 #+begin_src nix
-extraConfig.init.defaultBranch = "main";
+programs.git.extraConfig.init.defaultBranch = "main";
 #+end_src
 **** Use SSH only when pushing
 I use SSH to push into Git repository.
@@ -2190,7 +2280,7 @@ If you use just ~insteadOf~, it will ask SSH key even when cloning.
 
 #+name: git-push-ssh
 #+begin_src nix
-extraConfig.url."git@github.com:" = {
+programs.git.extraConfig.url."git@github.com:" = {
     pushinsteadOf = "https://github.com/";
 };
 #+end_src
@@ -2204,8 +2294,8 @@ To GitHub/GitLab be able to associate your commits with your accounts, you have 
 I'm still not ready to migrate to GitLab, so I use GitHub noreply mail address
 #+name: git-name-mail
 #+begin_src nix
-userName = "btwiusegentoo";
-userEmail = "66811008+btwiusegentoo@users.noreply.github.com";
+programs.git.userName = "btwiusegentoo";
+programs.git.userEmail = "66811008+btwiusegentoo@users.noreply.github.com";
 #+end_src
 *** bat
 A cat Linux command clone with syntax highlighting and Git integration
@@ -2215,31 +2305,29 @@ A cat Linux command clone with syntax highlighting and Git integration
 { pkgs, ... }:
 
 {
-  programs.bat = {
-    <<bat-enable>>
-    <<bat-italic-text>>
-    <<bat-theme-config>>
-    <<bat-theme-fetch>>
-  };
+  <<bat-enable>>
+  <<bat-italic-text>>
+  <<bat-theme-config>>
+  <<bat-theme-fetch>>
 }
 #+end_src
 **** Enable bat
 Turn on to install bat
 #+name: bat-enable
 #+begin_src nix
-enable = true;
+programs.bat.enable = true;
 #+end_src
 **** Use italic text on the terminal
 (Note, it isn't supported on all terminals)
 #+name: bat-italic-text
 #+begin_src nix
-config.italic-text = "always";
+programs.bat.config.italic-text = "always";
 #+end_src
 **** Customize bat style
 Show line numbers, Git modifications and file header
 #+name: bat-style
 #+begin_src nix
-config.style = "numbers,changes,header";
+programs.bat.config.style = "numbers,changes,header";
 #+end_src
 *** fzf
 fzf is a general-purpose command line fuzzy finder.
@@ -2247,61 +2335,56 @@ fzf is a general-purpose command line fuzzy finder.
 #+begin_src nix :tangle modules/terminal/fzf.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  programs.fzf = {
-    <<fzf-enable>>
-    <<fzf-fish-integration>>
-    <<fzf-use-fd>>
+  <<fzf-enable>>
+  <<fzf-fish-integration>>
+  <<fzf-use-fd>>
 
-    defaultOptions = [
-      <<fzf-colors>>
-    ];
-
-  };
+  programs.fzf.defaultOptions = [
+    <<fzf-colors>>
+  ];
 }
 #+end_src
 **** Enable fzf
 Turn on to install fzf
 #+name: fzf-enable
 #+begin_src nix
-enable = true;
+programs.fzf.enable = true;
 #+end_src
 **** Fish shell integration
 Turn on to enable fish shell integration.
 Most usable one is <C-t> to search current directory.
 #+name: fzf-fish-integration
 #+begin_src nix
-enableFishIntegration = true;
+programs.fzf.enableFishIntegration = true;
 #+end_src
 **** Use fd instead of default find
 Requires fd installed.
 It is faster than default find
 #+name: fzf-use-fd
 #+begin_src nix
-defaultCommand = "fd --type f";
+programs.fzf.defaultCommand = "fd --type f";
 #+end_src
 *** lsd
 Simply put, lsd is a better ~ls~ command with colors, nerdfont icons, written in Rust
 #+begin_src nix :tangle modules/terminal/lsd.nix :noweb no-export
 # This file is generated from "README.org"
 {
-  programs.lsd = {
-    <<lsd-enable>>
-    <<lsd-aliases>>
-  };
+  <<lsd-enable>>
+  <<lsd-aliases>>
 }
 #+end_src
 **** Enable lsd
 Enable to install lsd
 #+name: lsd-enable
 #+begin_src nix
-enable = true;
+programs.lsd.enable = true;
 #+end_src
 **** lsd aliases
 Turn on to enable lsd aliases.
 I want to use my own aliases, so I disable it.
 #+name: lsd-aliases
 #+begin_src nix
-enableAliases = false;
+programs.lsd.enableAliases = false;
 #+end_src
 ***  tmux
 tmux is a terminal multiplexer.
@@ -2311,25 +2394,23 @@ detach them (they keep running in the background) and reattach them to a differe
 { pkgs, ... }:
 
 {
-  programs.tmux = {
-    <<tmux-enable>>
-    plugins = with pkgs; [
-      <<vim-tmux-navigator>>
-      <<tmux-prefix-highlight>>
-    ];
-    <<tmux-vi-keymode>>
-    extraConfig = ''
+  <<tmux-enable>>
+  programs.tmux.plugins = with pkgs; [
+    <<vim-tmux-navigator>>
+    <<tmux-prefix-highlight>>
+  ];
+  <<tmux-vi-keymode>>
+  programs.tmux.extraConfig = ''
       <<tmux-truecolor>>
       <<tmux-colors-source>>
       <<tmux-keybinds>>
-    '';
-  };
+  '';
 }
 #+end_src
 **** Enable tmux
 #+name: tmux-enable
 #+begin_src nix
-enable = true;
+programs.tmux.enable = true;
 #+end_src
 **** Vim tmux navigator
 This plugin provides the following mappings which allow you to move between Vim panes and tmux splits seamlessly like this:
@@ -2357,7 +2438,7 @@ tmuxPlugins.prefix-highlight
 Enable a set of vi-like bindings for navigating a buffer in a window
 #+name: tmux-vi-keymode
 #+begin_src nix
-keyMode = "vi";
+programs.tmux.keyMode = "vi";
 #+end_src
 **** Enable true color
 This is necessary to make neovim true color work inside tmux
@@ -3549,6 +3630,15 @@ Set haskell-language-server as LSP
  (setq lsp-haskell-process-path-hie "haskell-language-server-wrapper")
 )
 #+end_src
+** Twittering mode
+Display icons
+Requires imagemagick
+#+name: emacs-twittering-mode-icon
+#+begin_src elisp
+(after! twittering-mode
+  (setq twittering-icon-mode t)
+  )
+#+end_src
 ** Performance (optimize, remove the clutter)
 Disable modeline word
 #+name: doom-modeline-disable-word-count
@@ -3647,6 +3737,7 @@ Disable line highlight
 <<emacs-haskell-brittany>>
 <<emacs-haskell-language-server>>
 <<emacs-opacity>>
+<<emacs-twittering-mode-icon>>
 #+end_src
 * neovim
 ** Open lazygit commit window inside neovim
@@ -3877,66 +3968,6 @@ Set my own startpage
 "browser.search.isUS" = true;
 #+end_src
 * Multimedia
-** PulseAudio
-PulseAudio is a general purpose sound server intended to run as a middleware between your applications and your hardware devices, either using ALSA or OSS.
-It's required by many programs to play sound nowadays.
-#+begin_src nix :tangle modules/services/pulseaudio.nix :noweb no-export
-# This file is generated from "README.org"
-{ pkgs, ... }:
-{
-  <<pulseaudio-enable>>
-  <<pulseaudio-package>>
-  <<pulseaudio-support-32bit>>
-  <<pulseaudio-extramodules>>
-  <<pulseaudio-daemon-config>>
-}
-#+end_src
-*** Enable PulseAudio
-Whether to enable the PulseAudio sound server.
-#+name: pulseaudio-enable
-#+begin_src nix
-hardware.pulseaudio.enable = true;
-#+end_src
-*** PulseAudio 32bit support
-Include 32-bit pulseaudio libraries in the system. It's needed by certain programs(like wine 32bit, mainly used for games)
-#+name: pulseaudio-support-32bit
-#+begin_src nix
-hardware.pulseaudio.support32Bit = true;
-#+end_src
-*** PulseAudio package
-Select the PulseAudio derivation to use. This can be used to enable features (such as JACK support, Bluetooth) via the pulseaudioFull package
-#+name: pulseaudio-package
-#+begin_src nix
-hardware.pulseaudio.package = pkgs.pulseaudioFull;
-#+end_src
-*** PulseAudio extra modules
-Extra PulseAudio modules to use. This is intended for out-of-tree pulseaudio modules like extra bluetooth codecs.
-#+name: pulseaudio-extramodules
-#+begin_src nix
-hardware.pulseaudio.extraModules = [ pkgs.pulseaudio-modules-bt ];
-#+end_src
-*** PulseAudio daemon config
-idk, this config is supposed to improve audio quality
-#+name: pulseaudio-daemon-config
-#+begin_src nix
-hardware.pulseaudio.daemon.config = {
-    default-sample-rate = "48000";
-    alternate-sample-rate = "44100";
-    default-sample-channels = "2";
-    default-channel-map = "front-left,front-right";
-    default-fragments = "2";
-    default-fragment-size-msec = "125";
-    enable-lfe-remixing = "no";
-    high-priority = "yes";
-    nice-level = "-11";
-    realtime-scheduling = "yes";
-    realtime-priority = "9";
-    rlimit-rtprio = "9";
-    resample-method = "soxr-vhq";
-    daemonize = "no";
-    default-sample-format = "float32le";
-};
-#+end_src
 ** mpv
 mpv is a FOSS, lightweight command line media player. It supports a wide variety of media file formats.
 I mostly use it to play Youtube videos [[Youtube playback with mpv][spawning from qutebrowser]] , Thanks to [[ https://github.com/ytdl-org/youtube-dl][youtube-dl]]
@@ -4477,11 +4508,6 @@ This is required to enable various firmwares like WiFi
 hardware.enableRedistributableFirmware = true;
 #+end_src
 
-Enable ALSA sound
-#+name: enable-sound
-#+begin_src nix
-sound.enable = true;
-#+end_src
 ** Boot/kernel/initrd
 Boot faster
 #+name: configurationnix-faster-boot
@@ -4693,11 +4719,7 @@ networking.hostName = "desktop1";
   <<enable-sound>>
   <<configurationnix-amd-microcode>>
   <<configurationnix-opengl-enable>>
-  # Hardware{{{
-  hardware = {
-    opengl.extraPackages32 = with pkgs.unstable.pkgsi686Linux; [ libva ];
-  };
-  # }}}
+  hardware.opengl.extraPackages32 = with pkgs.unstable.pkgsi686Linux; [ libva ];
 
   programs = {
     dconf.enable = true;
@@ -5022,50 +5044,50 @@ networking.hostName = "laptop1";
     intel-media-driver
   ];
 
-programs = {
-  dconf.enable = true;
-  adb.enable = true;
-  java.enable = true;
-  java.package = pkgs.unstable.jdk;
-};
+  programs = {
+    dconf.enable = true;
+    adb.enable = true;
+    java.enable = true;
+    java.package = pkgs.unstable.jdk;
+  };
 
-<<configurationnix-laptop-hostname>>
-# Networking{{{
-# networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  <<configurationnix-laptop-hostname>>
+  # Networking{{{
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-# The global useDHCP flag is deprecated, therefore explicitly set to false here.
-# Per-interface useDHCP will be mandatory in the future, so this generated config
-# replicates the default behaviour.
-networking = {
-  dhcpcd.enable = false;
-  useDHCP = false;
-  interfaces.wlan0.useDHCP = false;
-  networkmanager = {
-    enable = true;
-    wifi = {
-      backend = "iwd";
-      macAddress = "random";
-      scanRandMacAddress = true;
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking = {
+    dhcpcd.enable = false;
+    useDHCP = false;
+    interfaces.wlan0.useDHCP = false;
+    networkmanager = {
+      enable = true;
+      wifi = {
+        backend = "iwd";
+        macAddress = "random";
+        scanRandMacAddress = true;
+      };
     };
   };
-};
-#}}}
+  #}}}
 
-environment.variables = (import ../../modules/common/globalvars.nix);
+  environment.variables = (import ../../modules/common/globalvars.nix);
 
-virtualisation = import (../../modules/virtualisation/default.nix);
+  virtualisation = import (../../modules/virtualisation/default.nix);
 
-<<thinkpad-layout-service>>
+  <<thinkpad-layout-service>>
 
-<<configurationnix-intelgpu-driver>>
+  <<configurationnix-intelgpu-driver>>
 
-# This value determines the NixOS release from which the default
-# settings for stateful data, like file locations and database versions
-# on your system were taken. It‘s perfectly fine and recommended to leave
-# this value at the release version of the first install of this system.
-# Before changing this value read the documentation for this option
-# (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-system.stateVersion = "20.03"; # Did you read the comment?
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "20.03"; # Did you read the comment?
 
 }
 #+end_src
