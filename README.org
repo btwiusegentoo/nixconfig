@@ -3,15 +3,18 @@
 #+LANGUAGE: en
 #+STARTUP: inlineimages overview
 #+PROPERTY: header-args :tangle no :cache yes :results silent
-
-[[https://builtwithnix.org/badge.svg]] [[https://github.com/btwiusegentoo/nixconfig/workflows/Haskell%20Linter/badge.svg]]
+#+OPTIONS: broken-links:auto
+#+EXPORT_FILE_NAME: index.html
 
 #+ATTR_HTML: :width 300
 #+ATTR_ORG: :width 300
-[[file:pictures/screenshot1.png]] [[file:pictures/wallpaper2.png]]
+[[file:pictures/screenshot1.png]]
+#+ATTR_HTML: :width 300
+#+ATTR_ORG: :width 300
+[[file:pictures/wallpaper2.png]]
 
 
-* Introduction :noexport:
+* Introduction
 Hi! This is my repo that contains my configuration files for my machines (aka dotfiles)
 This repository contains configuration for three hosts currently
 - Ryzen desktop
@@ -26,7 +29,7 @@ You can install this config running this command at repository root ~nixos-rebui
 Note that you need [[#nix][flakes enabled to install]].
 Use ~SPC m .~ in doom-emacs to move faster to headlines.
 
-* [0/8]TODOs :noexport:
+* [0/8]TODOs
 - [ ] Document xmobar
 - [ ] Document custom packages
 - [ ] Document configuration.nix/home.nix
@@ -34,135 +37,8 @@ Use ~SPC m .~ in doom-emacs to move faster to headlines.
 - [ ] Document neovim and coc-settings.json
 - [ ] Document flashfocus
 - [ ] Document vifm
-* Table of Contents :TOC_2_gh:
-- [[#flake][Flake]]
-  - [[#flake-inputs][Flake inputs]]
-  - [[#default-imports][default imports]]
-  - [[#x11-imports][X11 imports]]
-  - [[#home-manager-imports][home-manager imports]]
-  - [[#home-manager-x11-imports][home-manager X11 imports]]
-  - [[#nixpkgs-config][nixpkgs config]]
-  - [[#import-overlays][import overlays]]
-  - [[#machines][Machines]]
-- [[#nix][Nix]]
-  - [[#enable-flakes][Enable flakes]]
-  - [[#allowed-users][Allowed users]]
-  - [[#trusted-users][Trusted users]]
-  - [[#enable-lorri][Enable lorri]]
-  - [[#integrate-lorri-direnv-with-fish-shell][Integrate lorri direnv with fish shell]]
-- [[#overlays][Overlays]]
-  - [[#overrides][Overrides]]
-  - [[#import-custom-packages][Import custom packages]]
-  - [[#attribute-overrides][Attribute overrides]]
-- [[#input][Input]]
-  - [[#keyboard][Keyboard]]
-  - [[#trackpad][Trackpad]]
-  - [[#keynav][keynav]]
-- [[#output][Output]]
-  - [[#monitor][Monitor]]
-  - [[#sound][Sound]]
-- [[#other-hardwares][Other Hardwares]]
-  - [[#bluetooth][Bluetooth]]
-  - [[#tlp][TLP]]
-  - [[#thinkfan][Thinkfan]]
-  - [[#zram][ZRAM]]
-  - [[#ssd][SSD]]
-  - [[#early-oom][Early oom]]
-- [[#look-and-feel][Look And Feel]]
-  - [[#color-schemethemes][Color Scheme/Themes]]
-  - [[#style][Style]]
-  - [[#fonts][Fonts]]
-  - [[#wallpapers][Wallpapers]]
-  - [[#icons][Icons]]
-  - [[#cursors][Cursors]]
-  - [[#opacity][Opacity]]
-  - [[#border][Border]]
-- [[#terminalshell][Terminal/Shell]]
-  - [[#alacritty][Alacritty]]
-  - [[#tty][TTY]]
-  - [[#vterm][vterm]]
-  - [[#fish-shell][fish shell]]
-  - [[#starship][starship]]
-  - [[#shell-utilities][Shell utilities]]
-- [[#xmonad][xmonad]]
-  - [[#install-xmonad-set-config-file-path][Install xmonad/ Set config file path]]
-  - [[#imports][imports]]
-  - [[#workspaces][Workspaces]]
-  - [[#xmonad-prompt][xmonad prompt]]
-  - [[#set-default-terminal][Set default terminal]]
-  - [[#set-gaps][Set gaps]]
-  - [[#keybindings][Keybindings]]
-  - [[#layouts][Layouts]]
-  - [[#startupsautostart][Startups(autostart)]]
-  - [[#scratchpads][Scratchpads]]
-  - [[#managehook][ManageHook]]
-  - [[#mouse][Mouse]]
-  - [[#function-to-get-active-layout-description][Function to get active layout description]]
-  - [[#xmonadhs-base-code][xmonad.hs base code]]
-- [[#xmobar][xmobar]]
-  - [[#desktop-config][Desktop config]]
-  - [[#laptop-config][Laptop config]]
-- [[#emacs][Emacs]]
-  - [[#install-emacs-nativecomp-pgtk][Install Emacs nativecomp pgtk]]
-  - [[#enable-emacs-daemon][Enable Emacs daemon]]
-  - [[#select-doom-emacs-modules][Select doom-emacs modules]]
-  - [[#install-custom-packages][Install custom packages]]
-  - [[#disable-line-number][Disable line number]]
-  - [[#indent][Indent]]
-  - [[#history-length][History length]]
-  - [[#enable-auto-saving][Enable auto saving]]
-  - [[#delete-files-to-trash][Delete files to trash]]
-  - [[#stretch-cursor][Stretch cursor]]
-  - [[#centaur-tabs][Centaur Tabs]]
-  - [[#company-auto-completionlsp][Company auto completion/LSP]]
-  - [[#projectile][Projectile]]
-  - [[#magit][Magit]]
-  - [[#dired][Dired]]
-  - [[#org-mode][org-mode]]
-  - [[#evil-mode][Evil-mode]]
-  - [[#rainbow-mode][Rainbow mode]]
-  - [[#haskell-mode][Haskell mode]]
-  - [[#twittering-mode][Twittering mode]]
-  - [[#performance-optimize-remove-the-clutter][Performance (optimize, remove the clutter)]]
-  - [[#emacsnix-base-code][emacs.nix base code]]
-  - [[#doom-emacs-configel-base-code][doom-emacs config.el base code]]
-- [[#neovim][neovim]]
-  - [[#open-lazygit-commit-window-inside-neovim][Open lazygit commit window inside neovim]]
-- [[#dev-environment][Dev environment]]
-  - [[#haskell][Haskell]]
-- [[#web-browser][Web Browser]]
-  - [[#qutebrowser][qutebrowser]]
-  - [[#firefox][Firefox]]
-- [[#multimedia][Multimedia]]
-  - [[#mpv][mpv]]
-  - [[#zathura][zathura]]
-- [[#security][Security]]
-  - [[#doas][doas]]
-  - [[#clamav][ClamAV]]
-  - [[#gnupg][GnuPG]]
-- [[#common-configs][Common configs]]
-  - [[#x-server][X server]]
-  - [[#lightdm][LightDM]]
-  - [[#locale][Locale]]
-  - [[#xdg][XDG]]
-- [[#services][Services]]
-  - [[#openssh][OpenSSH]]
-  - [[#dunst][Dunst]]
-  - [[#picom][Picom]]
-- [[#machines-1][Machines]]
-  - [[#common-defaults][Common Defaults]]
-  - [[#bootkernelinitrd][Boot/kernel/initrd]]
-  - [[#hardware][Hardware]]
-  - [[#desktop][Desktop]]
-  - [[#laptop][Laptop]]
-  - [[#server][Server]]
-- [[#symlinks][Symlinks]]
-  - [[#etc-files][/etc files]]
-  - [[#config-files][~/.config files]]
-- [[#credits][Credits]]
-
 * Flake
-A [[https://nixos.wiki/wiki/Flakes][flake]] is (usually) a Git repository that contains a file named ~flake.nix~ at root.
+A flake is (usually) a Git repository that contains a file named ~flake.nix~ at root.
 This repository is compatible with nix flakes.
 The following code is the base code of  ~flake.nix~ file.
 #+begin_src nix :tangle flake.nix :noweb no-export
@@ -277,6 +153,7 @@ List default modules for home-manager that *requires X11* here
 ./modules/gui/qutebrowser.nix
 ./modules/gui/firefox.nix
 ./modules/gui/mpv.nix
+./modules/gui/zathura.nix
 ./modules/editors/emacs.nix
 #+end_src
 ** nixpkgs config
@@ -3580,13 +3457,12 @@ Enable indent guide module
 #+begin_src elisp
 indent-guides     ; highlighted indent columns
 #+end_src
-Set indent guide to bitmap
+Set indent guide to column
 #+name: emacs-indent-guide-config
 #+begin_src elisp
 (after! highlight-indent-guides
-  (setq highlight-indent-guides-method 'bitmap
-        highlight-indent-guides-responsive t
-        highlight-indent-guides-bitmap-function 'highlight-indent-guides--bitmap-line))
+  (setq highlight-indent-guides-method 'column
+        highlight-indent-guides-responsive t))
 #+end_src
 ** History length
 Set history length to 1000
@@ -3840,6 +3716,18 @@ You have to set variable pitch font from link below
 + [[Emacs fonts][Fonts]]
 company-mode becomes zig zag in org-mode using this package. Use company-box(childframe) to fix it.
 
+Set org-mode headline characters.
+I use emoji
+#+name: emacs-org-headline-bullets
+#+begin_src elisp
+(setq org-superstar-headline-bullets-list '("💠" "🌸" "🎀" "❄" "🌷"))
+#+end_src
+
+Hide markup elements(*bold*, /italic/)
+#+name: emacs-org-hide-emphasis-markers
+#+begin_src elisp
+(setq org-hide-emphasis-markers t)
+#+end_src
 ** Evil-mode
 Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions.
 It comes with doom-emacs.
@@ -3980,6 +3868,8 @@ Disable line highlight
 <<emacs-org-startup-folded>>
 <<emacs-org-startup-inline-images>>
 <<emacs-org-mixed-pitch-enable>>
+<<emacs-org-headline-bullets>>
+<<emacs-org-hide-emphasis-markers>>
 <<magit-delta-enable>>
 <<evil-escape-disable>>
 <<evil-substitute-global>>
@@ -4317,7 +4207,7 @@ Clam AntiVirus is a FOSS antivirus software toolkit able to detect many types of
 }
 #+end_src
 *** Enable ClamAV daemon
-#+name:clamav-daemon-enable
+#+name: clamav-daemon-enable
 #+begin_src nix
 services.clamav.daemon.enable = true;
 #+end_src

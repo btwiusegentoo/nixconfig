@@ -28,9 +28,8 @@
  line-spacing 4
  )
 (after! highlight-indent-guides
-  (setq highlight-indent-guides-method 'bitmap
-        highlight-indent-guides-responsive t
-        highlight-indent-guides-bitmap-function 'highlight-indent-guides--bitmap-line))
+  (setq highlight-indent-guides-method 'column
+        highlight-indent-guides-responsive t))
 
 (projectile-add-known-project "~/.nixconfig")
 (setq doom-modeline-enable-word-count nil)
@@ -111,6 +110,8 @@
 (use-package! mixed-pitch
   :hook
   (org-mode . mixed-pitch-mode))
+(setq org-superstar-headline-bullets-list '("💠" "🌸" "🎀" "❄" "🌷"))
+(setq org-hide-emphasis-markers t)
 (after! magit
   (magit-delta-mode +1))
 (after! evil-escape (evil-escape-mode -1))
