@@ -31,7 +31,8 @@ Note that you need [[#nix][flakes enabled to install]].
 Use ~SPC m .~ in doom-emacs to move faster to headlines.
 
 If you want to take a look at my config, Please open this in emacs, or just go [[https://btwiusegentoo.github.io/nixconfig/][here]]
-I generate a HTML file based on this file, thanks to [[https://github.com/fniessen/org-html-themes]]
+
+I keep in sync HTML file based on this file, thanks to [[https://github.com/fniessen/org-html-themes]]
 It's much easier to read than GitHub preview.
 
 * [0/8]TODOs
