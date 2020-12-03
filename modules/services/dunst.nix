@@ -9,7 +9,7 @@
       urgency_normal.timeout = 10;
       urgency_critical.timeout = 10;
   };
-  services.dunst.settings.global.font = "SFNS Display 14";
+  services.dunst.settings.global.font = "Liberation Sans 14";
   services.dunst.settings.global = {
       frame_color = "#959DCB";
       separator_color = "#959DCB";

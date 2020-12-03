@@ -1,21 +1,15 @@
-# -*- mode: Org; eval: (company-mode 0) -*- #
+# -*- mode: Org; eval: (company-mode 0); -*- #
 #+TITLE: My NixOS configuration
 #+LANGUAGE: en
-#+STARTUP: inlineimages overview
-#+PROPERTY: header-args :tangle no :cache yes :results silent
+#+STARTUP: inlineimages
+#+PROPERTY: header-args :tangle no :tangle-mode (identity #o444) :cache yes :results silent
 #+OPTIONS: broken-links:auto
 #+EXPORT_FILE_NAME: index.html
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 
-#+ATTR_HTML: :width 300
-#+ATTR_ORG: :width 300
-[[file:pictures/screenshot1.png]]
-#+ATTR_HTML: :width 300
-#+ATTR_ORG: :width 300
-[[file:pictures/wallpaper2.png]]
+#+ATTR_ORG: :width 400
+[[file:pictures/screenshot1.png]] [[file:pictures/wallpaper2.png]]
 
-
-* Introduction
 Hi! This is my repo that contains my configuration files for my machines (aka dotfiles)
 This repository contains configuration for three hosts currently
 - Ryzen desktop
@@ -34,7 +28,7 @@ If you want to take a look at my config, Please open this in emacs, or just go [
 I keep in sync a HTML file based on this file, thanks to [[https://github.com/fniessen/org-html-themes]]
 It's much easier to read than GitHub preview.
 
-* [0/8]TODOs
+* [0/8]TODO
 - [ ] Document xmobar
 - [ ] Document custom packages
 - [ ] Document configuration.nix/home.nix
@@ -84,7 +78,7 @@ This can also be achieved by manually pinning nixpkgs at specific revision using
 But flakes does it automatically, without having to update rev and sha256 manually everytime.
 You can update inputs easily like this: ~nix flake --update-input nixpkgs~
 
-Currently, I have *home-manager*, *NUR* (nix user repository), *emacs pgtk nativecomp overlay*, and *nixpkgs* 20.09,unstable,master as inputs:
+Currently, I have *home-manager*, *NUR* (nix user repository), *emacs overlay*, and *nixpkgs* 20.09,unstable,master as inputs:
 #+name: flake-inputs
 #+begin_src nix
   inputs = {
@@ -95,7 +89,7 @@ Currently, I have *home-manager*, *NUR* (nix user repository), *emacs pgtk nativ
       };
     };
     nur.url = "github:nix-community/NUR";
-    emacs.url = "github:berbiche/emacs-pgtk-nativecomp-overlay";
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
 
     nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -194,9 +188,7 @@ Importing as package set makes it possible and it's more convenient.
           nur = final: prev: {
             nur = import inputs.nur { nurpkgs = final; pkgs = final; };
           };
-          emacsPgtk = final: prev: {
-            emacsGccPgtk = inputs.emacs.packages.${final.system}.emacsGccPgtk;
-          };
+          emacs-overlay = inputs.emacs-overlay.overlay;
           unstable = final: prev: {
             unstable = import inputs.unstable {
               system = final.system;
@@ -371,7 +363,6 @@ Import custom packages into nixpkgs, so you can treat just like any other packag
 #+begin_src nix :tangle overlays/packages.nix
 # This file is generated from "README.org"
 final: prev: rec {
-  san-francisco-font = prev.callPackage ../packages/san-francisco-font { };
   apple-color-emoji = prev.callPackage ../packages/apple-color-emoji { };
   tamzen-nerdfont = prev.callPackage ../packages/tamzen-nerdfont { };
   palenight-gtk-theme = prev.callPackage ../packages/palenight-gtk-theme { };
@@ -396,18 +387,8 @@ final: prev:
   });
 }
 #+end_src
-*** neovim
-#+begin_src nix :tangle overlays/neovim.nix
-# This file is generated from "README.org"
-final: prev:
-{
-  neovim = prev.neovim.override {
-    viAlias = true;
-    vimAlias = true;
-  };
-}
-#+end_src
 *** neovim-unwrapped
+Install latest unstable neovim 0.5 from master branch
 #+begin_src nix :tangle overlays/neovim-unwrapped.nix
 # This file is generated from "README.org"
 final: prev:
@@ -417,9 +398,9 @@ final: prev:
     version = "master";
     src = builtins.fetchGit {
       url = "https://github.com/neovim/neovim";
-      rev = "f26df8bb66158baacb79c79822babaf137607cd6";
+      rev = "8fb786e415d1c3538452885455b2268d13f640a6";
+      sha256 = "1smq0y7r3s2qqsi11vr9jb5xmch8p9krfxmx9rrmfg7qn38awzkg";
     };
-    patches = old.patches ++ [ ../patches/nvim_fix_terminal_colors.patch ];
   });
 }
 #+end_src
@@ -1231,55 +1212,6 @@ load colorscheme file
 #+begin_src conf
 source-file ./.palenight-tmux
 #+end_src
-** Style
-*** Emacs Centaur Tabs
-Set centaur tabs height
-#+name: centaur-tabs-height
-#+begin_src elisp
-(setq centaur-tabs-height 32)
-#+end_src
-Set the tab style to chamfer
-#+name: centaur-tabs-style
-#+begin_src elisp
-(setq centaur-tabs-style "chamfer")
-#+end_src
-
-Display themed icons from all the icons
-#+name: centaur-tabs-show-icons
-#+begin_src elisp
-(setq centaur-tabs-set-icons t)
-#+end_src
-
-Gray out icons for the unselected tabs
-#+name: centaur-tabs-grayout-icons
-#+begin_src elisp
-(setq centaur-tabs-gray-out-icons 'buffer)
-#+end_src
-
-Display underline below the selected tab
-#+name: centaur-tabs-underline
-#+begin_src elisp
-(setq centaur-tabs-set-bar 'under)
-#+end_src
-
-Display a marker indicating that a buffer has been modified
-#+name: centaur-tabs-modified-marker
-#+begin_src elisp
-(setq centaur-tabs-set-modified-marker t)
-#+end_src
-
-Set modified marker character
-#+name: centaur-tabs-modified-marker-character
-#+begin_src elisp
-(setq centaur-tabs-modified-marker "•")
-#+end_src
-
-Set close button character
-#+name: centaur-tabs-close-button
-#+begin_src elisp
-(setq centaur-tabs-close-button "✕")
-#+end_src
-
 ** Fonts
 I use
 Apple Color Emoji for emojis (can be tested [[https://getemoji.com/][here]])
@@ -1287,7 +1219,7 @@ Apple Color Emoji for emojis (can be tested [[https://getemoji.com/][here]])
 Gohu Font Nerd Font for nerdfont
 [[file:pictures/screenshot-nerdfont.png]]
 Spleen as monospaced fixed-pitch font for editor, terminal, etc
-San Francisco as variable pitch font
+Liberation Sans and Et Book as variable pitch font
 All The Icons is a nerdfont equivalent for emacs.
 Noto Fonts CJK is used as Japanese font.
 
@@ -1300,10 +1232,11 @@ Install fonts:
     (nerdfonts.override { fonts = [ "Gohu" ]; })
     unstable.dejavu_fonts
     unstable.spleen
-    san-francisco-font
     apple-color-emoji
     noto-fonts-cjk
     emacs-all-the-icons-fonts
+    etBook
+    liberation_ttf_v2
   ];
   <<system-font-config>>
   <<fontconfig-enable>>
@@ -1366,7 +1299,7 @@ Set doom fixed-pitch font and doom variable pitch font here:
 #+name: emacs-doom-fonts
 #+begin_src elisp
 (setq doom-font (font-spec :family "Spleen" :size 16)
-      doom-variable-pitch-font (font-spec :family "SFNS Display" :size 16 :weight 'Regular))
+      doom-variable-pitch-font (font-spec :family "ETBembo" :size 14))
 #+end_src
 
 Enable bold and italic
@@ -1382,17 +1315,39 @@ Enable bold and italic
 Set centaur-tabs tabline font
 #+name: centaur-tabs-font
 #+begin_src elisp
-(centaur-tabs-change-fonts "SFNS Display" 140)
+(centaur-tabs-change-fonts "Liberation Sans" 120)
 #+end_src
 
 Set custom set faces
-Use variable pitch font for doom-modeline and centaur-tabs
+Set *modeline* font to Liberation Sans
+Set *dashboard* font color
 #+name: emacs-custom-set-faces
 #+begin_src elisp
 (custom-set-faces!
-  '(mode-line :family "SFNS Display" :height 120)
-  '(mode-line-inactive :family "SFNS Display" :height 120)
-  '(variable-pitch :family "SFNS Display" :height 110))
+  '(mode-line :family "Liberation Sans" :height 120)
+  '(mode-line-inactive :family "Liberation Sans" :height 120)
+  '(doom-dashboard-menu-title :foreground "#c792ea")
+  )
+#+end_src
+
+Set treemacs fonts to Liberation Sans
+#+name: emacs-treemacs-fonts
+#+begin_src elisp
+(setq doom-themes-treemacs-enable-variable-pitch nil)
+(custom-set-faces!
+  '(treemacs-root-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-unmodified-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-modified-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-renamed-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-ignored-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-untracked-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-added-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-conflict-face :family "Liberation Sans" :height 120)
+  '(treemacs-directory-face :family "Liberation Sans" :height 120)
+  '(treemacs-directory-collapsed-face :family "Liberation Sans" :height 120)
+  '(treemacs-file-face :family "Liberation Sans" :height 120)
+  '(treemacs-tags-face :family "Liberation Sans" :height 120)
+  )
 #+end_src
 
 Set emoji and nerdfont(extrafonts):
@@ -1407,17 +1362,18 @@ Set emoji and nerdfont(extrafonts):
                (set-fontset-font t 'symbol "GohuFont Nerd Font" nil 'append))))
 #+end_src
 
+
 Add this to config to use unicode emoji inside emacs
 #+name: emacs-emojify-display-style
 #+begin_src elisp
 (setq emojify-display-style 'unicode)
 #+end_src
 *** xmonad prompt fonts
-Set xmonad prompt font to San Francisco
+Set xmonad prompt font to Liberation Sans
 #+name: xmonad-prompt-font
 #+begin_src haskell
 myFont :: String
-myFont = "xft:SFNS Display:size=14"
+myFont = "xft:Liberation Sans:size=14"
 #+end_src
 Set xmonad emoji prompt font
 #+name: xmonad-prompt-emoji-font
@@ -1461,10 +1417,10 @@ The size is in point(pt)
 #+name: qutebrowser-fonts
 #+begin_src nix
 programs.qutebrowser.settings.fonts = {
-  default_family = "SFNS Display";
-  web.family.standard = "SFNS Display";
-  web.family.serif = "SFNS Display";
-  web.family.sans_serif = "SFNS Display";
+  default_family = "Liberation Sans";
+  web.family.standard = "Liberation Sans";
+  web.family.serif = "Liberation Sans";
+  web.family.sans_serif = "Liberation Sans";
   web.family.fixed = "Spleen";
   completion = {
     category = "12pt Spleen";
@@ -1557,7 +1513,7 @@ Seems like this user-level config is needed to programs use Apple Color Emoji fo
 *** Dunst(Notifications) font
 #+name: dunst-font
 #+begin_src nix
-services.dunst.settings.global.font = "SFNS Display 14";
+services.dunst.settings.global.font = "Liberation Sans 14";
 #+end_src
 ** Wallpapers
 Desktop wallpaper ~pictures/wallpaper1.png~
@@ -1709,7 +1665,7 @@ round-borders = 1;
 Set window corner radius
 #+name: picom-corner-radius
 #+begin_src nix
-corner-radius = 5;
+corner-radius = 18;
 #+end_src
 *** Rounded corner exclude
 Programs to exclude from rounded corners.
@@ -1997,6 +1953,7 @@ Restart to uefi easier
 #+name: fish-programs
 #+begin_src nix :noweb no-export
 <<fish-editors>>
+<<fish-devour>>
 <<fish-btm>>
 <<fish-vifm>>
 <<fish-ncpamixer>>
@@ -2006,7 +1963,17 @@ Launch editors from terminal easier
 #+name: fish-editors
 #+begin_src nix
 "v" = "nvim";
-"em" = "emacsclient -c";
+"emn" = "emacsclient -c -nw";
+#+end_src
+
+Use window swallowing on mpv,zathura,sxiv,emacs.
+Requires [[https://github.com/salman-abedin/devour][devour]] and xdotool installed
+#+name: fish-devour
+#+begin_src nix
+"em" = "devour emacsclient -c";
+"mpv" = "devour mpv";
+"sxiv" = "devour sxiv";
+"zathura" = "devour zathura";
 #+end_src
 
 Use bottom instead of top
@@ -2888,7 +2855,7 @@ import           Xmobar
 
 config :: Config
 config = defaultConfig
-  { font             = "xft:SFNS Display-14,GohuFont Nerd Font-14"
+  { font             = "xft:Liberation Sans-14,GohuFont Nerd Font-14"
   , additionalFonts  = []
   , borderColor      = "#232635"
   , border           = BottomB
@@ -2952,7 +2919,7 @@ import           Xmobar
 
 config :: Config
 config = defaultConfig
-  { font             = "xft:SFNS Display-14,GohuFont Nerd Font-14"
+  { font             = "xft:Liberation Sans-14,GohuFont Nerd Font-14"
   , additionalFonts  = []
   , borderColor      = "#232635"
   , border           = BottomB
@@ -3057,6 +3024,7 @@ main :: IO ()
 main = xmobar config
 #+end_src
 * Emacs
+[[file:pictures/emacs-logo.png]]
 I use emacs (specifically, *doom-emacs*) as main text editor
 
 doom-emacs is an Emacs framework, which is preconfigured with evil-mode(vim keybindings) that allows me to use heavily customized emacs ootb
@@ -3076,10 +3044,10 @@ Install emacs itself
 #+begin_src nix
 programs.emacs.enable = true;
 #+end_src
-Choose to install emacs native comp pgtk from [[Flake inputs][Overlay here]]
+Use emacs native comp pgtk package from [[Flake inputs][Overlay here]]
 #+name: emacs-package
 #+begin_src nix
-programs.emacs.package = pkgs.emacsGccPgtk;
+programs.emacs.package = pkgs.emacsPgtkGcc;
 #+end_src
 
 You have to add this to init.el and config.el to fix nativecomp in Nix
@@ -3175,7 +3143,7 @@ nav-flash         ; blink cursor line after big motions
 ;;neotree           ; a project drawer, like NERDTree for vim
 ophints           ; highlight the region an operation acts on
 (popup +defaults)   ; tame sudden yet inevitable temporary windows
-ligatures       ; ligatures or substitute text with pretty symbols
+(ligatures +extra)       ; ligatures or substitute text with pretty symbols
 <<initel-centaur-tabs>>
 treemacs          ; a project drawer, like neotree but cooler
 unicode           ; extended unicode support for various languages
@@ -3294,7 +3262,7 @@ markdown          ; writing docs for people to ignore
 ;;nim               ; python + lisp at the speed of c
 nix               ; I hereby declare "nix geht mehr!"
 ;;ocaml             ; an objective camel
-(org +pretty)               ; organize your plain life in plain text
+(org +pretty +pandoc)               ; organize your plain life in plain text
 ;;php               ; perl's insecure younger brother
 ;;plantuml          ; diagrams for confusing people more
 ;;purescript        ; javascript, but functional
@@ -3509,8 +3477,6 @@ Comment to disable default tabs module from doom emacs(init.el)
 #+begin_src elisp
 ;; tabs              ; a tab bar for Emacs
 #+end_src
-
-+ [[Emacs Centaur Tabs][Customize Appearance]]
 + [[centaur-tabs-font][Fonts]]
 
 Hook centaur tabs at doom startup
@@ -3562,8 +3528,112 @@ base code:
   <<centaur-tabs-modified-marker>>
   <<centaur-tabs-underline>>
   <<centaur-tabs-height>>
+  <<centaur-tabs-horizontal-margin>>
   (centaur-tabs-mode t)
+  :bind
+  <<centaur-tabs-vim-key>>
   )
+#+end_src
+*** Style
+Set centaur tabs height
+#+name: centaur-tabs-height
+#+begin_src elisp
+(setq centaur-tabs-height 32)
+#+end_src
+Set the tab style to chamfer
+#+name: centaur-tabs-style
+#+begin_src elisp
+(setq centaur-tabs-style "chamfer")
+#+end_src
+
+Display themed icons from all the icons
+#+name: centaur-tabs-show-icons
+#+begin_src elisp
+(setq centaur-tabs-set-icons t)
+#+end_src
+
+Gray out icons for the unselected tabs
+#+name: centaur-tabs-grayout-icons
+#+begin_src elisp
+(setq centaur-tabs-gray-out-icons 'buffer)
+#+end_src
+
+Display underline below the selected tab
+#+name: centaur-tabs-underline
+#+begin_src elisp
+(setq centaur-tabs-set-bar 'under)
+#+end_src
+
+Display a marker indicating that a buffer has been modified
+#+name: centaur-tabs-modified-marker
+#+begin_src elisp
+(setq centaur-tabs-set-modified-marker t)
+#+end_src
+
+Set modified marker character
+#+name: centaur-tabs-modified-marker-character
+#+begin_src elisp
+(setq centaur-tabs-modified-marker "•")
+#+end_src
+
+Set close button character
+#+name: centaur-tabs-close-button
+#+begin_src elisp
+(setq centaur-tabs-close-button "✕")
+#+end_src
+
+Add horizontal margins
+#+name: centaur-tabs-horizontal-margin
+#+begin_src elisp
+(setq centaur-tabs-left-edge-margin "         ")
+(setq centaur-tabs-right-edge-margin "         ")
+#+end_src
+
+Enable Vim like tab motions
+#+name: centaur-tabs-vim-key
+#+begin_src elisp
+(:map evil-normal-state-map
+ ("g t" . centaur-tabs-forward)
+ ("g T" . centaur-tabs-backward))
+#+end_src
+
+** Modeline
+Set doom modeline height
+#+name: doom-modeline-height
+#+begin_src elisp
+(setq doom-modeline-height 20)
+#+end_src
+** Treemacs
++ [[emacs-treemacs-theme][Theme]]
++ [[emacs-treemacs-fonts][Fonts]]
+
+Set dynamic title for Treemacs workspace
+Stolen code from [[https://andreyorst.gitlab.io/posts/2020-05-01-dynamic-title-for-treemacs-workspace/]]
+#+name: emacs-treemacs-dynamic-title
+#+begin_src elisp
+(defun my/treemacs-setup-title ()
+  (let ((bg (face-attribute 'default :background))
+        (fg (face-attribute 'default :foreground)))
+    (face-remap-add-relative 'header-line
+                             :family "Liberation Sans"
+                             :height 120
+                             :background bg :foreground fg
+                             :box `(:line-width ,(/ (line-pixel-height) 2) :color ,bg)))
+  (setq header-line-format
+        '((:eval
+           (let* ((text "File Explorer")
+                  (extra-align (+ (/ (length text) 2) 1))
+                  (width (- (/ (window-width) 2) extra-align)))
+             (concat (make-string width ?\s) text))))))
+
+(add-hook 'treemacs-mode-hook #'my/treemacs-setup-title)
+#+end_src
+** Dashboard
+*** Set dashboard logo
+#+name: emacs-dashboard-logo
+#+begin_src elisp
+(setq +doom-dashboard-banner-file "emacs-logo.png"
+      +doom-dashboard-banner-dir "/etc")
 #+end_src
 ** Company auto completion/LSP
 Enable company module [[doom-initel-completion][here]]
@@ -3685,26 +3755,26 @@ Set dired default to ranger mode
 ** org-mode
 Configure org-mode
 
-Set org-mode directory
+**** Set org-mode directory
 #+name: emacs-org-directory
 #+begin_src elisp
 (setq org-directory "~/org/")
 #+end_src
 
-Start every org-mode files folded.
+**** Start every org-mode files folded.
 It can be set per-file, but better also set here:
 #+name: emacs-org-startup-folded
 #+begin_src elisp
 (setq org-startup-folded t)
 #+end_src
 
-Start every org-mode files with inline images
+**** Start every org-mode files with inline images
 #+name: emacs-org-startup-inline-images
 #+begin_src elisp
 (setq org-startup-with-inline-images t)
 #+end_src
 
-Enable variable pitch font in org-mode using a package called mixed-pitch
+**** Enable variable pitch font in org-mode using mixed-pitch-mode
 Install it:
 #+name: emacs-org-mixed-pitch-install
 #+begin_src elisp
@@ -3719,19 +3789,45 @@ Hook it into org-mode:
 #+end_src
 You have to set variable pitch font from link below
 + [[Emacs fonts][Fonts]]
-company-mode becomes zig zag in org-mode using this package. Use company-box(childframe) to fix it.
+company-mode becomes zig zag in org-mode when we use ~mixed-pitch-mode~.
+We have to use company-box(childframe) to workaround it.
 
-Set org-mode headline characters.
+**** Set org-mode headline bullets characters.
 I use emoji
 #+name: emacs-org-headline-bullets
 #+begin_src elisp
-(setq org-superstar-headline-bullets-list '("💠" "🌸" "🎀" "❄" "🌷"))
+(setq org-superstar-headline-bullets-list '("🌑" "🌸" "🎀" "❄" "🌷"))
 #+end_src
-
-Hide markup elements(*bold*, /italic/)
+**** Hide markup elements(*bold*, /italic/)
 #+name: emacs-org-hide-emphasis-markers
 #+begin_src elisp
 (setq org-hide-emphasis-markers t)
+#+end_src
+
+**** Increase headline font sizes according to level
+#+name: emacs-org-headline-fontsize
+#+begin_src elisp
+(with-eval-after-load 'org
+  (set-face-attribute 'org-level-1 nil :height 1.5)
+  (set-face-attribute 'org-level-2 nil :height 1.25)
+  (set-face-attribute 'org-level-3 nil :height 1.0)
+  (set-face-attribute 'org-level-4 nil :height 1.0)
+  (set-face-attribute 'org-level-5 nil :height 1.0)
+  )
+#+end_src
+
+**** Set org-mode folding symbol(ellipsis) to triangle
+#+name: emacs-org-ellipsis
+#+begin_src elisp
+(setq org-ellipsis "")
+#+end_src
+**** Set margins for org-mode
+#+name: emacs-org-margins
+#+begin_src elisp
+(defun my-set-margins ()
+  (setq left-margin-width 2)
+  (setq right-margin-width 2))
+(add-hook 'org-mode-hook 'my-set-margins)
 #+end_src
 ** Evil-mode
 Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions.
@@ -3851,13 +3947,17 @@ Disable line highlight
 <<emacs-theme>>
 <<emacs-theme-bold>>
 <<emacs-theme-italic>>
+<<emacs-dashboard-logo>>
 <<emacs-treemacs-theme>>
+<<emacs-treemacs-fonts>>
+<<emacs-treemacs-dynamic-title>>
 <<emacs-disable-line-number>>
 <<emacs-indent-space>>
 <<emacs-indent-guide-config>>
 <<projecile-add-searchpath>>
 <<projectile-add-nixconfig>>
 <<doom-modeline-disable-word-count>>
+<<doom-modeline-height>>
 <<emacs-posframe-resizemode>>
 <<emacs-fast-but-imprecise-scrolling>>
 <<emacs-pixel-scroll-mode>>
@@ -3875,7 +3975,9 @@ Disable line highlight
 <<emacs-org-mixed-pitch-enable>>
 <<emacs-org-headline-bullets>>
 <<emacs-org-hide-emphasis-markers>>
-<<magit-delta-enable>>
+<<emacs-org-headline-fontsize>>
+<<emacs-org-ellipsis>>
+<<emacs-org-margins>>
 <<evil-escape-disable>>
 <<evil-substitute-global>>
 <<emacs-auto-save>>
@@ -4992,6 +5094,7 @@ home.packages = with pkgs; [
   xkb-switch
   unstable.libinput-gestures
   unstable.xdotool
+  unstable.devour
   unstable.xorg.xwininfo
   unstable.xfontsel
   unstable.xorg.libXext
@@ -5296,6 +5399,7 @@ home.packages = with pkgs; [
   unstable.direnv
   unstable.imagemagick
   unstable.xdotool
+  unstable.devour
   unstable.xorg.xwininfo
   unstable.zstd
   unstable.editorconfig-core-c
@@ -5639,9 +5743,10 @@ That makes possible to share same config that uses these files for more than one
     "icons/volume.xpm".source = ../../icons/volume.xpm;
     "icons/volume-mute.xpm".source = ../../icons/volume-mute.xpm;
     "icons/clock.xpm".source = ../../icons/clock.xpm;
-    # misc
     # emojis
     "UnicodeData.txt".source = ../../textfiles/UnicodeData.txt;
+    # emacs dashboard logo
+    "emacs-logo.png".source = ../../pictures/emacs-logo.png;
   };
   <<thinkpad-layout-file>>
 }

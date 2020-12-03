@@ -6,8 +6,8 @@ final: prev:
     version = "master";
     src = builtins.fetchGit {
       url = "https://github.com/neovim/neovim";
-      rev = "f26df8bb66158baacb79c79822babaf137607cd6";
+      rev = "8fb786e415d1c3538452885455b2268d13f640a6";
+      sha256 = "1smq0y7r3s2qqsi11vr9jb5xmch8p9krfxmx9rrmfg7qn38awzkg";
     };
-    patches = old.patches ++ [ ../patches/nvim_fix_terminal_colors.patch ];
   });
 }

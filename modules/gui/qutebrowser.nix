@@ -11,10 +11,10 @@
   programs.qutebrowser.settings.url.default_page = "https://btwiusegentoo.github.io/start.html";
   programs.qutebrowser.settings.zoom.default = "90%";
   programs.qutebrowser.settings.fonts = {
-    default_family = "SFNS Display";
-    web.family.standard = "SFNS Display";
-    web.family.serif = "SFNS Display";
-    web.family.sans_serif = "SFNS Display";
+    default_family = "Liberation Sans";
+    web.family.standard = "Liberation Sans";
+    web.family.serif = "Liberation Sans";
+    web.family.sans_serif = "Liberation Sans";
     web.family.fixed = "Spleen";
     completion = {
       category = "12pt Spleen";

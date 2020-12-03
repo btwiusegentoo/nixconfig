@@ -2,7 +2,7 @@
 ;This file is generated from "README.org"
 (setq comp-async-env-modifier-form "")
 (setq doom-font (font-spec :family "Spleen" :size 16)
-      doom-variable-pitch-font (font-spec :family "SFNS Display" :size 16 :weight 'Regular))
+      doom-variable-pitch-font (font-spec :family "ETBembo" :size 14))
 (add-hook! 'doom-load-theme-hook
            :append
            (defun my/init-extra-fonts-h(&optional frame)
@@ -11,14 +11,48 @@
                (set-fontset-font t 'symbol "Apple Color Emoji" nil 'append)
                (set-fontset-font t 'symbol "GohuFont Nerd Font" nil 'append))))
 (custom-set-faces!
-  '(mode-line :family "SFNS Display" :height 120)
-  '(mode-line-inactive :family "SFNS Display" :height 120)
-  '(variable-pitch :family "SFNS Display" :height 110))
+  '(mode-line :family "Liberation Sans" :height 120)
+  '(mode-line-inactive :family "Liberation Sans" :height 120)
+  '(doom-dashboard-menu-title :foreground "#c792ea")
+  )
 (setq emojify-display-style 'unicode)
 (setq doom-theme 'doom-palenight)
 (setq doom-themes-enable-bold t)
 (setq doom-themes-enable-italic t)
+(setq +doom-dashboard-banner-file "emacs-logo.png"
+      +doom-dashboard-banner-dir "/etc")
 (setq doom-themes-treemacs-theme "doom-colors")
+(setq doom-themes-treemacs-enable-variable-pitch nil)
+(custom-set-faces!
+  '(treemacs-root-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-unmodified-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-modified-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-renamed-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-ignored-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-untracked-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-added-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-conflict-face :family "Liberation Sans" :height 120)
+  '(treemacs-directory-face :family "Liberation Sans" :height 120)
+  '(treemacs-directory-collapsed-face :family "Liberation Sans" :height 120)
+  '(treemacs-file-face :family "Liberation Sans" :height 120)
+  '(treemacs-tags-face :family "Liberation Sans" :height 120)
+  )
+(defun my/treemacs-setup-title ()
+  (let ((bg (face-attribute 'default :background))
+        (fg (face-attribute 'default :foreground)))
+    (face-remap-add-relative 'header-line
+                             :family "Liberation Sans"
+                             :height 120
+                             :background bg :foreground fg
+                             :box `(:line-width ,(/ (line-pixel-height) 2) :color ,bg)))
+  (setq header-line-format
+        '((:eval
+           (let* ((text "File Explorer")
+                  (extra-align (+ (/ (length text) 2) 1))
+                  (width (- (/ (window-width) 2) extra-align)))
+             (concat (make-string width ?\s) text))))))
+
+(add-hook 'treemacs-mode-hook #'my/treemacs-setup-title)
 (setq display-line-numbers-type nil)
 (setq-default
  indent-tabs-mode nil
@@ -33,6 +67,7 @@
 
 (projectile-add-known-project "~/.nixconfig")
 (setq doom-modeline-enable-word-count nil)
+(setq doom-modeline-height 20)
 (setq posframe-gtk-resize-child-frames 'resize-mode)
 (setq fast-but-imprecise-scrolling t)
 (add-hook 'prog-mode-hook 'pixel-scroll-mode)
@@ -54,13 +89,19 @@
   :config
   (add-hook '+doom-dashboard-mode-hook #'centaur-tabs-local-mode)
   (add-hook '+popup-buffer-mode-hook #'centaur-tabs-local-mode)
-  (centaur-tabs-change-fonts "SFNS Display" 140)
+  (centaur-tabs-change-fonts "Liberation Sans" 120)
   (centaur-tabs-group-by-projectile-project)
   (setq centaur-tabs-set-icons t)
   (setq centaur-tabs-set-modified-marker t)
   (setq centaur-tabs-set-bar 'under)
   (setq centaur-tabs-height 32)
+  (setq centaur-tabs-left-edge-margin "         ")
+  (setq centaur-tabs-right-edge-margin "         ")
   (centaur-tabs-mode t)
+  :bind
+  (:map evil-normal-state-map
+   ("g t" . centaur-tabs-forward)
+   ("g T" . centaur-tabs-backward))
   )
 ;; Company completion
 (after! company
@@ -110,10 +151,20 @@
 (use-package! mixed-pitch
   :hook
   (org-mode . mixed-pitch-mode))
-(setq org-superstar-headline-bullets-list '("💠" "🌸" "🎀" "❄" "🌷"))
+(setq org-superstar-headline-bullets-list '("🌑" "🌸" "🎀" "❄" "🌷"))
 (setq org-hide-emphasis-markers t)
-(after! magit
-  (magit-delta-mode +1))
+(with-eval-after-load 'org
+  (set-face-attribute 'org-level-1 nil :height 1.5)
+  (set-face-attribute 'org-level-2 nil :height 1.25)
+  (set-face-attribute 'org-level-3 nil :height 1.0)
+  (set-face-attribute 'org-level-4 nil :height 1.0)
+  (set-face-attribute 'org-level-5 nil :height 1.0)
+  )
+(setq org-ellipsis "")
+(defun my-set-margins ()
+  (setq left-margin-width 2)
+  (setq right-margin-width 2))
+(add-hook 'org-mode-hook 'my-set-margins)
 (after! evil-escape (evil-escape-mode -1))
 (after! evil (setq evil-ex-substitute-global t))
 (setq auto-save-default t)

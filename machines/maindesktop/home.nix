@@ -110,6 +110,7 @@ in
     xkb-switch
     unstable.libinput-gestures
     unstable.xdotool
+    unstable.devour
     unstable.xorg.xwininfo
     unstable.xfontsel
     unstable.xorg.libXext

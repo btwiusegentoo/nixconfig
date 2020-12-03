@@ -13,9 +13,10 @@
     "icons/volume.xpm".source = ../../icons/volume.xpm;
     "icons/volume-mute.xpm".source = ../../icons/volume-mute.xpm;
     "icons/clock.xpm".source = ../../icons/clock.xpm;
-    # misc
     # emojis
     "UnicodeData.txt".source = ../../textfiles/UnicodeData.txt;
+    # emacs dashboard logo
+    "emacs-logo.png".source = ../../pictures/emacs-logo.png;
   };
   environment.etc."thinkpadlayout.xkb".source = ../../configs/thinkpadlayout.xkb;
 }

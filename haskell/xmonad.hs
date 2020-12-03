@@ -50,7 +50,7 @@ myModMask = mod4Mask
 myTerminal :: String
 myTerminal = "alacritty"
 myFont :: String
-myFont = "xft:SFNS Display:size=14"
+myFont = "xft:Liberation Sans:size=14"
 myEmojiFont :: String
 myEmojiFont = "xft:Apple Color Emoji:size=14"
 myWorkspaces :: [String]

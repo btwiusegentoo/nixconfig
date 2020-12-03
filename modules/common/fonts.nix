@@ -5,10 +5,11 @@
     (nerdfonts.override { fonts = [ "Gohu" ]; })
     unstable.dejavu_fonts
     unstable.spleen
-    san-francisco-font
     apple-color-emoji
     noto-fonts-cjk
     emacs-all-the-icons-fonts
+    etBook
+    liberation_ttf_v2
   ];
       fonts.fontconfig = {
         defaultFonts = {

@@ -35,7 +35,11 @@
     "scrotclipsel" = "scrot -s ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
     "scrotclip" = "scrot ~/tmp.png && xclip -selection clipboard -t image/png -i ~/tmp.png && rm ~/tmp.png";
     "v" = "nvim";
-    "em" = "emacsclient -c";
+    "emn" = "emacsclient -c -nw";
+    "em" = "devour emacsclient -c";
+    "mpv" = "devour mpv";
+    "sxiv" = "devour sxiv";
+    "zathura" = "devour zathura";
     "top" = "btm";
     "vf" = "vifm";
     "ncpa" = "ncpamixer";

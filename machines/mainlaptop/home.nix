@@ -87,6 +87,7 @@ in
     unstable.direnv
     unstable.imagemagick
     unstable.xdotool
+    unstable.devour
     unstable.xorg.xwininfo
     unstable.zstd
     unstable.editorconfig-core-c

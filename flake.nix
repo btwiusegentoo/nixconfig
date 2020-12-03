@@ -10,7 +10,7 @@
         };
       };
       nur.url = "github:nix-community/NUR";
-      emacs.url = "github:berbiche/emacs-pgtk-nativecomp-overlay";
+      emacs-overlay.url = "github:nix-community/emacs-overlay";
   
       nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
       unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -61,9 +61,7 @@
                 nur = final: prev: {
                   nur = import inputs.nur { nurpkgs = final; pkgs = final; };
                 };
-                emacsPgtk = final: prev: {
-                  emacsGccPgtk = inputs.emacs.packages.${final.system}.emacsGccPgtk;
-                };
+                emacs-overlay = inputs.emacs-overlay.overlay;
                 unstable = final: prev: {
                   unstable = import inputs.unstable {
                     system = final.system;
