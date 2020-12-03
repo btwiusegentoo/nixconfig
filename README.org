@@ -18,13 +18,12 @@ This repository contains configuration for three hosts currently
 All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix Flakes]].
 [[https://github.com/nix-community/home-manager][home-manager]] is used to manage user environment. I try to install programs/services in user level as much as possible.
 I use [[https://xmonad.org/][xmonad]] as window manager for Desktop and Laptop, while server is headless.
-My English is not good, but I will try to make this into literate config just for fun.
-To generate actual files, open this file in emacs, and execute ~M-x org-babel-tangle~.
-You can install this config running this command at repository root ~nixos-rebuild switch --flake .~
-Note that you need [[#nix][flakes enabled to install]].
+To generate actual files, open this file in emacs, and execute ~M-x org-babel-tangle~ or  ~C-c C-v t~
+You can install this config running  ~nixos-rebuild switch --flake~ at repository root.
+Note that you require [[Enable flakes][flakes enabled]].
 Use ~SPC m .~ in doom-emacs to move faster to headlines.
 
-If you want to take a look at my config, Please open this in emacs, or just go [[https://btwiusegentoo.github.io/nixconfig/][here]].
+If you want to take a look at my config, Please open this file in emacs, or just go [[https://btwiusegentoo.github.io/nixconfig/][here]].
 I keep in sync a HTML file based on this file, thanks to [[https://github.com/fniessen/org-html-themes]]
 It's much easier to read than GitHub preview.
 
