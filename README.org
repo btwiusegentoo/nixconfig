@@ -77,7 +77,6 @@ This can also be achieved by manually pinning nixpkgs at specific revision using
 But flakes does it automatically, without having to update rev and sha256 manually everytime.
 You can update inputs easily like this: ~nix flake --update-input nixpkgs~
 
-Currently, I have *home-manager*, *NUR* (nix user repository), *emacs overlay*, and *nixpkgs* 20.09,unstable,master as inputs:
 #+name: flake-inputs
 #+begin_src nix
   inputs = {
@@ -89,6 +88,7 @@ Currently, I have *home-manager*, *NUR* (nix user repository), *emacs overlay*, 
     };
     nur.url = "github:nix-community/NUR";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
+    neovim-overlay.url = "github:mjlbach/neovim-nightly-overlay/flakes";
 
     nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -188,6 +188,7 @@ Importing as package set makes it possible and it's more convenient.
             nur = import inputs.nur { nurpkgs = final; pkgs = final; };
           };
           emacs-overlay = inputs.emacs-overlay.overlay;
+          neovim-overlay = inputs.neovim-overlay.overlay;
           unstable = final: prev: {
             unstable = import inputs.unstable {
               system = final.system;
@@ -382,24 +383,6 @@ final: prev:
       repo = "neofetch";
       rev = "5dfce0f9c3068d4d8a49d0b7182bdace61b8f4d0";
       sha256 = "131r07wllkvrcgw0ndyf5avqpzqkym56ii0qck6qyjfa8ylx6s31";
-    };
-  });
-}
-#+end_src
-*** neovim-unwrapped
-Install latest unstable neovim 0.5 from master branch
-#+begin_src nix :tangle overlays/neovim-unwrapped.nix
-# This file is generated from "README.org"
-final: prev:
-{
-  neovim-unwrapped = prev.neovim-unwrapped.overrideAttrs (old: rec {
-    ## use neovim nightly
-    version = "master";
-    src = prev.fetchFromGitHub {
-      owner = "neovim";
-      repo = "neovim";
-      rev = "8fb786e415d1c3538452885455b2268d13f640a6";
-      sha256 = "1smq0y7r3s2qqsi11vr9jb5xmch8p9krfxmx9rrmfg7qn38awzkg";
     };
   });
 }
