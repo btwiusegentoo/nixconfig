@@ -26,7 +26,7 @@ If you want to take a look at my config, Please open this file in emacs, or just
 I keep in sync a HTML file based on this file, thanks to [[https://github.com/fniessen/org-html-themes]]
 It's much easier to read than GitHub preview.
 
-* [0/8]TODOs
+* [1/8]TODOs
 ** TODO Document xmobar
 ** TODO Document custom packages
 ** TODO Document configuration.nix/home.nix
@@ -34,7 +34,7 @@ It's much easier to read than GitHub preview.
 ** TODO Document neovim and coc-settings.json
 ** TODO Document flashfocus
 ** TODO Document vifm
-** TODO Nigthly neovim doesn't build. Maybe just switch to available overlay
+** DONE Nigthly neovim doesn't build. Maybe just switch to available overlay
 * Flake
 A flake is (usually) a Git repository that contains a file named ~flake.nix~ at root.
 This repository is compatible with nix flakes.
