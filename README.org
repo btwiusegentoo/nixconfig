@@ -17,8 +17,10 @@ This repository contains configuration for three hosts currently
 All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix Flakes]].
 [[https://github.com/nix-community/home-manager][home-manager]] is used to manage user environment. I try to install programs/services in user level as much as possible.
 I use [[https://xmonad.org/][xmonad]] as window manager for Desktop and Laptop, while server is headless.
-To generate actual files, open this file in emacs, and execute ~M-x org-babel-tangle~ or  ~C-c C-v t~
-You can install this config running  ~nixos-rebuild switch --flake~ at repository root.
+To generate actual files, open this file in emacs and execute ~M-x org-babel-tangle~, binded to ~C-c C-v t~
+You can also execute the makefile
+
+You can install this config in NixOS running  ~nixos-rebuild switch --flake~ at repository root.
 Note that this requires [[Enable flakes][flakes enabled]].
 Use ~SPC m .~ in doom-emacs to move faster to headlines.
 
@@ -1958,6 +1960,11 @@ Launch editors from terminal easier
 #+begin_src nix
 "v" = "nvim";
 "emn" = "emacsclient -c -nw";
+#+end_src
+
+Tangle org-babel src blocks from command line
+#+begin_src nix
+"org-babel-tangle" = "emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "README.org")'";
 #+end_src
 
 Use window swallowing on mpv,zathura,sxiv,emacs.
@@ -5817,6 +5824,13 @@ This module is imported from home-manager
     sha256 = "04mjqsiajqdzp43fn16j6sfz3972yfpqq6s2vw0cnim5bp9a642b";
   };
 }
+#+end_src
+* Misc
+** makefile
+Generate a makefile to make to generate files from commandline
+#+begin_src makefile :tangle makefile
+compile:
+	emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "README.org")'
 #+end_src
 * Credits
 - [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in lock screen wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]
