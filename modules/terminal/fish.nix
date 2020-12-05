@@ -55,22 +55,22 @@
   programs.fish.plugins =
     [
       {
-          name = "z";
-          src = pkgs.fetchFromGitHub {
+        name = "z";
+        src = pkgs.fetchFromGitHub {
           owner = "jethrokuan";
           repo = "z";
           rev = "ddeb28a7b6a1f0ec6dae40c636e5ca4908ad160a";
           sha256 = "0c5i7sdrsp0q3vbziqzdyqn4fmp235ax4mn4zslrswvn8g3fvdyh";
-          };
+        };
       }
       {
-          name = "fish-ssh-agent";
-          src = pkgs.fetchFromGitHub {
+        name = "fish-ssh-agent";
+        src = pkgs.fetchFromGitHub {
           owner = "danhper";
           repo = "fish-ssh-agent";
           rev = "ce90d80aa9549c626f9c5fc5a964536de015a192";
           sha256 = "03zj5g7dxkhqpp9lijxxlnyx4cc7nqpapj5iqfv7swavyximicyi";
-          };
+        };
       }
     ];
 
