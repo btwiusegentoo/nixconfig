@@ -4,7 +4,7 @@ final: prev:
   neovim-unwrapped = prev.neovim-unwrapped.overrideAttrs (old: rec {
     ## use neovim nightly
     version = "master";
-    src = builtins.fetchFromGitHub {
+    src = prev.fetchFromGitHub {
       owner = "neovim";
       repo = "neovim";
       rev = "8fb786e415d1c3538452885455b2268d13f640a6";
