@@ -394,8 +394,9 @@ final: prev:
   neovim-unwrapped = prev.neovim-unwrapped.overrideAttrs (old: rec {
     ## use neovim nightly
     version = "master";
-    src = builtins.fetchGit {
-      url = "https://github.com/neovim/neovim";
+    src = builtins.fetchFromGitHub {
+      owner = "neovim";
+      repo = "neovim";
       rev = "8fb786e415d1c3538452885455b2268d13f640a6";
       sha256 = "1smq0y7r3s2qqsi11vr9jb5xmch8p9krfxmx9rrmfg7qn38awzkg";
     };
@@ -2070,13 +2071,13 @@ Z is a replacement for cd that learns your habit, tracks the directories you vis
 #+name: fish-plugin-z
 #+begin_src nix
 {
-    name = "z";
-    src = pkgs.fetchFromGitHub {
+  name = "z";
+  src = pkgs.fetchFromGitHub {
     owner = "jethrokuan";
     repo = "z";
     rev = "ddeb28a7b6a1f0ec6dae40c636e5ca4908ad160a";
     sha256 = "0c5i7sdrsp0q3vbziqzdyqn4fmp235ax4mn4zslrswvn8g3fvdyh";
-    };
+  };
 }
 #+end_src
 
@@ -2084,13 +2085,13 @@ Integrate SSH agent with fish shell
 #+name: fish-plugin-ssh-agent
 #+begin_src nix
 {
-    name = "fish-ssh-agent";
-    src = pkgs.fetchFromGitHub {
+  name = "fish-ssh-agent";
+  src = pkgs.fetchFromGitHub {
     owner = "danhper";
     repo = "fish-ssh-agent";
     rev = "ce90d80aa9549c626f9c5fc5a964536de015a192";
     sha256 = "03zj5g7dxkhqpp9lijxxlnyx4cc7nqpapj5iqfv7swavyximicyi";
-    };
+  };
 }
 #+end_src
 *** Enable vi key bindings
