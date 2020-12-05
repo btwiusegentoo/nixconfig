@@ -4,7 +4,8 @@
   fonts.fonts = with pkgs; [
     (nerdfonts.override { fonts = [ "Gohu" ]; })
     unstable.dejavu_fonts
-    unstable.spleen
+    spleen
+    unstable.cozette
     apple-color-emoji
     noto-fonts-cjk
     emacs-all-the-icons-fonts

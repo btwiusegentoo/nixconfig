@@ -1,6 +1,8 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
 
+;; Disable packages
+
 ;; Basic stuffs
 (package! centaur-tabs
   :recipe(:host github :repo "MoritzMaxeiner/centaur-tabs" :branch "daemon"))

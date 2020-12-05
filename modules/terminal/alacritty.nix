@@ -62,18 +62,18 @@
   };
   programs.alacritty.settings.font = {
     normal = {
-      family = "Spleen";
+      family = "CozetteVector";
       style = "Regular";
     };
     bold = {
-      family = "Spleen";
-      style = "Bold";
-    };
-    italic = {
-      family = "Spleen";
+      family = "CozetteVector";
       style = "Regular";
     };
-    size = 12;
+    italic = {
+      family = "CozetteVector";
+      style = "Regular";
+    };
+    size = 10.5;
     offset = {
       x = 0;
       y = 0;

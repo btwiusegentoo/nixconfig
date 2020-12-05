@@ -9,6 +9,7 @@
   "fontconfig/conf.d/10-prefer-emoji.conf".source = ../../configs/fontconfig/10-prefer-emoji.conf;
   "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
   "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
+  "fontconfig/conf.d/10-hinting.conf".source = ../../configs/fontconfig/10-hinting.conf;
 
   "tridactyl/tridactylrc".text = ''
       <<tridactylrc>>

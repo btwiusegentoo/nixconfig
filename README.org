@@ -1,6 +1,5 @@
 # -*- mode: Org; eval: (company-mode 0); -*- #
 #+TITLE: My NixOS configuration
-#+LANGUAGE: en
 #+STARTUP: inlineimages
 #+PROPERTY: header-args :tangle no :tangle-mode (identity #o444) :cache yes :results silent
 #+OPTIONS: broken-links:auto
@@ -10,7 +9,7 @@
 #+ATTR_ORG: :width 400
 [[file:pictures/screenshot1.png]] [[file:pictures/wallpaper2.png]]
 
-Hi! This is my repo that contains my configuration files for my machines (aka dotfiles)
+This is my repo that contains my configuration files for my machines (aka dotfiles)
 This repository contains configuration for three hosts currently
 - Ryzen desktop
 - My portable laptop
@@ -20,7 +19,7 @@ All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix F
 I use [[https://xmonad.org/][xmonad]] as window manager for Desktop and Laptop, while server is headless.
 To generate actual files, open this file in emacs, and execute ~M-x org-babel-tangle~ or  ~C-c C-v t~
 You can install this config running  ~nixos-rebuild switch --flake~ at repository root.
-Note that you require [[Enable flakes][flakes enabled]].
+Note that this requires [[Enable flakes][flakes enabled]].
 Use ~SPC m .~ in doom-emacs to move faster to headlines.
 
 If you want to take a look at my config, Please open this file in emacs, or just go [[https://btwiusegentoo.github.io/nixconfig/][here]].
@@ -357,7 +356,7 @@ final: prev:
   inherit (final.unstable) fzf;
 }
 #+end_src
-** Import custom packages
+** Custom packages
 Import custom packages into nixpkgs, so you can treat just like any other package.
 #+begin_src nix :tangle overlays/packages.nix
 # This file is generated from "README.org"
@@ -1212,15 +1211,10 @@ load colorscheme file
 source-file ./.palenight-tmux
 #+end_src
 ** Fonts
-I use
-Apple Color Emoji for emojis (can be tested [[https://getemoji.com/][here]])
-[[file:pictures/screenshot-emojis.png]]
-Gohu Font Nerd Font for nerdfont
-[[file:pictures/screenshot-nerdfont.png]]
-Spleen as monospaced fixed-pitch font for editor, terminal, etc
-Liberation Sans and Et Book as variable pitch font
-All The Icons is a nerdfont equivalent for emacs.
-Noto Fonts CJK is used as Japanese font.
+I use Cozette font as editor/terminal font.
+Spleen is my choice for TTY font
+GohuFont is used only to render nerdfonts.
+Apple's emoji font is the best emoji font.(Other emoji fonts are mostly too ugly(maybe except Twitter emoji) that is totally unusable on some places like IG stories)
 
 Install fonts:
 #+begin_src nix :tangle modules/common/fonts.nix :noweb no-export
@@ -1230,7 +1224,8 @@ Install fonts:
   fonts.fonts = with pkgs; [
     (nerdfonts.override { fonts = [ "Gohu" ]; })
     unstable.dejavu_fonts
-    unstable.spleen
+    spleen
+    unstable.cozette
     apple-color-emoji
     noto-fonts-cjk
     emacs-all-the-icons-fonts
@@ -1294,11 +1289,12 @@ console.packages = with pkgs; [ unstable.spleen ];
 console.font = "spleen-6x12";
 #+end_src
 *** Emacs fonts
+*Emacs fonts are set in point(pt) rather than pixel(px)*
 Set doom fixed-pitch font and doom variable pitch font here:
 #+name: emacs-doom-fonts
 #+begin_src elisp
-(setq doom-font (font-spec :family "Spleen" :size 16)
-      doom-variable-pitch-font (font-spec :family "ETBembo" :size 14))
+(setq doom-font "CozetteVector-10.5"
+      doom-variable-pitch-font "ETBembo-11")
 #+end_src
 
 Enable bold and italic
@@ -1314,18 +1310,20 @@ Enable bold and italic
 Set centaur-tabs tabline font
 #+name: centaur-tabs-font
 #+begin_src elisp
-(centaur-tabs-change-fonts "Liberation Sans" 120)
+(centaur-tabs-change-fonts "Liberation Sans" 110)
 #+end_src
 
-Set custom set faces
-Set *modeline* font to Liberation Sans
-Set *dashboard* font color
+Set custom set faces here
+*modeline* font
+*dashboard* font color
+*avy* hinting font.
 #+name: emacs-custom-set-faces
 #+begin_src elisp
 (custom-set-faces!
-  '(mode-line :family "Liberation Sans" :height 120)
-  '(mode-line-inactive :family "Liberation Sans" :height 120)
+  '(mode-line :family "Liberation Sans" :height 105)
+  '(mode-line-inactive :family "Liberation Sans" :height 105)
   '(doom-dashboard-menu-title :foreground "#c792ea")
+  '(avy-lead-face :family "Liberation Sans" :height 110)
   )
 #+end_src
 
@@ -1334,18 +1332,18 @@ Set treemacs fonts to Liberation Sans
 #+begin_src elisp
 (setq doom-themes-treemacs-enable-variable-pitch nil)
 (custom-set-faces!
-  '(treemacs-root-face :family "Liberation Sans" :height 120)
-  '(treemacs-git-unmodified-face :family "Liberation Sans" :height 120)
-  '(treemacs-git-modified-face :family "Liberation Sans" :height 120)
-  '(treemacs-git-renamed-face :family "Liberation Sans" :height 120)
-  '(treemacs-git-ignored-face :family "Liberation Sans" :height 120)
-  '(treemacs-git-untracked-face :family "Liberation Sans" :height 120)
-  '(treemacs-git-added-face :family "Liberation Sans" :height 120)
-  '(treemacs-git-conflict-face :family "Liberation Sans" :height 120)
-  '(treemacs-directory-face :family "Liberation Sans" :height 120)
-  '(treemacs-directory-collapsed-face :family "Liberation Sans" :height 120)
-  '(treemacs-file-face :family "Liberation Sans" :height 120)
-  '(treemacs-tags-face :family "Liberation Sans" :height 120)
+  '(treemacs-root-face :family "Liberation Sans" :height 105)
+  '(treemacs-git-unmodified-face :family "Liberation Sans" :height 105)
+  '(treemacs-git-modified-face :family "Liberation Sans" :height 105)
+  '(treemacs-git-renamed-face :family "Liberation Sans" :height 105)
+  '(treemacs-git-ignored-face :family "Liberation Sans" :height 105)
+  '(treemacs-git-untracked-face :family "Liberation Sans" :height 105)
+  '(treemacs-git-added-face :family "Liberation Sans" :height 105)
+  '(treemacs-git-conflict-face :family "Liberation Sans" :height 105)
+  '(treemacs-directory-face :family "Liberation Sans" :height 105)
+  '(treemacs-directory-collapsed-face :family "Liberation Sans" :height 105)
+  '(treemacs-file-face :family "Liberation Sans" :height 105)
+  '(treemacs-tags-face :family "Liberation Sans" :height 105)
   )
 #+end_src
 
@@ -1356,7 +1354,7 @@ Set emoji and nerdfont(extrafonts):
            :append
            (defun my/init-extra-fonts-h(&optional frame)
              (with-selected-frame (or frame (selected-frame))
-               (set-fontset-font t 'symbol "Spleen" nil)
+               (set-fontset-font t 'symbol "CozetteVector" nil)
                (set-fontset-font t 'symbol "Apple Color Emoji" nil 'append)
                (set-fontset-font t 'symbol "GohuFont Nerd Font" nil 'append))))
 #+end_src
@@ -1381,24 +1379,23 @@ myEmojiFont :: String
 myEmojiFont = "xft:Apple Color Emoji:size=14"
 #+end_src
 *** Alacritty Fonts
-I use Spleen font for Alacritty.
 The size is in point(pt)
 #+name: alacritty-fonts
 #+begin_src nix
 programs.alacritty.settings.font = {
   normal = {
-    family = "Spleen";
+    family = "CozetteVector";
     style = "Regular";
   };
   bold = {
-    family = "Spleen";
-    style = "Bold";
-  };
-  italic = {
-    family = "Spleen";
+    family = "CozetteVector";
     style = "Regular";
   };
-  size = 12;
+  italic = {
+    family = "CozetteVector";
+    style = "Regular";
+  };
+  size = 10.5;
   offset = {
     x = 0;
     y = 0;
@@ -1410,8 +1407,6 @@ programs.alacritty.settings.font = {
 };
 #+end_src
 *** qutebrowser Fonts
-I use Spleen for browser itself's appearance and web fixed font,
-San Francisco for most web contents.
 The size is in point(pt)
 #+name: qutebrowser-fonts
 #+begin_src nix
@@ -1420,39 +1415,39 @@ programs.qutebrowser.settings.fonts = {
   web.family.standard = "Liberation Sans";
   web.family.serif = "Liberation Sans";
   web.family.sans_serif = "Liberation Sans";
-  web.family.fixed = "Spleen";
+  web.family.fixed = "CozetteVector";
   completion = {
-    category = "12pt Spleen";
-    entry = "12pt Spleen";
+    category = "10.5pt CozetteVector";
+    entry = "10.5pt CozetteVector";
   };
-  contextmenu = "12pt Spleen";
-  debug_console = "12pt Spleen";
-  default_size = "12pt";
-  downloads = "12pt Spleen";
-  hints = "12pt Spleen";
-  keyhint = "12pt Spleen";
+  contextmenu = "10.5pt CozetteVector";
+  debug_console = "10.5pt CozetteVector";
+  default_size = "10.5pt";
+  downloads = "10.5pt CozetteVector";
+  hints = "11pt Liberation Sans";
+  keyhint = "10.5pt CozetteVector";
   messages = {
-    error = "12pt Spleen";
-    info = "12pt Spleen";
-    warning = "12pt Spleen";
+    error = "10.5pt CozetteVector";
+    info = "10.5pt CozetteVector";
+    warning = "10.5pt CozetteVector";
   };
-  prompts = "12pt Spleen";
-  statusbar = "12pt Spleen";
-  tabs.selected = "12pt Spleen";
-  tabs.unselected = "12pt Spleen";
-  #tabs = "12pt Spleen";
+  prompts = "10.5pt CozetteVector";
+  statusbar = "10.5pt CozetteVector";
+  tabs.selected = "10.5pt CozetteVector";
+  tabs.unselected = "10.5pt CozetteVector";
+  #tabs = "10.5pt CozetteVector";
 };
 #+end_src
 *** fontconfig
 Font configs that can't be configured using nix options belongs here.
 **** 10-symbols.conf
-This allows to use nerdfont symbols while using Spleen as font. It's really useful on terminal.
+Use nerdfont as fallback font
 #+begin_src xml :tangle configs/fontconfig/10-symbols.conf
 <?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 <fontconfig>
     <alias>
-        <family>Spleen</family>
+        <family>Cozette</family>
         <prefer>
             <family>GohuFont Nerd Font</family>
         </prefer>
@@ -1507,6 +1502,20 @@ Seems like this user-level config is needed to programs use Apple Color Emoji fo
             <string>Apple Color Emoji</string>
         </edit>
     </match>
+</fontconfig>
+#+end_src
+**** 10-hinting.conf
+#+begin_src xml :tangle configs/fontconfig/10-hinting.conf
+<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <match target="font">
+    <test name="family" qual="any">
+      <string>CozetteVector</string>
+    </test>
+    <edit name="hinting" mode="assign">
+      <bool>false</bool>
+    </edit>
+  </match>
 </fontconfig>
 #+end_src
 *** Dunst(Notifications) font
@@ -1853,6 +1862,7 @@ fish is a Unix shell that attempts to be more interactive and user-friendly
     <<fish-git-abbrs>>
     <<fish-screenshots>>
     <<fish-programs>>
+    <<fish-mpv-music>>
     <<fish-nixos>>
     <<fish-misc-commands>>
   };
@@ -1973,6 +1983,12 @@ Requires [[https://github.com/salman-abedin/devour][devour]] and xdotool install
 "mpv" = "devour mpv";
 "sxiv" = "devour sxiv";
 "zathura" = "devour zathura";
+#+end_src
+
+Launch mpv to play music
+#+name: fish-mpv-music
+#+begin_src nix
+"mpvm" = "mpv --no-video";
 #+end_src
 
 Use bottom instead of top
@@ -3136,13 +3152,13 @@ doom-quit         ; DOOM quit-message prompts when you quit Emacs
 hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
 ;;hydra
 <<emacs-indent-guide-enable>>
-minimap           ; show a map of the code on the side
+;;minimap           ; show a map of the code on the side
 modeline          ; snazzy, Atom-inspired modeline, plus API
 nav-flash         ; blink cursor line after big motions
 ;;neotree           ; a project drawer, like NERDTree for vim
 ophints           ; highlight the region an operation acts on
 (popup +defaults)   ; tame sudden yet inevitable temporary windows
-(ligatures +extra)       ; ligatures or substitute text with pretty symbols
+ligatures       ; ligatures or substitute text with pretty symbols
 <<initel-centaur-tabs>>
 treemacs          ; a project drawer, like neotree but cooler
 unicode           ; extended unicode support for various languages
@@ -3310,6 +3326,8 @@ Install custom packages that aren't included in doom-emacs here
 #+begin_src elisp :tangle doom.d/packages.el :noweb no-export
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
+
+;; Disable packages
 
 ;; Basic stuffs
 <<centaur-tabs-package>>
@@ -3537,7 +3555,7 @@ base code:
 Set centaur tabs height
 #+name: centaur-tabs-height
 #+begin_src elisp
-(setq centaur-tabs-height 32)
+(setq centaur-tabs-height 30)
 #+end_src
 Set the tab style to chamfer
 #+name: centaur-tabs-style
@@ -3578,7 +3596,7 @@ Set modified marker character
 Set close button character
 #+name: centaur-tabs-close-button
 #+begin_src elisp
-(setq centaur-tabs-close-button "✕")
+(setq centaur-tabs-close-button "")
 #+end_src
 
 Add horizontal margins
@@ -3595,7 +3613,6 @@ Enable Vim like tab motions
  ("g t" . centaur-tabs-forward)
  ("g T" . centaur-tabs-backward))
 #+end_src
-
 ** Modeline
 Set doom modeline height
 #+name: doom-modeline-height
@@ -3606,7 +3623,7 @@ Set doom modeline height
 + [[emacs-treemacs-theme][Theme]]
 + [[emacs-treemacs-fonts][Fonts]]
 
-Set dynamic title for Treemacs workspace
+*** Set title for Treemacs workspace
 Stolen code from [[https://andreyorst.gitlab.io/posts/2020-05-01-dynamic-title-for-treemacs-workspace/]]
 #+name: emacs-treemacs-dynamic-title
 #+begin_src elisp
@@ -3615,17 +3632,21 @@ Stolen code from [[https://andreyorst.gitlab.io/posts/2020-05-01-dynamic-title-f
         (fg (face-attribute 'default :foreground)))
     (face-remap-add-relative 'header-line
                              :family "Liberation Sans"
-                             :height 120
+                             :height 100
                              :background bg :foreground fg
                              :box `(:line-width ,(/ (line-pixel-height) 2) :color ,bg)))
   (setq header-line-format
         '((:eval
-           (let* ((text "File Explorer")
+           (let* ((text "Explorer")
                   (extra-align (+ (/ (length text) 2) 1))
                   (width (- (/ (window-width) 2) extra-align)))
              (concat (make-string width ?\s) text))))))
 
 (add-hook 'treemacs-mode-hook #'my/treemacs-setup-title)
+#+end_src
+*** Start treemacs on emacs startup
+#+name: emacs-treemacs-startup
+#+begin_src elisp
 #+end_src
 ** Dashboard
 *** Set dashboard logo
@@ -3754,26 +3775,26 @@ Set dired default to ranger mode
 ** org-mode
 Configure org-mode
 
-**** Set org-mode directory
+*** Set org-mode directory
 #+name: emacs-org-directory
 #+begin_src elisp
 (setq org-directory "~/org/")
 #+end_src
 
-**** Start every org-mode files folded.
+*** Start every org-mode files folded.
 It can be set per-file, but better also set here:
 #+name: emacs-org-startup-folded
 #+begin_src elisp
 (setq org-startup-folded t)
 #+end_src
 
-**** Start every org-mode files with inline images
+*** Start every org-mode files with inline images
 #+name: emacs-org-startup-inline-images
 #+begin_src elisp
 (setq org-startup-with-inline-images t)
 #+end_src
 
-**** Enable variable pitch font in org-mode using mixed-pitch-mode
+*** Enable variable pitch font in org-mode using mixed-pitch-mode
 Install it:
 #+name: emacs-org-mixed-pitch-install
 #+begin_src elisp
@@ -3791,19 +3812,25 @@ You have to set variable pitch font from link below
 company-mode becomes zig zag in org-mode when we use ~mixed-pitch-mode~.
 We have to use company-box(childframe) to workaround it.
 
-**** Set org-mode headline bullets characters.
+Set mixed-pitch-mode variable pitch font height (This is required to set different variable-pitch font size than fixed-pitch one)
+#+name: emacs-org-mixed-pitch-height
+#+begin_src elisp
+(setq mixed-pitch-set-height t)
+#+end_src
+
+*** Set org-mode headline bullets characters.
 I use emoji
 #+name: emacs-org-headline-bullets
 #+begin_src elisp
-(setq org-superstar-headline-bullets-list '("🌑" "🌸" "🎀" "❄" "🌷"))
+(setq org-superstar-headline-bullets-list '("🌑" "💜" "👛" "❄" "🌷"))
 #+end_src
-**** Hide markup elements(*bold*, /italic/)
+*** Hide markup elements(*bold*, /italic/)
 #+name: emacs-org-hide-emphasis-markers
 #+begin_src elisp
 (setq org-hide-emphasis-markers t)
 #+end_src
 
-**** Increase headline font sizes according to level
+*** Increase headline font sizes according to level
 #+name: emacs-org-headline-fontsize
 #+begin_src elisp
 (with-eval-after-load 'org
@@ -3815,12 +3842,12 @@ I use emoji
   )
 #+end_src
 
-**** Set org-mode folding symbol(ellipsis) to triangle
+*** Set org-mode folding symbol(ellipsis) to triangle
 #+name: emacs-org-ellipsis
 #+begin_src elisp
 (setq org-ellipsis "")
 #+end_src
-**** Set margins for org-mode
+*** Set margins for org-mode
 #+name: emacs-org-margins
 #+begin_src elisp
 (defun my-set-margins ()
@@ -3845,6 +3872,12 @@ Set evil-mode substitute(search and replace) to global by default
 #+name: evil-substitute-global
 #+begin_src elisp
 (after! evil (setq evil-ex-substitute-global t))
+#+end_src
+** Avy
+Remap avy(qutebrowser-like hinting) to the dvorak home row
+#+name: emacs-avy-dvorak
+#+begin_src elisp
+(setq avy-keys '(?a ?o ?e ?u ?i ?d ?h ?t ?n ?s))
 #+end_src
 ** Rainbow mode
 Enable rainbow mode(RGB code preview) for all files
@@ -3949,6 +3982,7 @@ Disable line highlight
 <<emacs-dashboard-logo>>
 <<emacs-treemacs-theme>>
 <<emacs-treemacs-fonts>>
+<<emacs-treemacs-startup>>
 <<emacs-treemacs-dynamic-title>>
 <<emacs-disable-line-number>>
 <<emacs-indent-space>>
@@ -3972,6 +4006,7 @@ Disable line highlight
 <<emacs-org-startup-folded>>
 <<emacs-org-startup-inline-images>>
 <<emacs-org-mixed-pitch-enable>>
+<<emacs-org-mixed-pitch-height>>
 <<emacs-org-headline-bullets>>
 <<emacs-org-hide-emphasis-markers>>
 <<emacs-org-headline-fontsize>>
@@ -3979,6 +4014,7 @@ Disable line highlight
 <<emacs-org-margins>>
 <<evil-escape-disable>>
 <<evil-substitute-global>>
+<<emacs-avy-dvorak>>
 <<emacs-auto-save>>
 <<emacs-delete-trash>>
 <<emacs-x-stretch-cursor>>
@@ -4047,6 +4083,7 @@ qutebrowser is a keyboard-focused(Vim-style key bindings) browser with a minimal
   <<qutebrowser-mpv-hint>>
   <<qutebrowser-start-page>>
   <<qutebrowser-default-zoom>>
+  <<qutebrowser-hinting-dvorak>>
   <<qutebrowser-fonts>>
   <<qutebrowser-darkmode>>
   <<qutebrowser-colors>>
@@ -4120,6 +4157,11 @@ Requires [[Emacs daemon]]
 #+name: qutebrowser-emacs-editor
 #+begin_src python :tangle no
 c.editor.command = ["emacsclient", "-c", "--eval", "(find-file \"{}\")", "(org-mode)"]
+#+end_src
+*** Dvorak friendly Hinting
+#+name: qutebrowser-hinting-dvorak
+#+begin_src nix
+programs.qutebrowser.settings.hints.chars = "aoeuidhtns";
 #+end_src
 ** Firefox
 Firefox is my backup browser.
@@ -5767,6 +5809,7 @@ This module is imported from home-manager
   "fontconfig/conf.d/10-prefer-emoji.conf".source = ../../configs/fontconfig/10-prefer-emoji.conf;
   "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
   "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
+  "fontconfig/conf.d/10-hinting.conf".source = ../../configs/fontconfig/10-hinting.conf;
 
   <<tridactylrc-symlink>>
 

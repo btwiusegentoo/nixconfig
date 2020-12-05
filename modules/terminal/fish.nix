@@ -43,6 +43,7 @@
     "top" = "btm";
     "vf" = "vifm";
     "ncpa" = "ncpamixer";
+    "mpvm" = "mpv --no-video";
     "nixre" = "doas nixos-rebuild switch --flake";
     "nixrt" = "doas nixos-rebuild test --flake";
     "dnixtrash" = "doas nix-collect-garbage -d";
