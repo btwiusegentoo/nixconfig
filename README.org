@@ -5834,6 +5834,14 @@ Generate a makefile to make to generate files from commandline
 #+begin_src makefile :tangle Makefile
 compile:
 	emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "README.org")'
+install:
+	doas nixos-rebuild switch --flake .
+desktop1:
+	doas nixos-rebuild switch --flake .#desktop1
+laptop1:
+	doas nixos-rebuild switch --flake .#laptop1
+server1:
+	doas nixos-rebuild switch --flake .#server1
 #+end_src
 * Credits
 - [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in lock screen wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]
