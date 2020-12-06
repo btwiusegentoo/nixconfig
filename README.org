@@ -1319,6 +1319,7 @@ Set custom set faces here
 *modeline* font
 *dashboard* font color
 *avy* hinting font.
+*org-mode title* font size
 #+name: emacs-custom-set-faces
 #+begin_src elisp
 (custom-set-faces!
@@ -1326,6 +1327,7 @@ Set custom set faces here
   '(mode-line-inactive :family "Liberation Sans" :height 105)
   '(doom-dashboard-menu-title :foreground "#c792ea")
   '(avy-lead-face :family "Liberation Sans" :height 110)
+  '(org-document-title :height 225)
   )
 #+end_src
 

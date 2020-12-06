@@ -15,6 +15,7 @@
   '(mode-line-inactive :family "Liberation Sans" :height 105)
   '(doom-dashboard-menu-title :foreground "#c792ea")
   '(avy-lead-face :family "Liberation Sans" :height 110)
+  '(org-document-title :height 225)
   )
 (setq emojify-display-style 'unicode)
 (setq doom-theme 'doom-palenight)
