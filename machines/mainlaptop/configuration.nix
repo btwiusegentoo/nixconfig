@@ -109,17 +109,17 @@
 
   virtualisation = import (../../modules/virtualisation/default.nix);
 
-    systemd.user.services.xkb-restore = {
-        description = "Restore keyboard layout after suspend";
-        after = [ "suspend.target" "graphical-session.target" ];
-        serviceConfig = {
-          Type = "simple";
-          Environment = "DISPLAY=:0";
-          ExecStartPre = "/usr/bin/env sleep 3";
-          ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/thinkpadlayout.xkb :0\"";
-        };
-        wantedBy = [ "suspend.target" "graphical-session.target" ];
+  systemd.user.services.xkb-restore = {
+    description = "Restore keyboard layout after suspend";
+    after = [ "suspend.target" "graphical-session.target" ];
+    serviceConfig = {
+      Type = "simple";
+      Environment = "DISPLAY=:0";
+      ExecStartPre = "/usr/bin/env sleep 3";
+      ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/thinkpadlayout.xkb :0\"";
     };
+    wantedBy = [ "suspend.target" "graphical-session.target" ];
+  };
 
   services.xserver.videoDrivers = [ "intel" ];
   services.xserver.deviceSection = ''
