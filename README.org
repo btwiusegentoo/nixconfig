@@ -27,7 +27,7 @@ To generate actual files, open this file in emacs and execute ~M-x org-babel-tan
 You can install this config in NixOS running  ~nixos-rebuild switch --flake~ at repository root.
 
 You can also use ~cmake~ to make things easier
-| make compile  | Generate files from this document using emacs |
+| make build    | Generate files from this document using emacs |
 | make install  | Install this config based on hostname         |
 | make desktop1 | Install Desktop configs                       |
 | make laptop1  | Install laptop configs                        |
@@ -5844,7 +5844,7 @@ This module is imported from home-manager
 ** Makefile
 Generate a makefile to make to generate files from commandline
 #+begin_src makefile :tangle Makefile
-compile:
+build:
 	emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "README.org")'
 install:
 	doas nixos-rebuild switch --flake .
