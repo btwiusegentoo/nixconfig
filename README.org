@@ -1199,8 +1199,11 @@ source-file ./.palenight-tmux
 #+end_src
 ** Fonts
 I use Cozette font as editor/terminal font.
+
 Spleen is my choice for TTY font
+
 GohuFont is used only to render nerdfonts.
+
 Apple's emoji font is the best emoji font.(Other emoji fonts are mostly too ugly(maybe except Twitter emoji) that is totally unusable on some places like IG stories)
 
 Install fonts:
@@ -3038,6 +3041,7 @@ doom-emacs is an Emacs framework, which is preconfigured with evil-mode(vim keyb
 Doom starts up really quickly,because it tries to lazy load a lot of packages, byte compiles your configuration.
 
 My emacs config is still work in progress, I change it often.
+
 So, I choose to install doom-emacs in traditional way instead of using [[https://github.com/vlaci/nix-doom-emacs][nix-doom-emacs]]
 ~git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d~
 ~~/.emacs.d/bin/doom install~
@@ -5826,9 +5830,9 @@ This module is imported from home-manager
 }
 #+end_src
 * Misc
-** makefile
+** Makefile
 Generate a makefile to make to generate files from commandline
-#+begin_src makefile :tangle makefile
+#+begin_src makefile :tangle Makefile
 compile:
 	emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "README.org")'
 #+end_src
