@@ -1515,7 +1515,6 @@ services.dunst.settings.global.font = "Liberation Sans 14";
 #+end_src
 ** Wallpapers
 Desktop wallpaper ~pictures/wallpaper1.png~
-#+ATTR_HTML: :width 300
 #+ATTR_ORG: :width 300
 [[file:pictures/wallpaper1.png]]
 Lock screen wallpaper ~pictures/wallpaper2.png~
