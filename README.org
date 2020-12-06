@@ -20,8 +20,8 @@ I use [[https://xmonad.org/][xmonad]] as window manager for Desktop and Laptop, 
 
 Prequisites
 | NixOS      | Requires a NixOS environment to install [[https://nixos.org/download.html][Download live environment here]] |
-| Nix flakes | Requires nix flakes to install this config [[Enable flakes]]               |
-| Emacs      | [[Emacs]] is optional, required to generate files from this document       |
+| Nix flakes | Requires nix flakes to install this config [[Enable flakes][Enable flakes]]               |
+| Emacs      | [[Emacs][Emacs]] is optional, required to generate files from this document       |
 
 To generate actual files, open this file in emacs and execute ~M-x org-babel-tangle~, binded to ~C-c C-v t~
 You can install this config in NixOS running  ~nixos-rebuild switch --flake~ at repository root.
