@@ -13,7 +13,7 @@ This is my repo that contains my configuration files for my machines (aka dotfil
 This repository contains configuration for three hosts currently
 - Ryzen desktop
 - My portable laptop
-- My lowspec server
+- My server
 All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix Flakes]].
 [[https://github.com/nix-community/home-manager][home-manager]] is used to manage user environment. I try to install programs/services in user level as much as possible.
 I use [[https://xmonad.org/][xmonad]] as window manager for Desktop and Laptop, while server is headless.
