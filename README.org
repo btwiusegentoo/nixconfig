@@ -5820,5 +5820,5 @@ This module is imported from home-manager
 #+end_src
 * Credits
 - [[https://github.com/NixOS/nixos-artwork/tree/master/logo][NixOS/nixos-artwork]] -> NixOS logo. Changed colors and used in lock screen wallpaper. used under [[https://creativecommons.org/licenses/by/4.0][CC-BY license]]
-- [[https://wallhaven.cc/w/45xkj1][Wallpaper]]
+- Wallpaper from [[https://www.deviantart.com/seerlight/art/Let-s-Go-Home-743542427][here]]
 - Icons from [[https://remixicon.com][Remix Icon]]
