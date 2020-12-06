@@ -12,12 +12,12 @@
     etBook
     liberation_ttf_v2
   ];
-      fonts.fontconfig = {
-        defaultFonts = {
-          emoji = [ "Apple Color Emoji" ];
-          monospace = [ "Spleen" ];
-        };
-      };
+  fonts.fontconfig = {
+    defaultFonts = {
+      emoji = [ "Apple Color Emoji" ];
+      monospace = [ "Spleen" ];
+    };
+  };
   fonts.fontconfig.enable = true;
   fonts.fontconfig.allowBitmaps = true;
   fonts.fontconfig.useEmbeddedBitmaps = true;

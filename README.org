@@ -17,15 +17,27 @@ This repository contains configuration for three hosts currently
 All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix Flakes]].
 [[https://github.com/nix-community/home-manager][home-manager]] is used to manage user environment. I try to install programs/services in user level as much as possible.
 I use [[https://xmonad.org/][xmonad]] as window manager for Desktop and Laptop, while server is headless.
+
+Prequisites
+| NixOS      | Requires a NixOS environment to install [[https://nixos.org/download.html][Download live environment here]] |
+| Nix flakes | Requires nix flakes to install this config [[Enable flakes]]               |
+| Emacs      | [[Emacs]] is optional, required to generate files from this document       |
+
 To generate actual files, open this file in emacs and execute ~M-x org-babel-tangle~, binded to ~C-c C-v t~
-You can also execute the makefile
-
 You can install this config in NixOS running  ~nixos-rebuild switch --flake~ at repository root.
-Note that this requires [[Enable flakes][flakes enabled]].
-Use ~SPC m .~ in doom-emacs to move faster to headlines.
 
-If you want to take a look at my config, Please open this file in emacs, or just go [[https://btwiusegentoo.github.io/nixconfig/][here]].
-I keep in sync a HTML file based on this file, thanks to [[https://github.com/fniessen/org-html-themes]]
+You can also use ~cmake~ to make things easier
+| make compile  | Generate files from this document using emacs |
+| make install  | Install this config based on hostname         |
+| make desktop1 | Install Desktop configs                       |
+| make laptop1  | Install laptop configs                        |
+| make server1  | Install server configs                        |
+
+You can use ~SPC m .~ in doom-emacs to navigate headlines faster.
+If you just want to navigate my config,
+Please don't use GitHub preview. Open this file in emacs, or just go [[https://btwiusegentoo.github.io/nixconfig/][here]] from browser (generated HTML file).
+I keep in sync a HTML file based on this document, thanks to [[https://github.com/fniessen/org-html-themes]]
+
 It's much easier to read than GitHub preview.
 
 * [1/8]TODOs
