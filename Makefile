@@ -1,4 +1,4 @@
-compile:
+build:
 	emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "README.org")'
 install:
 	doas nixos-rebuild switch --flake .
