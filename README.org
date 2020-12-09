@@ -13,7 +13,7 @@ This is my repo that contains my configuration files for my machines (aka dotfil
 This repository contains configuration for three hosts currently
 - Ryzen desktop
 - My portable laptop
-- My lowspec server
+- My server
 All hosts runs NixOS and it's managed by [[https://nixos.wiki/wiki/Flakes][Nix Flakes]].
 [[https://github.com/nix-community/home-manager][home-manager]] is used to manage user environment. I try to install programs/services in user level as much as possible.
 I use [[https://xmonad.org/][xmonad]] as window manager for Desktop and Laptop, while server is headless.
@@ -27,6 +27,7 @@ To generate actual files, open this file in emacs and execute ~M-x org-babel-tan
 You can install this config in NixOS running  ~nixos-rebuild switch --flake~ at repository root.
 
 You can also use ~cmake~ to make things easier
+| make          | Executes the same command as ~make build~       |
 | make build    | Generate files from this document using emacs |
 | make install  | Install this config based on hostname         |
 | make desktop1 | Install Desktop configs                       |
@@ -93,44 +94,44 @@ You can update inputs easily like this: ~nix flake --update-input nixpkgs~
 
 #+name: flake-inputs
 #+begin_src nix
-  inputs = {
-    home-manager = {
-      url = "github:rycee/home-manager";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
+inputs = {
+  home-manager = {
+    url = "github:rycee/home-manager";
+    inputs = {
+      nixpkgs.follows = "nixpkgs";
     };
-    nur.url = "github:nix-community/NUR";
-    emacs-overlay.url = "github:nix-community/emacs-overlay";
-    neovim-overlay.url = "github:mjlbach/neovim-nightly-overlay/flakes";
-
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
-    unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    master.url = "github:nixos/nixpkgs/master";
   };
+  nur.url = "github:nix-community/NUR";
+  emacs-overlay.url = "github:nix-community/emacs-overlay";
+  neovim-overlay.url = "github:mjlbach/neovim-nightly-overlay/flakes";
+
+  nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
+  unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+  master.url = "github:nixos/nixpkgs/master";
+};
 #+end_src
 
 ** default imports
 Import default modules
 #+name: flake-defaults
 #+begin_src nix
-      defaults = { pkgs, ... }: {
-        imports = [
-          ./cachix.nix
-          ./modules/common/nix.nix
-          ./modules/common/doas.nix
-          ./modules/common/console.nix
-          ./modules/hardware/bluetooth.nix
-          ./modules/hardware/zram.nix
-          ./modules/hardware/earlyoom.nix
-          ./modules/common/etcfiles.nix
-          ./modules/common/systempackages.nix
-          ./modules/common/globallocale.nix
-          ./modules/services/pulseaudio.nix
-          ./modules/services/clamav.nix
-          ./modules/services/openssh.nix
-        ];
-      };
+defaults = { pkgs, ... }: {
+  imports = [
+    ./cachix.nix
+    ./modules/common/nix.nix
+    ./modules/common/doas.nix
+    ./modules/common/console.nix
+    ./modules/hardware/bluetooth.nix
+    ./modules/hardware/zram.nix
+    ./modules/hardware/earlyoom.nix
+    ./modules/common/etcfiles.nix
+    ./modules/common/systempackages.nix
+    ./modules/common/globallocale.nix
+    ./modules/services/pulseaudio.nix
+    ./modules/services/clamav.nix
+    ./modules/services/openssh.nix
+  ];
+};
 #+end_src
 
 ** X11 imports
@@ -173,11 +174,11 @@ This configuration is for default nixpkgs.
 Set system arch to x86_64, Allow installation for non-free software(also known as proprietary software), and import overlays from [[#overlays][here]]
 #+name: nixpkgs-config
 #+begin_src nix
-      pkgs = (import nixpkgs) {
-        system = "x86_64-linux";
-        config = { allowUnfree = true; };
-        overlays = attrValues self.overlays;
-      };
+pkgs = (import nixpkgs) {
+  system = "x86_64-linux";
+  config = { allowUnfree = true; };
+  overlays = attrValues self.overlays;
+};
 #+end_src
 
 ** import overlays
@@ -188,34 +189,34 @@ So it can't be used to override packages of home-manager modules.
 Importing as package set makes it possible and it's more convenient.
 #+name: flake-overlays
 #+begin_src nix
-      overlays =
-        let
-          overlayFiles = listToAttrs (map
-            (name: {
-              name = removeSuffix ".nix" name;
-              value = import (./overlays + "/${name}");
-            })
-            (attrNames (readDir ./overlays)));
-        in
-        overlayFiles // {
-          nur = final: prev: {
-            nur = import inputs.nur { nurpkgs = final; pkgs = final; };
-          };
-          emacs-overlay = inputs.emacs-overlay.overlay;
-          neovim-overlay = inputs.neovim-overlay.overlay;
-          unstable = final: prev: {
-            unstable = import inputs.unstable {
-              system = final.system;
-              config.allowUnfree = true;
-            };
-          };
-          master = final: prev: {
-            master = import inputs.master {
-              system = final.system;
-              config.allowUnfree = true;
-            };
-          };
+overlays =
+  let
+    overlayFiles = listToAttrs (map
+      (name: {
+        name = removeSuffix ".nix" name;
+        value = import (./overlays + "/${name}");
+      })
+      (attrNames (readDir ./overlays)));
+  in
+    overlayFiles // {
+      nur = final: prev: {
+        nur = import inputs.nur { nurpkgs = final; pkgs = final; };
+      };
+      emacs-overlay = inputs.emacs-overlay.overlay;
+      neovim-overlay = inputs.neovim-overlay.overlay;
+      unstable = final: prev: {
+        unstable = import inputs.unstable {
+          system = final.system;
+          config.allowUnfree = true;
         };
+      };
+      master = final: prev: {
+        master = import inputs.master {
+          system = final.system;
+          config.allowUnfree = true;
+        };
+      };
+    };
 #+end_src
 ** Machines
 These are the codes that evaluates a NixOS configuration for tools like ~nixos-rebuild~ for each machines.
@@ -223,87 +224,87 @@ It imports modules (that contains configuration for) for each machines.
 *** Desktop
 #+name: desktop1
 #+begin_src nix :noweb no-export
-        desktop1 = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules =
-            [
-              defaults
-              ./machines/maindesktop/configuration.nix
-              ./modules/common/xserver.nix
-              ./modules/hardware/ssd.nix
-              <<x11-defaults>>
-              home-manager.nixosModules.home-manager
-              ({
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
-                home-manager.users.btw = { ... }: {
-                  imports = [
-                    ./machines/maindesktop/home.nix
-                    <<home-manager-x11-defaults>>
-                    <<home-manager-defaults>>
-                  ];
-                };
-              })
+desktop1 = nixpkgs.lib.nixosSystem {
+  system = "x86_64-linux";
+  modules =
+    [
+      defaults
+      ./machines/maindesktop/configuration.nix
+      ./modules/common/xserver.nix
+      ./modules/hardware/ssd.nix
+      <<x11-defaults>>
+      home-manager.nixosModules.home-manager
+        ({
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.btw = { ... }: {
+            imports = [
+              ./machines/maindesktop/home.nix
+              <<home-manager-x11-defaults>>
+              <<home-manager-defaults>>
             ];
-          inherit pkgs;
-        };
+          };
+        })
+    ];
+  inherit pkgs;
+};
 #+end_src
 
 *** Laptop
 #+name: laptop1
 #+begin_src nix :noweb no-export
-        laptop1 = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules =
-            [
-              defaults
-              ./machines/mainlaptop/configuration.nix
-              ./modules/common/xserverlaptop.nix
-              ./modules/hardware/ssd.nix
-              ./modules/hardware/tlp.nix
-              ./modules/hardware/thinkfan.nix
-              ./modules/hardware/libinput.nix
-              <<x11-defaults>>
-              home-manager.nixosModules.home-manager
-              ({
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
-                home-manager.users.x230 = { ... }: {
-                  imports = [
-                    ./machines/mainlaptop/home.nix
-                    <<home-manager-x11-defaults>>
-                    <<home-manager-defaults>>
-                  ];
-                };
-              })
+laptop1 = nixpkgs.lib.nixosSystem {
+  system = "x86_64-linux";
+  modules =
+    [
+      defaults
+      ./machines/mainlaptop/configuration.nix
+      ./modules/common/xserverlaptop.nix
+      ./modules/hardware/ssd.nix
+      ./modules/hardware/tlp.nix
+      ./modules/hardware/thinkfan.nix
+      ./modules/hardware/libinput.nix
+      <<x11-defaults>>
+      home-manager.nixosModules.home-manager
+        ({
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.x230 = { ... }: {
+            imports = [
+              ./machines/mainlaptop/home.nix
+              <<home-manager-x11-defaults>>
+              <<home-manager-defaults>>
             ];
-          inherit pkgs;
-        };
+          };
+        })
+    ];
+  inherit pkgs;
+};
 #+end_src
 
 *** Server
 #+name: server1
 #+begin_src nix :noweb no-export
-        server1 = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules =
-            [
-              defaults
-              ./machines/mainserver/configuration.nix
-              home-manager.nixosModules.home-manager
-              ({
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
-                home-manager.users.hac = { ... }: {
-                  imports = [
-                    ./machines/mainserver/home.nix
-                    <<home-manager-defaults>>
-                  ];
-                };
-              })
-            ];
-          inherit pkgs;
+server1 = nixpkgs.lib.nixosSystem {
+  system = "x86_64-linux";
+  modules =
+    [
+      defaults
+      ./machines/mainserver/configuration.nix
+      home-manager.nixosModules.home-manager
+      ({
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+        home-manager.users.hac = { ... }: {
+          imports = [
+            ./machines/mainserver/home.nix
+            <<home-manager-defaults>>
+          ];
         };
+      })
+    ];
+  inherit pkgs;
+};
 #+end_src
 * Nix
 Configure Nix package manager
@@ -471,17 +472,17 @@ environment.etc."thinkpadlayout.xkb".source = ../../configs/thinkpadlayout.xkb;
 Make a systemd service to execute everytime after waking up from restart/sleep
 #+name: thinkpad-layout-service
 #+begin_src nix
-  systemd.user.services.xkb-restore = {
-      description = "Restore keyboard layout after suspend";
-      after = [ "suspend.target" "graphical-session.target" ];
-      serviceConfig = {
-        Type = "simple";
-        Environment = "DISPLAY=:0";
-        ExecStartPre = "/usr/bin/env sleep 3";
-        ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/thinkpadlayout.xkb :0\"";
-      };
-      wantedBy = [ "suspend.target" "graphical-session.target" ];
+systemd.user.services.xkb-restore = {
+  description = "Restore keyboard layout after suspend";
+  after = [ "suspend.target" "graphical-session.target" ];
+  serviceConfig = {
+    Type = "simple";
+    Environment = "DISPLAY=:0";
+    ExecStartPre = "/usr/bin/env sleep 3";
+    ExecStart = "${pkgs.bash}/bin/bash -c \"${pkgs.xorg.xkbcomp}/bin/xkbcomp -i $(${pkgs.xorg.xinput}/bin/xinput list | sed -n 's/.*Translated.*id=\\\([0-9]*\\\).*keyboard.*/\\\1/p') /etc/thinkpadlayout.xkb :0\"";
   };
+  wantedBy = [ "suspend.target" "graphical-session.target" ];
+};
 #+end_src
 ** Trackpad
 I use libinput because the better palm detection.
@@ -3142,11 +3143,9 @@ japanese
 #+name: doom-initel-completion
 #+begin_src elisp :noweb no-export
 (company +childframe +tng)          ; the ultimate code completion backend
-;; (company +tng)          ; the ultimate code completion backend
 ;;helm              ; the *other* search engine for love and life
 ;;ido               ; the other *other* search engine...
 (ivy +fuzzy +prescient +childframe +icons)              ; a search engine for love and life
-;; (ivy +fuzzy +prescient +icons)              ; a search engine for love and life
 #+end_src
 *** UI modules
 #+name: doom-initel-ui

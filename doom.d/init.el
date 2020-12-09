@@ -9,11 +9,9 @@
        ;;layout
        :completion
        (company +childframe +tng)          ; the ultimate code completion backend
-       ;; (company +tng)          ; the ultimate code completion backend
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        (ivy +fuzzy +prescient +childframe +icons)              ; a search engine for love and life
-       ;; (ivy +fuzzy +prescient +icons)              ; a search engine for love and life
        :ui
        ;;deft              ; notational velocity for Emacs
        doom              ; what makes DOOM look the way it does

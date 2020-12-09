@@ -49,6 +49,7 @@
             };
     in
     {
+<<<<<<< HEAD
             overlays =
               let
                 overlayFiles = listToAttrs (map
@@ -190,6 +191,145 @@
                       })
                     ];
                   inherit pkgs;
+=======
+      overlays =
+        let
+          overlayFiles = listToAttrs (map
+            (name: {
+              name = removeSuffix ".nix" name;
+              value = import (./overlays + "/${name}");
+            })
+            (attrNames (readDir ./overlays)));
+        in
+          overlayFiles // {
+            nur = final: prev: {
+              nur = import inputs.nur { nurpkgs = final; pkgs = final; };
+            };
+            emacs-overlay = inputs.emacs-overlay.overlay;
+            neovim-overlay = inputs.neovim-overlay.overlay;
+            unstable = final: prev: {
+              unstable = import inputs.unstable {
+                system = final.system;
+                config.allowUnfree = true;
+              };
+            };
+            master = final: prev: {
+              master = import inputs.master {
+                system = final.system;
+                config.allowUnfree = true;
+              };
+            };
+          };
+
+      nixosConfigurations = {
+        desktop1 = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules =
+            [
+              defaults
+              ./machines/maindesktop/configuration.nix
+              ./modules/common/xserver.nix
+              ./modules/hardware/ssd.nix
+              ./modules/common/fonts.nix
+              ./modules/gui/blueman.nix
+              home-manager.nixosModules.home-manager
+                ({
+                  home-manager.useGlobalPkgs = true;
+                  home-manager.useUserPackages = true;
+                  home-manager.users.btw = { ... }: {
+                    imports = [
+                      ./machines/maindesktop/home.nix
+                      ./modules/common/xdg.nix
+                      ./modules/common/xmonad.nix
+                      ./modules/services/dunst.nix
+                      ./modules/services/picom.nix
+                      ./modules/terminal/alacritty.nix
+                      ./modules/gui/qutebrowser.nix
+                      ./modules/gui/firefox.nix
+                      ./modules/gui/mpv.nix
+                      ./modules/gui/zathura.nix
+                      ./modules/editors/emacs.nix
+                      ./modules/terminal/fish.nix
+                      ./modules/terminal/git.nix
+                      ./modules/terminal/bat.nix
+                      ./modules/terminal/fzf.nix
+                      ./modules/terminal/lsd.nix
+                      ./modules/terminal/starship.nix
+                      ./modules/terminal/tmux.nix
+                      ./modules/services/gpg.nix
+                    ];
+                  };
+                })
+            ];
+          inherit pkgs;
+        };
+        laptop1 = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules =
+            [
+              defaults
+              ./machines/mainlaptop/configuration.nix
+              ./modules/common/xserverlaptop.nix
+              ./modules/hardware/ssd.nix
+              ./modules/hardware/tlp.nix
+              ./modules/hardware/thinkfan.nix
+              ./modules/hardware/libinput.nix
+              ./modules/common/fonts.nix
+              ./modules/gui/blueman.nix
+              home-manager.nixosModules.home-manager
+                ({
+                  home-manager.useGlobalPkgs = true;
+                  home-manager.useUserPackages = true;
+                  home-manager.users.x230 = { ... }: {
+                    imports = [
+                      ./machines/mainlaptop/home.nix
+                      ./modules/common/xdg.nix
+                      ./modules/common/xmonad.nix
+                      ./modules/services/dunst.nix
+                      ./modules/services/picom.nix
+                      ./modules/terminal/alacritty.nix
+                      ./modules/gui/qutebrowser.nix
+                      ./modules/gui/firefox.nix
+                      ./modules/gui/mpv.nix
+                      ./modules/gui/zathura.nix
+                      ./modules/editors/emacs.nix
+                      ./modules/terminal/fish.nix
+                      ./modules/terminal/git.nix
+                      ./modules/terminal/bat.nix
+                      ./modules/terminal/fzf.nix
+                      ./modules/terminal/lsd.nix
+                      ./modules/terminal/starship.nix
+                      ./modules/terminal/tmux.nix
+                      ./modules/services/gpg.nix
+                    ];
+                  };
+                })
+            ];
+          inherit pkgs;
+        };
+        server1 = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules =
+            [
+              defaults
+              ./machines/mainserver/configuration.nix
+              home-manager.nixosModules.home-manager
+              ({
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users.hac = { ... }: {
+                  imports = [
+                    ./machines/mainserver/home.nix
+                    ./modules/terminal/fish.nix
+                    ./modules/terminal/git.nix
+                    ./modules/terminal/bat.nix
+                    ./modules/terminal/fzf.nix
+                    ./modules/terminal/lsd.nix
+                    ./modules/terminal/starship.nix
+                    ./modules/terminal/tmux.nix
+                    ./modules/services/gpg.nix
+                  ];
+>>>>>>> 1c5393f55cef425aad643174325fc948d244971c
                 };
       };
     };
