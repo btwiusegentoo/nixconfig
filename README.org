@@ -41,6 +41,9 @@ I keep in sync a HTML file based on this document, thanks to [[https://github.co
 
 It's much easier to read than GitHub preview.
 
+All files generated from README.org except configuration.nix(s) are read-only.
+Made an exception for configuration.nix(s) because NixOS reinstall requires to edit Partition UUID.
+
 * [1/8]TODOs
 ** TODO Document xmobar
 ** TODO Document custom packages
@@ -1849,6 +1852,45 @@ programs.emacs.extraPackages = (epkgs: [ epkgs.vterm ]);
 #+end_src
 
 Enable doom-emacs module [[doom-initel-term][here]]
+*** fish shell configuration
+#+name: fish-vterm-config
+#+begin_src fish
+# Some of the most useful features in emacs-libvterm require shell-side
+# configurations. The main goal of these additional functions is to enable the
+# shell to send information to `vterm` via properly escaped sequences. A
+# function that helps in this task, `vterm_printf`, is defined below.
+
+function vterm_printf;
+    if [ -n "$TMUX" ]
+        # tell tmux to pass the escape sequences through
+        # (Source: http://permalink.gmane.org/gmane.comp.terminal-emulators.tmux.user/1324)
+        printf "\ePtmux;\e\e]%s\007\e\\" "$argv"
+    else if string match -q -- "screen*" "$TERM"
+        # GNU screen (screen, screen-256color, screen-256color-bce)
+        printf "\eP\e]%s\007\e\\" "$argv"
+    else
+        printf "\e]%s\e\\" "$argv"
+    end
+end
+
+# Completely clear the buffer. With this, everything that is not on screen
+# is erased.
+if [ "$INSIDE_EMACS" = 'vterm' ]
+    function clear
+        vterm_printf "51;Evterm-clear-scrollback";
+        tput clear;
+    end
+end
+
+# This is to change the title of the buffer based on information provided by the
+# shell. See, http://tldp.org/HOWTO/Xterm-Title-4.html, for the meaning of the
+# various symbols.
+function fish_title
+    hostname
+    echo ":"
+    pwd
+end
+#+end_src
 ** fish shell
 fish is a Unix shell that attempts to be more interactive and user-friendly
 #+begin_src nix :tangle modules/terminal/fish.nix :noweb no-export
@@ -1883,6 +1925,7 @@ fish is a Unix shell that attempts to be more interactive and user-friendly
       <<fish-colors>>
       <<fish-lazygit-neovim>>
       <<fish-direnv>>
+      <<fish-vterm-config>>
       # vifm image preview
       alias vifm="bash -c 'vifmrun'"
 
@@ -4973,7 +5016,7 @@ Option "TearFree" "true"
 networking.hostName = "desktop1";
 #+end_src
 *** configuration.nix
-#+begin_src nix :tangle machines/maindesktop/configuration.nix :noweb no-export
+#+begin_src nix :tangle machines/maindesktop/configuration.nix :noweb no-export :tangle-mode (identity #o644)
 # This file is generated from "README.org"
 { config, pkgs, fetchgit, ... }:
 {
@@ -5287,7 +5330,7 @@ in
 networking.hostName = "laptop1";
 #+end_src
 *** configuration.nix
-#+begin_src nix :tangle machines/mainlaptop/configuration.nix :noweb no-export
+#+begin_src nix :tangle machines/mainlaptop/configuration.nix :noweb no-export :tangle-mode (identity #o644)
 # This file is generated from "README.org"
 { config, pkgs, fetchgit, ... }:
 {
@@ -5592,7 +5635,7 @@ in
 networking.hostName = "server1";
 #+end_src
 *** configuration.nix
-#+begin_src nix :tangle machines/mainserver/configuration.nix :noweb no-export
+#+begin_src nix :tangle machines/mainserver/configuration.nix :noweb no-export :tangle-mode (identity #o644)
 # This file is generated from "README.org"
 { config, pkgs, fetchgit, ... }:
 {

@@ -119,6 +119,41 @@
           export EDITOR="nvim"
       end
       eval (direnv hook fish)
+      # Some of the most useful features in emacs-libvterm require shell-side
+      # configurations. The main goal of these additional functions is to enable the
+      # shell to send information to `vterm` via properly escaped sequences. A
+      # function that helps in this task, `vterm_printf`, is defined below.
+      
+      function vterm_printf;
+          if [ -n "$TMUX" ]
+              # tell tmux to pass the escape sequences through
+              # (Source: http://permalink.gmane.org/gmane.comp.terminal-emulators.tmux.user/1324)
+              printf "\ePtmux;\e\e]%s\007\e\\" "$argv"
+          else if string match -q -- "screen*" "$TERM"
+              # GNU screen (screen, screen-256color, screen-256color-bce)
+              printf "\eP\e]%s\007\e\\" "$argv"
+          else
+              printf "\e]%s\e\\" "$argv"
+          end
+      end
+      
+      # Completely clear the buffer. With this, everything that is not on screen
+      # is erased.
+      if [ "$INSIDE_EMACS" = 'vterm' ]
+          function clear
+              vterm_printf "51;Evterm-clear-scrollback";
+              tput clear;
+          end
+      end
+      
+      # This is to change the title of the buffer based on information provided by the
+      # shell. See, http://tldp.org/HOWTO/Xterm-Title-4.html, for the meaning of the
+      # various symbols.
+      function fish_title
+          hostname
+          echo ":"
+          pwd
+      end
       # vifm image preview
       alias vifm="bash -c 'vifmrun'"
 
