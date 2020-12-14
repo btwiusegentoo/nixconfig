@@ -5885,7 +5885,7 @@ This module is imported from home-manager
 #+end_src
 * Misc
 ** Makefile
-Generate a makefile to make to generate files from commandline
+Generate a makefile that can be used to generate files from commandline
 #+begin_src makefile :tangle Makefile
 build:
 	emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "README.org")'
