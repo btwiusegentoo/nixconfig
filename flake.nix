@@ -4,14 +4,14 @@
 
   inputs = {
     home-manager = {
-      url = "github:rycee/home-manager";
+      url = "github:rycee/home-manager/release-20.09";
       inputs = {
         nixpkgs.follows = "nixpkgs";
       };
     };
     nur.url = "github:nix-community/NUR";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
-    neovim-overlay.url = "github:mjlbach/neovim-nightly-overlay/flakes";
+    neovim-overlay.url = "github:nix-community/neovim-nightly-overlay";
   
     nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -26,7 +26,16 @@
 
       pkgs = (import nixpkgs) {
         system = "x86_64-linux";
-        config = { allowUnfree = true; };
+        config = {
+          allowUnfree = true;
+          enableDolphin = true;
+          enableDesmume = true;
+          enableMupen64Plus = true;
+          enableCitra = true;
+          enablePPSSPP = true;
+          enableSnes9x = true;
+          enableVbaNext = true;
+        };
         overlays = attrValues self.overlays;
       };
 

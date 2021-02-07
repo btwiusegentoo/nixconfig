@@ -85,6 +85,9 @@ in
     sxiv
     unstable.retroarch
     unstable.steam
+    unstable.lutris
+    unstable.yuzu-ea
+    unstable.ryujinx
     unstable.virt-manager
     unstable.pulseeffects
     # node packages

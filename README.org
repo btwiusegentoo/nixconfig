@@ -99,14 +99,14 @@ You can update inputs easily like this: ~nix flake --update-input nixpkgs~
 #+begin_src nix
 inputs = {
   home-manager = {
-    url = "github:rycee/home-manager";
+    url = "github:rycee/home-manager/release-20.09";
     inputs = {
       nixpkgs.follows = "nixpkgs";
     };
   };
   nur.url = "github:nix-community/NUR";
   emacs-overlay.url = "github:nix-community/emacs-overlay";
-  neovim-overlay.url = "github:mjlbach/neovim-nightly-overlay/flakes";
+  neovim-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
   nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
   unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -176,10 +176,13 @@ List default modules for home-manager that *requires X11* here
 This configuration is for default nixpkgs.
 Set system arch to x86_64, Allow installation for non-free software(also known as proprietary software), and import overlays from [[#overlays][here]]
 #+name: nixpkgs-config
-#+begin_src nix
+#+begin_src nix :noweb no-export
 pkgs = (import nixpkgs) {
   system = "x86_64-linux";
-  config = { allowUnfree = true; };
+  config = {
+    allowUnfree = true;
+    <<retroarch-cores>>
+  };
   overlays = attrValues self.overlays;
 };
 #+end_src
@@ -4371,6 +4374,19 @@ Turn on to recolor the document
 #+begin_src nix
 programs.zathura.options.recolor = "true";
 #+end_src
+* Games
+** RetroArch
+Install cores
+#+name: retroarch-cores
+#+begin_src nix
+enableDolphin = true;
+enableDesmume = true;
+enableMupen64Plus = true;
+enableCitra = true;
+enablePPSSPP = true;
+enableSnes9x = true;
+enableVbaNext = true;
+#+end_src
 * Security
 ** doas
 The *doas* utility is a program originally written for OpenBSD, that can be used as alternative for *sudo*
@@ -5160,6 +5176,9 @@ home.packages = with pkgs; [
   sxiv
   unstable.retroarch
   unstable.steam
+  unstable.lutris
+  unstable.yuzu-ea
+  unstable.ryujinx
   unstable.virt-manager
   unstable.pulseeffects
   # node packages
