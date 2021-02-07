@@ -83,7 +83,7 @@ in
     pavucontrol
     spotify
     sxiv
-    unstable.retroarch
+    retroarch
     unstable.steam
     unstable.lutris
     unstable.yuzu-ea

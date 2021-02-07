@@ -28,13 +28,14 @@
         system = "x86_64-linux";
         config = {
           allowUnfree = true;
-          enableDolphin = true;
-          enableDesmume = true;
-          enableMupen64Plus = true;
-          enableCitra = true;
-          enablePPSSPP = true;
-          enableSnes9x = true;
-          enableVbaNext = true;
+          retroarch = {
+            enableDolphin = true;
+            enableCitra = true;
+            enableMupen64Plus = true;
+            enableDesmume = true;
+            enableSnes9x = true;
+            enableVbaNext = true;
+          };
         };
         overlays = attrValues self.overlays;
       };

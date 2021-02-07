@@ -4376,16 +4376,16 @@ programs.zathura.options.recolor = "true";
 #+end_src
 * Games
 ** RetroArch
-Install cores
 #+name: retroarch-cores
 #+begin_src nix
-enableDolphin = true;
-enableDesmume = true;
-enableMupen64Plus = true;
-enableCitra = true;
-enablePPSSPP = true;
-enableSnes9x = true;
-enableVbaNext = true;
+retroarch = {
+  enableDolphin = true;
+  enableCitra = true;
+  enableMupen64Plus = true;
+  enableDesmume = true;
+  enableSnes9x = true;
+  enableVbaNext = true;
+};
 #+end_src
 * Security
 ** doas
@@ -5174,7 +5174,7 @@ home.packages = with pkgs; [
   pavucontrol
   spotify
   sxiv
-  unstable.retroarch
+  retroarch
   unstable.steam
   unstable.lutris
   unstable.yuzu-ea
