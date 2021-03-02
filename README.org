@@ -1223,7 +1223,7 @@ Spleen is my choice for TTY font
 
 GohuFont is used only to render nerdfonts.
 
-Apple's emoji font is the best emoji font.(Other emoji fonts are mostly too ugly(maybe except Twitter emoji) that is totally unusable on some places like IG stories)
+I think Apple's emoji font is the best emoji font.
 
 Install fonts:
 #+begin_src nix :tangle modules/common/fonts.nix :noweb no-export
@@ -4387,6 +4387,17 @@ retroarch = {
   enableVbaNext = true;
 };
 #+end_src
+** Dolphin (GC/Wii emu)
+Install Dolphin emu
+#+name: dolphin-emulator
+#+begin_src nix
+unstable.dolphinEmu
+#+end_src
+udev rules required is required to use GameCube controllers
+#+name: dolphin-emulator-udev
+#+begin_src nix
+services.udev.packages = [ pkgs.dolphinEmu ];
+#+end_src
 * Security
 ** doas
 The *doas* utility is a program originally written for OpenBSD, that can be used as alternative for *sudo*
@@ -5015,6 +5026,9 @@ services.xserver.videoDrivers = [ "amdgpu" ];
 services.xserver.deviceSection = ''
 Option "TearFree" "true"
 '';
+hardware.opengl.extraPackages = with pkgs; [
+  amdvlk
+];
 #+end_src
 *** xserver intel gpu driver
 This belongs to laptop config
@@ -5094,6 +5108,7 @@ networking.hostName = "desktop1";
   virtualisation = import (../../modules/virtualisation/default.nix);
   <<configurationnix-amdgpu-driver>>
   services.xserver.wacom.enable = true;
+  <<dolphin-emulator-udev>>
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -5176,6 +5191,7 @@ home.packages = with pkgs; [
   sxiv
   retroarch
   unstable.steam
+  <<dolphin-emulator>>
   unstable.lutris
   unstable.yuzu-ea
   unstable.ryujinx

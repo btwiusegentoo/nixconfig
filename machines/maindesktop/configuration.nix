@@ -88,7 +88,11 @@
   services.xserver.deviceSection = ''
   Option "TearFree" "true"
   '';
+  hardware.opengl.extraPackages = with pkgs; [
+    amdvlk
+  ];
   services.xserver.wacom.enable = true;
+  services.udev.packages = [ pkgs.dolphinEmu ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

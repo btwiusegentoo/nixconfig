@@ -85,6 +85,7 @@ in
     sxiv
     retroarch
     unstable.steam
+    unstable.dolphinEmu
     unstable.lutris
     unstable.yuzu-ea
     unstable.ryujinx
