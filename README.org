@@ -3295,7 +3295,7 @@ rgb               ; creating color strings
 #+name: doom-initel-lang
 #+begin_src elisp :noweb no-export
 ;;agda              ; types of types of types of types...
-;;cc                ; C/C++/Obj-C madness
+cc                ; C/C++/Obj-C madness
 ;;clojure           ; java with a lisp
 ;;common-lisp       ; if you've seen one lisp, you've seen them all
 ;;coq               ; proofs-as-programs
@@ -5354,7 +5354,7 @@ in
     "XDG_CONFIG_HOME" = "$HOME/.config";
     "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
     "COLORTERM" = "truecolor";
-    "THEOS" = "~/theos";
+    "THEOS" = "$HOME/theos";
   }; # }}}
 
 }

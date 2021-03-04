@@ -240,7 +240,7 @@ in
     "XDG_CONFIG_HOME" = "$HOME/.config";
     "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
     "COLORTERM" = "truecolor";
-    "THEOS" = "~/theos";
+    "THEOS" = "$HOME/theos";
   }; # }}}
 
 }
