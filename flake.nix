@@ -70,7 +70,7 @@
         in
           overlayFiles // {
             nur = final: prev: {
-              nur = import inputs.nur { nurpkgs = final; pkgs = final; };
+              nur = import inputs.nur { nurpkgs = final.unstable; pkgs = final.unstable; };
             };
             emacs-overlay = inputs.emacs-overlay.overlay;
             neovim-overlay = inputs.neovim-overlay.overlay;

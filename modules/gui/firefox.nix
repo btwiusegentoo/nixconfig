@@ -2,7 +2,7 @@
 { pkgs, ... }:
 {
   programs.firefox.enable = true;
-  programs.firefox.package = pkgs.unstable.firefox;
+  programs.firefox.package = pkgs.firefox;
   programs.firefox.extensions = with pkgs.nur.repos.rycee.firefox-addons; [
     tridactyl
     ublock-origin

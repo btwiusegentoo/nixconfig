@@ -206,7 +206,7 @@ overlays =
   in
     overlayFiles // {
       nur = final: prev: {
-        nur = import inputs.nur { nurpkgs = final; pkgs = final; };
+        nur = import inputs.nur { nurpkgs = final.unstable; pkgs = final.unstable; };
       };
       emacs-overlay = inputs.emacs-overlay.overlay;
       neovim-overlay = inputs.neovim-overlay.overlay;
@@ -552,7 +552,7 @@ Enable ALSA sound in configuration.nix
 #+begin_src nix
 sound.enable = true;
 #+end_src
-*** PulseAudio
+*** PipeWire
 PulseAudio is a general purpose sound server intended to run as a middleware between your applications and your hardware devices, either using ALSA or OSS.
 It's required by many programs to play sound nowadays.
 #+begin_src nix :tangle modules/services/pulseaudio.nix :noweb no-export
@@ -4242,7 +4242,7 @@ programs.firefox.enable = true;
 I like to use Firefox from nixpkgs-unstable
 #+name: firefox-package
 #+begin_src nix
-programs.firefox.package = pkgs.unstable.firefox;
+programs.firefox.package = pkgs.firefox;
 #+end_src
 *** Extensions
 Extensions to install goes here:
@@ -4373,6 +4373,18 @@ Turn on to recolor the document
 #+name: zathura-recolor
 #+begin_src nix
 programs.zathura.options.recolor = "true";
+#+end_src
+** Kodi
+#+name: kodi
+#+begin_src nix
+(unstable.kodiPlugins.kodiWithPlugins (unstable: with unstable; [
+  kodiPlugins.advanced-launcher
+  kodiPlugins.advanced-emulator-launcher
+  kodiPlugins.joystick
+  kodiPlugins.inputstream-adaptive
+  (pythonPackages.pillow // { extraRuntimeDependencies = []; })
+  (python3Packages.python // { extraRuntimeDependencies = []; })
+]))
 #+end_src
 * Games
 ** RetroArch
@@ -5045,6 +5057,11 @@ Option "TearFree" "true"
 #+begin_src nix
 networking.hostName = "desktop1";
 #+end_src
+*** Open TCP Ports
+#+name: configurationnix-desktop-firewall
+#+begin_src nix
+networking.firewall.allowedTCPPorts = [ 8080 9090 9777 ];
+#+end_src
 *** configuration.nix
 #+begin_src nix :tangle machines/maindesktop/configuration.nix :noweb no-export :tangle-mode (identity #o644)
 # This file is generated from "README.org"
@@ -5085,6 +5102,7 @@ networking.hostName = "desktop1";
   };
 
   <<configurationnix-desktop-hostname>>
+  <<configurationnix-desktop-firewall>>
   # Networking{{{
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -5109,6 +5127,8 @@ networking.hostName = "desktop1";
   <<configurationnix-amdgpu-driver>>
   services.xserver.wacom.enable = true;
   <<dolphin-emulator-udev>>
+  services.avahi.enable = true;
+  # Required to use Kodi Zeroconf
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -5193,10 +5213,11 @@ home.packages = with pkgs; [
   unstable.steam
   <<dolphin-emulator>>
   unstable.lutris
-  unstable.yuzu-ea
-  unstable.ryujinx
+  nur.repos.ivar.yuzu-ea
+  nur.repos.ivar.ryujinx
   unstable.virt-manager
-  unstable.pulseeffects
+  unstable.pulseeffects-legacy
+  <<kodi>>
   # node packages
   nodePackages.gitmoji-cli
   # dependencies
@@ -5213,6 +5234,7 @@ home.packages = with pkgs; [
   unstable.zstd
   unstable.editorconfig-core-c
   unstable.sqlite
+  unstable.shairplay
   # misc
   glxinfo
   xclip

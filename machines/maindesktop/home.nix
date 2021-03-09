@@ -87,10 +87,18 @@ in
     unstable.steam
     unstable.dolphinEmu
     unstable.lutris
-    unstable.yuzu-ea
-    unstable.ryujinx
+    nur.repos.ivar.yuzu-ea
+    nur.repos.ivar.ryujinx
     unstable.virt-manager
-    unstable.pulseeffects
+    unstable.pulseeffects-legacy
+    (unstable.kodiPlugins.kodiWithPlugins (unstable: with unstable; [
+      kodiPlugins.advanced-launcher
+      kodiPlugins.advanced-emulator-launcher
+      kodiPlugins.joystick
+      kodiPlugins.inputstream-adaptive
+      (pythonPackages.pillow // { extraRuntimeDependencies = []; })
+      (python3Packages.python // { extraRuntimeDependencies = []; })
+    ]))
     # node packages
     nodePackages.gitmoji-cli
     # dependencies
@@ -107,6 +115,7 @@ in
     unstable.zstd
     unstable.editorconfig-core-c
     unstable.sqlite
+    unstable.shairplay
     # misc
     glxinfo
     xclip

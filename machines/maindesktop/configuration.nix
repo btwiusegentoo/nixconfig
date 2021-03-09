@@ -63,6 +63,7 @@
   };
 
   networking.hostName = "desktop1";
+  networking.firewall.allowedTCPPorts = [ 8080 9090 9777 ];
   # Networking{{{
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -93,6 +94,8 @@
   ];
   services.xserver.wacom.enable = true;
   services.udev.packages = [ pkgs.dolphinEmu ];
+  services.avahi.enable = true;
+  # Required to use Kodi Zeroconf
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
