@@ -94,6 +94,7 @@ in
     (unstable.kodiPlugins.kodiWithPlugins (pkgs: with pkgs; [
       unstable.kodiPlugins.joystick
       unstable.kodiPlugins.inputstream-adaptive
+      unstable.kodiPlugins.vfs-libarchive
       (unstable.pythonPackages.pillow // { extraRuntimeDependencies = []; })
       (unstable.python3Packages.python // { extraRuntimeDependencies = []; })
     ]))
