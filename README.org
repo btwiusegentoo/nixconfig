@@ -173,20 +173,26 @@ List default modules for home-manager that *requires X11* here
 ./modules/editors/emacs.nix
 #+end_src
 ** nixpkgs config
-This configuration is for default nixpkgs.
-Set system arch to x86_64, Allow installation for non-free software(also known as proprietary software), and import overlays from [[#overlays][here]]
+Configs specific for default pkgs
+Set system arch to x86_64,  import overlays from [[#overlays][here]]
 #+name: nixpkgs-config
 #+begin_src nix :noweb no-export
 pkgs = (import nixpkgs) {
   system = "x86_64-linux";
   config = {
-    allowUnfree = true;
-    <<retroarch-cores>>
+    <<nixpkgs-globalconfigs>>
   };
   overlays = attrValues self.overlays;
 };
 #+end_src
 
+Configs that is also applied to unstable and master
+Allow installation for non-free software(also known as proprietary software), etc etc
+#+name: nixpkgs-globalconfigs
+#+begin_src nix :noweb no-export
+allowUnfree = true;
+<<retroarch-cores>>
+#+end_src
 ** import overlays
 This code searchs ~./overlays~ directory for nix files and automatically imports the files.
 NUR, nixos-unstable, nixpkgs master are imported as package set of pkgs here. Packages from these package sets can be referred like ~pkgs.unstable.fish~ ~pkgs.master.discord~ ~pkgs.nur.repos.rycee.firefox-addons~
@@ -194,7 +200,7 @@ This have a benefit than just importing the same way as pkgs like ~{pkgs, unstab
 So it can't be used to override packages of home-manager modules.
 Importing as package set makes it possible and it's more convenient.
 #+name: flake-overlays
-#+begin_src nix
+#+begin_src nix :noweb no-export
 overlays =
   let
     overlayFiles = listToAttrs (map
@@ -213,13 +219,17 @@ overlays =
       unstable = final: prev: {
         unstable = import inputs.unstable {
           system = final.system;
-          config.allowUnfree = true;
+          config = {
+            <<nixpkgs-globalconfigs>>
+          };
         };
       };
       master = final: prev: {
         master = import inputs.master {
           system = final.system;
-          config.allowUnfree = true;
+          config = {
+            <<nixpkgs-globalconfigs>>
+          };
         };
       };
     };
@@ -4377,13 +4387,11 @@ programs.zathura.options.recolor = "true";
 ** Kodi
 #+name: kodi
 #+begin_src nix
-(unstable.kodiPlugins.kodiWithPlugins (unstable: with unstable; [
-  kodiPlugins.advanced-launcher
-  kodiPlugins.advanced-emulator-launcher
-  kodiPlugins.joystick
-  kodiPlugins.inputstream-adaptive
-  (pythonPackages.pillow // { extraRuntimeDependencies = []; })
-  (python3Packages.python // { extraRuntimeDependencies = []; })
+(unstable.kodiPlugins.kodiWithPlugins (pkgs: with pkgs; [
+  unstable.kodiPlugins.joystick
+  unstable.kodiPlugins.inputstream-adaptive
+  (unstable.pythonPackages.pillow // { extraRuntimeDependencies = []; })
+  (unstable.python3Packages.python // { extraRuntimeDependencies = []; })
 ]))
 #+end_src
 * Games

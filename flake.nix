@@ -77,13 +77,33 @@
             unstable = final: prev: {
               unstable = import inputs.unstable {
                 system = final.system;
-                config.allowUnfree = true;
+                config = {
+                  allowUnfree = true;
+                  retroarch = {
+                    enableDolphin = true;
+                    enableCitra = true;
+                    enableMupen64Plus = true;
+                    enableDesmume = true;
+                    enableSnes9x = true;
+                    enableVbaNext = true;
+                  };
+                };
               };
             };
             master = final: prev: {
               master = import inputs.master {
                 system = final.system;
-                config.allowUnfree = true;
+                config = {
+                  allowUnfree = true;
+                  retroarch = {
+                    enableDolphin = true;
+                    enableCitra = true;
+                    enableMupen64Plus = true;
+                    enableDesmume = true;
+                    enableSnes9x = true;
+                    enableVbaNext = true;
+                  };
+                };
               };
             };
           };

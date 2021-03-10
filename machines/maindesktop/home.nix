@@ -91,13 +91,11 @@ in
     nur.repos.ivar.ryujinx
     unstable.virt-manager
     unstable.pulseeffects-legacy
-    (unstable.kodiPlugins.kodiWithPlugins (unstable: with unstable; [
-      kodiPlugins.advanced-launcher
-      kodiPlugins.advanced-emulator-launcher
-      kodiPlugins.joystick
-      kodiPlugins.inputstream-adaptive
-      (pythonPackages.pillow // { extraRuntimeDependencies = []; })
-      (python3Packages.python // { extraRuntimeDependencies = []; })
+    (unstable.kodiPlugins.kodiWithPlugins (pkgs: with pkgs; [
+      unstable.kodiPlugins.joystick
+      unstable.kodiPlugins.inputstream-adaptive
+      (unstable.pythonPackages.pillow // { extraRuntimeDependencies = []; })
+      (unstable.python3Packages.python // { extraRuntimeDependencies = []; })
     ]))
     # node packages
     nodePackages.gitmoji-cli
