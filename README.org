@@ -4402,9 +4402,10 @@ programs.zathura.options.recolor = "true";
 retroarch = {
   enableDolphin = true;
   enableCitra = true;
-  enableMupen64Plus = true;
+  enableParallelN64 = true;
   enableDesmume = true;
   enableSnes9x = true;
+  enableNestopia = true;
   enableVbaNext = true;
 };
 #+end_src
@@ -5222,6 +5223,7 @@ home.packages = with pkgs; [
   unstable.steam
   <<dolphin-emulator>>
   unstable.lutris
+  unstable.multimc
   nur.repos.ivar.yuzu-ea
   nur.repos.ivar.ryujinx
   unstable.virt-manager

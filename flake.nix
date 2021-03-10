@@ -31,9 +31,10 @@
           retroarch = {
             enableDolphin = true;
             enableCitra = true;
-            enableMupen64Plus = true;
+            enableParallelN64 = true;
             enableDesmume = true;
             enableSnes9x = true;
+            enableNestopia = true;
             enableVbaNext = true;
           };
         };
@@ -82,9 +83,10 @@
                   retroarch = {
                     enableDolphin = true;
                     enableCitra = true;
-                    enableMupen64Plus = true;
+                    enableParallelN64 = true;
                     enableDesmume = true;
                     enableSnes9x = true;
+                    enableNestopia = true;
                     enableVbaNext = true;
                   };
                 };
@@ -98,9 +100,10 @@
                   retroarch = {
                     enableDolphin = true;
                     enableCitra = true;
-                    enableMupen64Plus = true;
+                    enableParallelN64 = true;
                     enableDesmume = true;
                     enableSnes9x = true;
+                    enableNestopia = true;
                     enableVbaNext = true;
                   };
                 };

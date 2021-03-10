@@ -87,6 +87,7 @@ in
     unstable.steam
     unstable.dolphinEmu
     unstable.lutris
+    unstable.multimc
     nur.repos.ivar.yuzu-ea
     nur.repos.ivar.ryujinx
     unstable.virt-manager
