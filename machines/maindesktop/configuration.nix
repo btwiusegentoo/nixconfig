@@ -53,6 +53,11 @@
   hardware.opengl.enable = true;
   hardware.opengl.driSupport = true;
   hardware.opengl.driSupport32Bit = true;
+  hardware.opengl.extraPackages = with pkgs; [
+    rocm-opencl-icd
+    rocm-opencl-runtime
+    amdvlk
+  ];
   hardware.opengl.extraPackages32 = with pkgs.unstable.pkgsi686Linux; [ libva ];
 
   programs = {
@@ -89,9 +94,6 @@
   services.xserver.deviceSection = ''
   Option "TearFree" "true"
   '';
-  hardware.opengl.extraPackages = with pkgs; [
-    amdvlk
-  ];
   services.xserver.wacom.enable = true;
   services.udev.packages = [ pkgs.dolphinEmu ];
   services.avahi.enable = true;

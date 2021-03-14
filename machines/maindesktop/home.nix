@@ -19,6 +19,7 @@ in
 {
   home.packages = with pkgs; [
     haskell-env
+    clinfo
     trash-cli
     tree
     bc

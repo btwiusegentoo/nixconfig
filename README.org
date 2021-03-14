@@ -5048,9 +5048,6 @@ services.xserver.videoDrivers = [ "amdgpu" ];
 services.xserver.deviceSection = ''
 Option "TearFree" "true"
 '';
-hardware.opengl.extraPackages = with pkgs; [
-  amdvlk
-];
 #+end_src
 *** xserver intel gpu driver
 This belongs to laptop config
@@ -5102,6 +5099,11 @@ networking.firewall.allowedTCPPorts = [ 8080 9090 9777 ];
   <<enable-sound>>
   <<configurationnix-amd-microcode>>
   <<configurationnix-opengl-enable>>
+  hardware.opengl.extraPackages = with pkgs; [
+    rocm-opencl-icd
+    rocm-opencl-runtime
+    amdvlk
+  ];
   hardware.opengl.extraPackages32 = with pkgs.unstable.pkgsi686Linux; [ libva ];
 
   programs = {
@@ -5155,6 +5157,7 @@ networking.firewall.allowedTCPPorts = [ 8080 9090 9777 ];
 #+begin_src nix :noweb no-export
 home.packages = with pkgs; [
   <<haskell-packages-env>>
+  clinfo
   trash-cli
   tree
   bc
