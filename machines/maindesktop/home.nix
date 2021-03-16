@@ -20,6 +20,9 @@ in
   home.packages = with pkgs; [
     haskell-env
     clinfo
+    radeontop
+    radeon-profile
+    cpu-x
     trash-cli
     tree
     bc
@@ -93,6 +96,7 @@ in
     nur.repos.ivar.ryujinx
     unstable.virt-manager
     unstable.pulseeffects-legacy
+    unstable.corectrl
     (unstable.kodiPlugins.kodiWithPlugins (pkgs: with pkgs; [
       unstable.kodiPlugins.joystick
       unstable.kodiPlugins.inputstream-adaptive

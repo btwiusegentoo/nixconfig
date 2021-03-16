@@ -5087,6 +5087,10 @@ networking.firewall.allowedTCPPorts = [ 8080 9090 9777 ];
     extraModprobeConfig = ''
       options bluetooth disable_ertm=Y
     '';
+    kernelParams = [
+      "amdgpu.vm_fragment_size=9"
+      "amdgpu.ppfeaturemask=0xffffffff"
+    ];
   };
   # }}}
   <<configurationnix-systemdboot-enable>>
@@ -5158,6 +5162,9 @@ networking.firewall.allowedTCPPorts = [ 8080 9090 9777 ];
 home.packages = with pkgs; [
   <<haskell-packages-env>>
   clinfo
+  radeontop
+  radeon-profile
+  cpu-x
   trash-cli
   tree
   bc
@@ -5231,6 +5238,7 @@ home.packages = with pkgs; [
   nur.repos.ivar.ryujinx
   unstable.virt-manager
   unstable.pulseeffects-legacy
+  unstable.corectrl
   <<kodi>>
   # node packages
   nodePackages.gitmoji-cli
