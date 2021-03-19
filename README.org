@@ -5067,7 +5067,7 @@ networking.hostName = "desktop1";
 *** Open TCP Ports
 #+name: configurationnix-desktop-firewall
 #+begin_src nix
-networking.firewall.allowedTCPPorts = [ 8080 9090 9777 ];
+networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 ];
 #+end_src
 *** configuration.nix
 #+begin_src nix :tangle machines/maindesktop/configuration.nix :noweb no-export :tangle-mode (identity #o644)
