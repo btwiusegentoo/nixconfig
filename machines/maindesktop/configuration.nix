@@ -72,7 +72,7 @@
   };
 
   networking.hostName = "desktop1";
-  networking.firewall.allowedTCPPorts = [ 8080 9090 9777 ];
+  networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 ];
   # Networking{{{
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
