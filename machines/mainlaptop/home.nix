@@ -75,6 +75,7 @@ in
     pavucontrol
     spotify
     sxiv
+    unstable.steam
     unstable.pulseeffects-legacy
     # node packages
     nodePackages.gitmoji-cli
