@@ -4459,10 +4459,14 @@ Clam AntiVirus is a FOSS antivirus software toolkit able to detect many types of
 services.clamav.daemon.enable = true;
 #+end_src
 *** ClamAV daemon configs
+Exclude directory from scan
 #+name: clamav-daemon-config
 #+begin_src nix
 services.clamav.daemon.extraConfig = ''
-
+ExcludePath ^/media/hdd1/
+ExcludePath ^/media/hdd2/
+ExcludePath ^/media/hdd3/
+ExcludePath ^/media/raid0/
 '';
 #+end_src
 *** Enable ClamAV updater
@@ -5090,6 +5094,7 @@ networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 ];
     kernelParams = [
       "amdgpu.vm_fragment_size=9"
       "amdgpu.ppfeaturemask=0xffffffff"
+      "raid0.default_layout=2"
     ];
   };
   # }}}
