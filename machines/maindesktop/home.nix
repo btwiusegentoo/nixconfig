@@ -97,6 +97,7 @@ in
     unstable.virt-manager
     unstable.pulseeffects-legacy
     unstable.corectrl
+    unstable.tigervnc
     (unstable.kodiPlugins.kodiWithPlugins (pkgs: with pkgs; [
       unstable.kodiPlugins.joystick
       unstable.kodiPlugins.inputstream-adaptive

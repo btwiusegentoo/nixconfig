@@ -5244,6 +5244,7 @@ home.packages = with pkgs; [
   unstable.virt-manager
   unstable.pulseeffects-legacy
   unstable.corectrl
+  unstable.tigervnc
   <<kodi>>
   # node packages
   nodePackages.gitmoji-cli
@@ -5566,6 +5567,7 @@ home.packages = with pkgs; [
   unstable.steam
   unstable.lutris
   unstable.pulseeffects-legacy
+  unstable.tigervnc
   # node packages
   nodePackages.gitmoji-cli
   # dependencies
