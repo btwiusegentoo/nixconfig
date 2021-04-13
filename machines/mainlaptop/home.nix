@@ -78,6 +78,7 @@ in
     unstable.steam
     unstable.lutris
     unstable.pulseeffects-legacy
+    unstable.tigervnc
     # node packages
     nodePackages.gitmoji-cli
     # dependencies

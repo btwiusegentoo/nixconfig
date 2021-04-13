@@ -97,10 +97,11 @@ in
     unstable.virt-manager
     unstable.pulseeffects-legacy
     unstable.corectrl
-    (unstable.kodiPlugins.kodiWithPlugins (pkgs: with pkgs; [
-      unstable.kodiPlugins.joystick
-      unstable.kodiPlugins.inputstream-adaptive
-      unstable.kodiPlugins.vfs-libarchive
+    unstable.tigervnc
+    (unstable.kodi.withPackages ( p: with p; [
+      joystick
+      inputstream-adaptive
+      vfs-libarchive
       (unstable.pythonPackages.pillow // { extraRuntimeDependencies = []; })
       (unstable.python3Packages.python // { extraRuntimeDependencies = []; })
     ]))

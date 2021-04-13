@@ -4387,10 +4387,10 @@ programs.zathura.options.recolor = "true";
 ** Kodi
 #+name: kodi
 #+begin_src nix
-(unstable.kodiPlugins.kodiWithPlugins (pkgs: with pkgs; [
-  unstable.kodiPlugins.joystick
-  unstable.kodiPlugins.inputstream-adaptive
-  unstable.kodiPlugins.vfs-libarchive
+(unstable.kodi.withPackages ( p: with p; [
+  joystick
+  inputstream-adaptive
+  vfs-libarchive
   (unstable.pythonPackages.pillow // { extraRuntimeDependencies = []; })
   (unstable.python3Packages.python // { extraRuntimeDependencies = []; })
 ]))
@@ -4459,10 +4459,14 @@ Clam AntiVirus is a FOSS antivirus software toolkit able to detect many types of
 services.clamav.daemon.enable = true;
 #+end_src
 *** ClamAV daemon configs
+Exclude directory from scan
 #+name: clamav-daemon-config
 #+begin_src nix
 services.clamav.daemon.extraConfig = ''
-
+ExcludePath ^/media/hdd1/
+ExcludePath ^/media/hdd2/
+ExcludePath ^/media/hdd3/
+ExcludePath ^/media/raid0/
 '';
 #+end_src
 *** Enable ClamAV updater
@@ -5067,7 +5071,7 @@ networking.hostName = "desktop1";
 *** Open TCP Ports
 #+name: configurationnix-desktop-firewall
 #+begin_src nix
-networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 ];
+networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 ];
 #+end_src
 *** configuration.nix
 #+begin_src nix :tangle machines/maindesktop/configuration.nix :noweb no-export :tangle-mode (identity #o644)
@@ -5090,6 +5094,7 @@ networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 ];
     kernelParams = [
       "amdgpu.vm_fragment_size=9"
       "amdgpu.ppfeaturemask=0xffffffff"
+      "raid0.default_layout=2"
     ];
   };
   # }}}
@@ -5239,6 +5244,7 @@ home.packages = with pkgs; [
   unstable.virt-manager
   unstable.pulseeffects-legacy
   unstable.corectrl
+  unstable.tigervnc
   <<kodi>>
   # node packages
   nodePackages.gitmoji-cli
@@ -5562,6 +5568,7 @@ home.packages = with pkgs; [
   unstable.steam
   unstable.lutris
   unstable.pulseeffects-legacy
+  unstable.tigervnc
   # node packages
   nodePackages.gitmoji-cli
   # dependencies

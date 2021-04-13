@@ -20,6 +20,7 @@
     kernelParams = [
       "amdgpu.vm_fragment_size=9"
       "amdgpu.ppfeaturemask=0xffffffff"
+      "raid0.default_layout=2"
     ];
   };
   # }}}
@@ -72,7 +73,7 @@
   };
 
   networking.hostName = "desktop1";
-  networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 ];
+  networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 ];
   # Networking{{{
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
