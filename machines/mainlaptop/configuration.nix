@@ -21,6 +21,7 @@
     kernelParams = [
       "acpi_osi='!Windows 2012'"
       "acpi_backlight=vendor"
+      "iomem=relaxed"
     ];
   };
   boot.loader.grub.enable = true;

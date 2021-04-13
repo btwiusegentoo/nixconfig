@@ -5430,6 +5430,7 @@ networking.hostName = "laptop1";
     '';
     kernelParams = [
       <<configurationnix-laptop-brightness>>
+      "iomem=relaxed"
     ];
   };
   <<configurationnix-enable-grub>>
