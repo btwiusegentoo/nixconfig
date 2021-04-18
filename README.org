@@ -1224,7 +1224,7 @@ end
 load colorscheme file
 #+name: tmux-colors-source
 #+begin_src conf
-source-file ./.palenight-tmux
+source-file ~/.palenight-tmux
 #+end_src
 ** Fonts
 I use Cozette font as editor/terminal font.
@@ -5071,7 +5071,7 @@ networking.hostName = "desktop1";
 *** Open TCP Ports
 #+name: configurationnix-desktop-firewall
 #+begin_src nix
-networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 ];
+networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 8447 ];
 #+end_src
 *** configuration.nix
 #+begin_src nix :tangle machines/maindesktop/configuration.nix :noweb no-export :tangle-mode (identity #o644)
