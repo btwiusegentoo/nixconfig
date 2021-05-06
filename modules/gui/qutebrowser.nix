@@ -38,7 +38,7 @@
     tabs.unselected = "10.5pt CozetteVector";
     #tabs = "10.5pt CozetteVector";
   };
-  programs.qutebrowser.settings.colors.webpage.darkmode.enabled = true;
+  
   programs.qutebrowser.settings.colors = {
     completion = {
       fg = "#959DCB";

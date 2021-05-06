@@ -951,12 +951,6 @@ services.dunst.settings.urgency_critical = {
 #+end_src
 *** qutebrowser Colors
 
-Enable darkmode
-#+name: qutebrowser-darkmode
-#+begin_src nix
-programs.qutebrowser.settings.colors.webpage.darkmode.enabled = true;
-#+end_src
-
 Colors from base16-qutebrowser (https://github.com/theova/base16-qutebrowser)
 Base16 qutebrowser template by theova
 Material Palenight scheme by Nate Peterson
