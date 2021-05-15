@@ -11,7 +11,6 @@
     };
     nur.url = "github:nix-community/NUR";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
-    neovim-overlay.url = "github:nix-community/neovim-nightly-overlay";
   
     nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -74,7 +73,6 @@
               nur = import inputs.nur { nurpkgs = final.unstable; pkgs = final.unstable; };
             };
             emacs-overlay = inputs.emacs-overlay.overlay;
-            neovim-overlay = inputs.neovim-overlay.overlay;
             unstable = final: prev: {
               unstable = import inputs.unstable {
                 system = final.system;
