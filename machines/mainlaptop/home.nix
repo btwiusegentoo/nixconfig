@@ -114,7 +114,7 @@ in
   # programs {{{
   programs = {
     home-manager.enable = true;
-    neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; };
+    neovim = (import ../../modules/editors/neovim.nix) { inherit pkgs; };
   };
   #}}}
 

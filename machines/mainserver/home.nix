@@ -46,7 +46,7 @@
 
     home-manager.enable = true;
 
-    neovim = (import ../../modules/editors/neovim-stable.nix) { inherit pkgs; }; # don't compile
+    neovim = (import ../../modules/editors/neovim.nix) { inherit pkgs; }; # don't compile
   };
   #}}}
 

@@ -1,16 +1,16 @@
 { pkgs }:
 let
+  unstable = pkgs.unstable;
+  master = pkgs.master;
   plugins = pkgs.callPackage ./customvimplugins.nix { };
-
 in
 {
   enable = true;
   viAlias = true;
   vimAlias = true;
-  package = pkgs.neovim-nightly;
   configure = {
     # plugins {{{
-    plug.plugins = with pkgs.master.vimPlugins // plugins; [
+    plug.plugins = with master.vimPlugins // plugins; [
       coc-nvim
       coc-json
       coc-css
@@ -67,7 +67,7 @@ in
     # plugins that don't work with vim-plug goes here.
     packages.myVimPackage = with pkgs.master.vimPlugins // plugins; {
       # loaded on launch
-      # start = [ nvim-treesitter ];
+      start = [ ];
       # loaded manually with packadd
       opt = [ ];
     };
