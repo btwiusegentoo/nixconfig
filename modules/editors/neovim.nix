@@ -8,7 +8,7 @@ in
   enable = true;
   viAlias = true;
   vimAlias = true;
-  package = unstable.neovim;
+  package = unstable.neovim-unwrapped;
   configure = {
     # plugins {{{
     plug.plugins = with master.vimPlugins // plugins; [
