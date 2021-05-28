@@ -139,6 +139,8 @@
     java.package = pkgs.unstable.jdk;
   };
 
+  services.fstrim.interval = "daily";
+
   networking.hostName = "desktop1";
   networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 8447 ];
   # Networking{{{
