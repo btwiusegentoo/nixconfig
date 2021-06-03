@@ -35,6 +35,6 @@
       "RUNTIME_PM_ON_BAT" = "auto";
       "PCIE_ASPM_ON_AC" = "default";
       "PCIE_ASPM_ON_BAT" = "powersupersave";
-      "USB_AUTOSUSPEND" = 1;
+      "USB_AUTOSUSPEND" = 0;
     };
 }
