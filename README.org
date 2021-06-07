@@ -5138,7 +5138,7 @@ networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 8447 ];
 services.cron = {
   enable = true;
   systemCronJobs = [
-    "*/10 * * * *      root    . /etc/profile; bash /etc/moveplot.sh"
+    "* * * * * root . /etc/profile; bash /etc/moveplot.sh"
   ];
 };
 #+end_src

@@ -121,7 +121,7 @@
   services.cron = {
     enable = true;
     systemCronJobs = [
-      "*/10 * * * *      root    . /etc/profile; bash /etc/moveplot.sh"
+      "* * * * * root . /etc/profile; bash /etc/moveplot.sh"
     ];
   };
   sound.enable = true;
