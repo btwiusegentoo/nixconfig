@@ -4966,61 +4966,61 @@ fileSystems."/media/plotnvme1" =
 fileSystems."/media/plotstore1" =
   {
     device = "/dev/disk/by-uuid/82ef2a4e-85b7-44a5-bb55-e251992ae882";
-    fsType = "ext2";
+    fsType = "ext4";
   };
 # plotstore2
 fileSystems."/media/plotstore2" =
   {
     device = "/dev/disk/by-uuid/0e66fbd5-a36e-4b86-9d2a-b17865f0bb85";
-    fsType = "ext2";
+    fsType = "ext4";
   };
 # plotstore3
 fileSystems."/media/plotstore3" =
   {
     device = "/dev/disk/by-uuid/2cfb3ba2-9672-4c78-8f8d-97077b1fed0b";
-    fsType = "ext2";
+    fsType = "ext4";
   };
 # plotstore4
 fileSystems."/media/plotstore4" =
   {
     device = "/dev/disk/by-uuid/51139f8b-cc05-4906-a3b7-0141c7b91baf";
-    fsType = "ext2";
+    fsType = "ext4";
   };
 # plotstore5
 fileSystems."/media/plotstore5" =
   {
     device = "/dev/disk/by-uuid/9b6bf31c-334a-40f5-8456-1ecc5c3b2a99";
-    fsType = "ext2";
+    fsType = "ext4";
   };
 # plotstore6
 fileSystems."/media/plotstore6" =
   {
     device = "/dev/disk/by-uuid/37a868ba-52d6-4303-bd89-2ebd945371f5";
-    fsType = "ext2";
+    fsType = "ext4";
   };
 # plotstore7
 fileSystems."/media/plotstore7" =
   {
     device = "/dev/disk/by-uuid/aafe2fd7-cfab-49b6-9ef9-7dc9162fc017";
-    fsType = "ext2";
+    fsType = "ext4";
   };
 # plotstore8
 fileSystems."/media/plotstore8" =
   {
     device = "/dev/disk/by-uuid/04faa23b-7e56-4edc-a47c-b66593982cb1";
-    fsType = "ext2";
+    fsType = "ext4";
   };
 # plotstore9
 fileSystems."/media/plotstore9" =
   {
     device = "/dev/disk/by-uuid/f2499cb3-fbc3-4045-96f4-af4e469571e5";
-    fsType = "ext2";
+    fsType = "ext4";
   };
 # plotstore10
 fileSystems."/media/plotstore10" =
   {
     device = "/dev/disk/by-uuid/3a3d17c9-cfac-461f-bda8-eab311c8012d";
-    fsType = "ext2";
+    fsType = "ext4";
   };
 # Swap partition uuid
 swapDevices =
