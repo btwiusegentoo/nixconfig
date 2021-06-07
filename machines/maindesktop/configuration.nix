@@ -18,8 +18,6 @@
       options bluetooth disable_ertm=Y
     '';
     kernelParams = [
-      "amdgpu.vm_fragment_size=9"
-      "amdgpu.ppfeaturemask=0xffffffff"
       "raid0.default_layout=2"
     ];
   };
