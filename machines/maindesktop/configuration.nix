@@ -170,7 +170,7 @@
   environment.variables = (import ../../modules/common/globalvars.nix);
 
   virtualisation = import (../../modules/virtualisation/default.nix);
-  services.xserver.videoDrivers = [ "amdgpu" ];
+  services.xserver.videoDrivers = [ "unstable.nvidiaLegacy340" ];
   services.xserver.deviceSection = ''
   Option "TearFree" "true"
   '';

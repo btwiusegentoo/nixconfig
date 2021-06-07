@@ -5103,11 +5103,11 @@ hardware.opengl.enable = true;
 hardware.opengl.driSupport = true;
 hardware.opengl.driSupport32Bit = true;
 #+end_src
-*** xserver AMDGPU driver
+*** xserver nvidia legacy driver
 This belongs to desktop config
-#+name: configurationnix-amdgpu-driver
+#+name: configurationnix-video-driver
 #+begin_src nix
-services.xserver.videoDrivers = [ "amdgpu" ];
+services.xserver.videoDrivers = [ "unstable.nvidiaLegacy340" ];
 services.xserver.deviceSection = ''
 Option "TearFree" "true"
 '';
@@ -5151,8 +5151,6 @@ networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 8447 ];
       options bluetooth disable_ertm=Y
     '';
     kernelParams = [
-      "amdgpu.vm_fragment_size=9"
-      "amdgpu.ppfeaturemask=0xffffffff"
       "raid0.default_layout=2"
     ];
   };
@@ -5206,7 +5204,7 @@ networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 8447 ];
   environment.variables = (import ../../modules/common/globalvars.nix);
 
   virtualisation = import (../../modules/virtualisation/default.nix);
-  <<configurationnix-amdgpu-driver>>
+  <<configurationnix-video-driver>>
   services.xserver.wacom.enable = true;
   <<dolphin-emulator-udev>>
   services.avahi.enable = true;
