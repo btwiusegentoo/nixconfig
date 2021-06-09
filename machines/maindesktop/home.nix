@@ -73,6 +73,7 @@ in
     vifmimg
     htop
     unstable.bottom
+    unstable.bpytop
     ncpamixer
     unstable.mps-youtube
     unstable.lazygit

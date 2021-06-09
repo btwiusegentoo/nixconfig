@@ -5279,6 +5279,7 @@ home.packages = with pkgs; [
   vifmimg
   htop
   unstable.bottom
+  unstable.bpytop
   ncpamixer
   unstable.mps-youtube
   unstable.lazygit
