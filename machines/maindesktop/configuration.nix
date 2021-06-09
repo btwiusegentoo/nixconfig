@@ -118,12 +118,6 @@
     [{ device = "/dev/disk/by-uuid/aedff2c4-f34c-410c-9612-aa9df0dd3cef"; }];
 
   hardware.enableRedistributableFirmware = true;
-  services.cron = {
-    enable = true;
-    systemCronJobs = [
-      "* * * * * root . /etc/profile; bash /etc/moveplot.sh"
-    ];
-  };
   sound.enable = true;
   hardware.cpu.amd.updateMicrocode = true;
   hardware.opengl.enable = true;
