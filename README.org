@@ -5022,6 +5022,12 @@ fileSystems."/media/plotstore10" =
     device = "/dev/disk/by-uuid/3a3d17c9-cfac-461f-bda8-eab311c8012d";
     fsType = "ext4";
   };
+# plotstore11
+fileSystems."/media/plotstore11" =
+  {
+    device = "/dev/disk/by-uuid/454afe17-1deb-4319-85a1-40090e2d06c3";
+    fsType = "xfs";
+  };
 # Swap partition uuid
 swapDevices =
   [{ device = "/dev/disk/by-uuid/aedff2c4-f34c-410c-9612-aa9df0dd3cef"; }];
