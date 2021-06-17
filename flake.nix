@@ -88,7 +88,7 @@
                   };
                 };
                 overlays = [
-                  inputs.emacs-overlay.overlay;
+                  inputs.emacs-overlay.overlay
                 ];
               };
             };
