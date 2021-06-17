@@ -99,7 +99,7 @@ You can update inputs easily like this: ~nix flake --update-input nixpkgs~
 #+begin_src nix
 inputs = {
   home-manager = {
-    url = "github:rycee/home-manager/release-20.09";
+    url = "github:rycee/home-manager/release-21.05";
     inputs = {
       nixpkgs.follows = "nixpkgs";
     };
@@ -107,7 +107,7 @@ inputs = {
   nur.url = "github:nix-community/NUR";
   emacs-ng.url = "github:emacs-ng/emacs-ng";
 
-  nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
+  nixpkgs.url = "github:nixos/nixpkgs/nixos-21.05";
   unstable.url = "github:nixos/nixpkgs/nixos-unstable";
   master.url = "github:nixos/nixpkgs/master";
 };
@@ -625,7 +625,7 @@ hardware.bluetooth.package = pkgs.bluezFull;
 Setting controller mode to ~"bredr"~ (disabling Bluetooth LE) is a workaround to fix airpods.
 #+name: bluetooth-config
 #+begin_src nix
-hardware.bluetooth.config = {
+hardware.bluetooth.settings = {
     General = {
         ControllerMode = "bredr";
     };
@@ -1262,7 +1262,7 @@ fonts.fontconfig.useEmbeddedBitmaps = true;
 Create a directory with links to all fonts in ~/run/current-system/sw/share/X11-fonts~
 #+name: enable-font-dir
 #+begin_src nix
-fonts.enableFontDir = true;
+fonts.fontDir.enable = true;
 #+end_src
 *** Enable ghost script fonts
 Add the fonts provided by Ghostscript to the list of system fonts.
@@ -1310,8 +1310,8 @@ Set custom set faces here
 #+name: emacs-custom-set-faces
 #+begin_src elisp
 (custom-set-faces!
-  '(mode-line :family "Liberation Sans" :height 105)
-  '(mode-line-inactive :family "Liberation Sans" :height 105)
+  '(mode-line :family "Liberation Sans" :height 110)
+  '(mode-line-inactive :family "Liberation Sans" :height 110)
   '(doom-dashboard-menu-title :foreground "#c792ea")
   '(org-document-title :height 225)
   )
@@ -1322,18 +1322,18 @@ Set treemacs fonts to Liberation Sans
 #+begin_src elisp
 (setq doom-themes-treemacs-enable-variable-pitch nil)
 (custom-set-faces!
-  '(treemacs-root-face :family "Liberation Sans" :height 105)
-  '(treemacs-git-unmodified-face :family "Liberation Sans" :height 105)
-  '(treemacs-git-modified-face :family "Liberation Sans" :height 105)
-  '(treemacs-git-renamed-face :family "Liberation Sans" :height 105)
-  '(treemacs-git-ignored-face :family "Liberation Sans" :height 105)
-  '(treemacs-git-untracked-face :family "Liberation Sans" :height 105)
-  '(treemacs-git-added-face :family "Liberation Sans" :height 105)
-  '(treemacs-git-conflict-face :family "Liberation Sans" :height 105)
-  '(treemacs-directory-face :family "Liberation Sans" :height 105)
-  '(treemacs-directory-collapsed-face :family "Liberation Sans" :height 105)
-  '(treemacs-file-face :family "Liberation Sans" :height 105)
-  '(treemacs-tags-face :family "Liberation Sans" :height 105)
+  '(treemacs-root-face :family "Liberation Sans" :height 120)
+  '(treemacs-git-unmodified-face :family "Liberation Sans" :height 110)
+  '(treemacs-git-modified-face :family "Liberation Sans" :height 110)
+  '(treemacs-git-renamed-face :family "Liberation Sans" :height 110)
+  '(treemacs-git-ignored-face :family "Liberation Sans" :height 110)
+  '(treemacs-git-untracked-face :family "Liberation Sans" :height 110)
+  '(treemacs-git-added-face :family "Liberation Sans" :height 1120)
+  '(treemacs-git-conflict-face :family "Liberation Sans" :height 110)
+  '(treemacs-directory-face :family "Liberation Sans" :height 110)
+  '(treemacs-directory-collapsed-face :family "Liberation Sans" :height 110)
+  '(treemacs-file-face :family "Liberation Sans" :height 110)
+  '(treemacs-tags-face :family "Liberation Sans" :height 110)
   )
 #+end_src
 
@@ -1582,14 +1582,13 @@ setDefaultCursor xC_left_ptr
 #+ATTR_HTML: :width 300
 #+ATTR_ORG: :width 300
 [[file:pictures/screenshot-opacity.png]]
-Programs that doesn't have opacity option, or the opacity option doesn't work great(like PGTK emacs) can be set opacity using picom with following code:
+Programs that doesn't have opacity option, can be set opacity using picom with following code:
 #+name: picom-opacity
 #+begin_src nix
 services.picom.opacityRule = [
-    "80:class_g  = 'Zathura'"
-    "80:class_g  = 'TelegramDesktop'"
-    "80:class_g  = 'Discord'"
-    "80:class_g  = 'Emacs'"
+    "90:class_g  = 'Zathura'"
+    "90:class_g  = 'TelegramDesktop'"
+    "90:class_g  = 'Discord'"
     "100:class_g = 'keynav'"
 ];
 #+end_src
@@ -1622,13 +1621,13 @@ Window opacity as a floating point number from ~0.0~ to ~1.0~
 The value ~0.0~ is completely transparent and ~1.0~ is opaque.
 #+name: alacritty-opacity
 #+begin_src nix
-programs.alacritty.settings.background_opacity = 0.8;
+programs.alacritty.settings.background_opacity = 0.90;
 #+end_src
 *** Emacs opacity
-Set to nil, let picom manage opacity because pure gtk emacs doesn't work great with opacity option.
+Set emacs opacity
 #+name: emacs-opacity
 #+begin_src elisp
-(set-frame-parameter nil 'alpha nil) ;; let picom manage it
+(set-frame-parameter nil 'alpha 10)
 #+end_src
 ** Border
 [[file:pictures/screenshot-border.png]]
@@ -4383,7 +4382,6 @@ programs.zathura.options.recolor = "true";
 #+name: retroarch-cores
 #+begin_src nix
 retroarch = {
-  enableDolphin = true;
   enableCitra = true;
   enableParallelN64 = true;
   enableDesmume = true;
@@ -4433,7 +4431,6 @@ Clam AntiVirus is a FOSS antivirus software toolkit able to detect many types of
   <<clamav-updater-enable>>
   <<clamav-updater-frequency>>
   <<clamav-updater-interval>>
-  <<clamav-updater-config>>
 }
 #+end_src
 *** Enable ClamAV daemon
@@ -4445,12 +4442,9 @@ services.clamav.daemon.enable = true;
 Exclude directory from scan
 #+name: clamav-daemon-config
 #+begin_src nix
-services.clamav.daemon.extraConfig = ''
-ExcludePath ^/media/hdd1/
-ExcludePath ^/media/hdd2/
-ExcludePath ^/media/hdd3/
-ExcludePath ^/media/raid0/
-'';
+services.clamav.daemon.settings = {
+  ExcludePath = "^/media/plot/";
+};
 #+end_src
 *** Enable ClamAV updater
 Enable ClamAV freshclam updater
@@ -4469,13 +4463,6 @@ How often freshclam is invoked
 #+name: clamav-updater-interval
 #+begin_src nix
 services.clamav.updater.interval = "hourly";
-#+end_src
-*** ClamAV updater configs
-#+name: clamav-updater-config
-#+begin_src nix
-services.clamav.updater.extraConfig = ''
-
-'';
 #+end_src
 ** GnuPG
 GnuPG is a complete and free implementation of the OpenPGP standard.
@@ -4823,10 +4810,6 @@ services.picom.package = pkgs.nur.repos.reedrw.picom-next-ibhagwan;
 *** Picom backend
 xrender backend uses software rendering.
 glx uses GPU rendering.
-It's obviously that glx is better.
-round-borders was originally written for xrender backend, but it's ported to glx
-kawase-blur was originally written for glx backend.
-Just use glx.
 #+name: picom-backend
 #+begin_src nix
 services.picom.backend = "glx";
@@ -5095,10 +5078,8 @@ hardware.opengl.driSupport32Bit = true;
 This belongs to desktop config
 #+name: configurationnix-video-driver
 #+begin_src nix
-services.xserver.videoDrivers = [ "unstable.nouveau" ];
-services.xserver.deviceSection = ''
-Option "TearFree" "true"
-'';
+services.xserver.videoDrivers = [ "nvidia" ];
+hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.legacy_390;
 #+end_src
 *** xserver intel gpu driver
 This belongs to laptop config
@@ -5255,7 +5236,6 @@ home.packages = with pkgs; [
   nixpkgs-review
   nix-prefetch-git
   nix-prefetch-github
-  pypi2nix
   # rust
   unstable.cargo
   # dart
@@ -5596,7 +5576,6 @@ home.packages = with pkgs; [
   nixpkgs-review
   nix-prefetch-git
   nix-prefetch-github
-  pypi2nix
   # rust
   unstable.cargo
   # tui apps

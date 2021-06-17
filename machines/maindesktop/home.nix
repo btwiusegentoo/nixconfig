@@ -61,7 +61,6 @@ in
     nixpkgs-review
     nix-prefetch-git
     nix-prefetch-github
-    pypi2nix
     # rust
     unstable.cargo
     # dart

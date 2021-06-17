@@ -3,7 +3,7 @@
 {
   hardware.bluetooth.enable = true;
   hardware.bluetooth.package = pkgs.bluezFull;
-  hardware.bluetooth.config = {
+  hardware.bluetooth.settings = {
       General = {
           ControllerMode = "bredr";
       };

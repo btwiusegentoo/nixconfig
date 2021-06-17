@@ -6,10 +6,9 @@
   services.picom.backend = "glx";
   
   services.picom.opacityRule = [
-      "80:class_g  = 'Zathura'"
-      "80:class_g  = 'TelegramDesktop'"
-      "80:class_g  = 'Discord'"
-      "80:class_g  = 'Emacs'"
+      "90:class_g  = 'Zathura'"
+      "90:class_g  = 'TelegramDesktop'"
+      "90:class_g  = 'Discord'"
       "100:class_g = 'keynav'"
   ];
   services.picom.extraOptions = ''

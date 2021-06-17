@@ -21,6 +21,6 @@
   fonts.fontconfig.enable = true;
   fonts.fontconfig.allowBitmaps = true;
   fonts.fontconfig.useEmbeddedBitmaps = true;
-  fonts.enableFontDir = true;
+  fonts.fontDir.enable = true;
   fonts.enableGhostscriptFonts = true;
 }

@@ -1,4 +1,4 @@
-{ stdenv, fetchurl }:
+{ stdenv, fetchurl, lib }:
 
 stdenv.mkDerivation rec {
   name = "apple-color-emoji-${version}";
@@ -25,8 +25,8 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Apple Color Emoji is a color typeface used by iOS and macOS to display emoji";
     homepage = https://github.com/samuelngs/apple-emoji-linux;
-    license = stdenv.lib.licenses.asl20;
-    platforms = stdenv.lib.platforms.all;
+    license = lib.licenses.asl20;
+    platforms = lib.platforms.all;
     maintainers = [ ];
   };
 

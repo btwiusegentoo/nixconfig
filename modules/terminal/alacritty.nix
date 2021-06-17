@@ -96,7 +96,7 @@
       multiplier = 3;
   };
   programs.alacritty.settings.draw_bold_text_with_bright_colors = true;
-  programs.alacritty.settings.background_opacity = 0.8;
+  programs.alacritty.settings.background_opacity = 0.90;
   programs.alacritty.settings.key_bindings = [
     {
       key = "V";

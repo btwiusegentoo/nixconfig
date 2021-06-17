@@ -4,7 +4,7 @@
 
   inputs = {
     home-manager = {
-      url = "github:rycee/home-manager/release-20.09";
+      url = "github:rycee/home-manager/release-21.05";
       inputs = {
         nixpkgs.follows = "nixpkgs";
       };
@@ -12,7 +12,7 @@
     nur.url = "github:nix-community/NUR";
     emacs-ng.url = "github:emacs-ng/emacs-ng";
   
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-21.05";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     master.url = "github:nixos/nixpkgs/master";
   };
@@ -28,7 +28,6 @@
         config = {
           allowUnfree = true;
           retroarch = {
-            enableDolphin = true;
             enableCitra = true;
             enableParallelN64 = true;
             enableDesmume = true;
@@ -81,7 +80,6 @@
                 config = {
                   allowUnfree = true;
                   retroarch = {
-                    enableDolphin = true;
                     enableCitra = true;
                     enableParallelN64 = true;
                     enableDesmume = true;
@@ -98,7 +96,6 @@
                 config = {
                   allowUnfree = true;
                   retroarch = {
-                    enableDolphin = true;
                     enableCitra = true;
                     enableParallelN64 = true;
                     enableDesmume = true;

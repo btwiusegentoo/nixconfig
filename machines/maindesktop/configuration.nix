@@ -168,10 +168,8 @@
   environment.variables = (import ../../modules/common/globalvars.nix);
 
   virtualisation = import (../../modules/virtualisation/default.nix);
-  services.xserver.videoDrivers = [ "unstable.nouveau" ];
-  services.xserver.deviceSection = ''
-  Option "TearFree" "true"
-  '';
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.legacy_390;
   services.xserver.wacom.enable = true;
   services.udev.packages = [ pkgs.dolphinEmu ];
   services.avahi.enable = true;
