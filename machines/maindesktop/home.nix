@@ -64,6 +64,9 @@ in
     pypi2nix
     # rust
     unstable.cargo
+    # dart
+    unstable.flutter
+    unstable.dart
     # lua
     unstable.luajit
     unstable.luajitPackages.lua-lsp
