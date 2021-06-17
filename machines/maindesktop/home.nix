@@ -67,6 +67,7 @@ in
     # dart
     unstable.flutter
     unstable.dart
+    unstable.android-studio
     # lua
     unstable.luajit
     unstable.luajitPackages.lua-lsp
