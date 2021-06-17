@@ -182,7 +182,7 @@
                       ./modules/gui/firefox.nix
                       ./modules/gui/mpv.nix
                       ./modules/gui/zathura.nix
-                      ./modules/editors/emacs.nix
+                      #./modules/editors/emacs.nix
                       ./modules/terminal/fish.nix
                       ./modules/terminal/git.nix
                       ./modules/terminal/bat.nix
