@@ -10,7 +10,7 @@
       };
     };
     nur.url = "github:nix-community/NUR";
-    emacs-overlay.url = "github:nix-community/emacs-overlay";
+    emacs-ng.url = "github:emacs-ng/emacs-ng";
   
     nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -72,6 +72,9 @@
             nur = final: prev: {
               nur = import inputs.nur { nurpkgs = final.unstable; pkgs = final.unstable; };
             };
+            emacsNg = final: prev: {
+              emacsNg = inputs.emacs-ng.defaultPackage.${final.system};
+            };
             unstable = final: prev: {
               unstable = import inputs.unstable {
                 system = final.system;
@@ -87,9 +90,6 @@
                     enableVbaNext = true;
                   };
                 };
-                overlays = [
-                  inputs.emacs-overlay.overlay
-                ];
               };
             };
             master = final: prev: {
@@ -138,7 +138,7 @@
                       ./modules/gui/firefox.nix
                       ./modules/gui/mpv.nix
                       ./modules/gui/zathura.nix
-                      #./modules/editors/emacs.nix
+                      ./modules/editors/emacs.nix
                       ./modules/terminal/fish.nix
                       ./modules/terminal/git.nix
                       ./modules/terminal/bat.nix
@@ -182,7 +182,7 @@
                       ./modules/gui/firefox.nix
                       ./modules/gui/mpv.nix
                       ./modules/gui/zathura.nix
-                      #./modules/editors/emacs.nix
+                      ./modules/editors/emacs.nix
                       ./modules/terminal/fish.nix
                       ./modules/terminal/git.nix
                       ./modules/terminal/bat.nix
@@ -197,33 +197,7 @@
             ];
           inherit pkgs;
         };
-        server1 = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules =
-            [
-              defaults
-              ./machines/mainserver/configuration.nix
-              home-manager.nixosModules.home-manager
-              ({
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
-                home-manager.users.hac = { ... }: {
-                  imports = [
-                    ./machines/mainserver/home.nix
-                    ./modules/terminal/fish.nix
-                    ./modules/terminal/git.nix
-                    ./modules/terminal/bat.nix
-                    ./modules/terminal/fzf.nix
-                    ./modules/terminal/lsd.nix
-                    ./modules/terminal/starship.nix
-                    ./modules/terminal/tmux.nix
-                    ./modules/services/gpg.nix
-                  ];
-                };
-              })
-            ];
-          inherit pkgs;
-        };
+        
       };
     };
 }

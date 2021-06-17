@@ -105,7 +105,7 @@ inputs = {
     };
   };
   nur.url = "github:nix-community/NUR";
-  emacs-overlay.url = "github:nix-community/emacs-overlay";
+  emacs-ng.url = "github:emacs-ng/emacs-ng";
 
   nixpkgs.url = "github:nixos/nixpkgs/nixos-20.09";
   unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -169,7 +169,7 @@ List default modules for home-manager that *requires X11* here
 ./modules/gui/firefox.nix
 ./modules/gui/mpv.nix
 ./modules/gui/zathura.nix
-#./modules/editors/emacs.nix
+./modules/editors/emacs.nix
 #+end_src
 ** nixpkgs config
 Configs specific for default pkgs
@@ -213,15 +213,15 @@ overlays =
       nur = final: prev: {
         nur = import inputs.nur { nurpkgs = final.unstable; pkgs = final.unstable; };
       };
+      emacsNg = final: prev: {
+        emacsNg = inputs.emacs-ng.defaultPackage.${final.system};
+      };
       unstable = final: prev: {
         unstable = import inputs.unstable {
           system = final.system;
           config = {
             <<nixpkgs-globalconfigs>>
           };
-          overlays = [
-            inputs.emacs-overlay.overlay
-          ];
         };
       };
       master = final: prev: {
@@ -298,30 +298,6 @@ laptop1 = nixpkgs.lib.nixosSystem {
 };
 #+end_src
 
-*** Server
-#+name: server1
-#+begin_src nix :noweb no-export
-server1 = nixpkgs.lib.nixosSystem {
-  system = "x86_64-linux";
-  modules =
-    [
-      defaults
-      ./machines/mainserver/configuration.nix
-      home-manager.nixosModules.home-manager
-      ({
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-        home-manager.users.hac = { ... }: {
-          imports = [
-            ./machines/mainserver/home.nix
-            <<home-manager-defaults>>
-          ];
-        };
-      })
-    ];
-  inherit pkgs;
-};
-#+end_src
 * Nix
 Configure Nix package manager
 #+begin_src nix :tangle modules/common/nix.nix :noweb no-export
@@ -3110,16 +3086,16 @@ Requires manual installation
 + [[Emacs theme][Theme]]
 + [[Emacs fonts][Fonts]]
 
-** Install Emacs nativecomp pgtk
-Disabled emacs to use emacsNg
+** EmacsNg
+Enable emacs
 #+name: emacs-install
 #+begin_src nix
-#programs.emacs.enable = true;
+programs.emacs.enable = true;
 #+end_src
-Use emacs native comp pgtk package from [[Flake inputs][Overlay here]]
+Use emacs-ng with webrender
 #+name: emacs-package
 #+begin_src nix
-programs.emacs.package = pkgs.unstable.emacsPgtkGcc;
+programs.emacs.package = pkgs.emacsNg;
 #+end_src
 
 add this to init.el and config.el to fix nativecomp in Nix
@@ -3251,7 +3227,7 @@ vc                ; version-control and Emacs, sitting in a tree
 *** term modules
 #+name: doom-initel-term
 #+begin_src elisp :noweb no-export
-;;eshell            ; the elisp shell that works everywhere
+eshell            ; the elisp shell that works everywhere
 ;;shell             ; simple shell REPL for Emacs
 ;;term              ; basic terminal emulator for Emacs
 vterm             ; the best terminal emulation in Emacs
@@ -4855,15 +4831,6 @@ Just use glx.
 #+begin_src nix
 services.picom.backend = "glx";
 #+end_src
-*** Experimental backends
-Whether to use the new experimental backends.
-Currently, new backends feature better vsync with the xrender backend and improved input lag with the glx backend(for non-NVIDIA users).
-Also, I think dual_kawase blur and rounded borders have better implementation within the experimental backends code.
-#+name: picom-experimental-backends
-#+begin_src nix
-services.picom.experimentalBackends = true;
-#+end_src
-
 *** Detect Client Opacity
 Detect _NET_WM_OPACITY on client windows.
 This prevents opacity being ignored for some apps.
@@ -5124,11 +5091,11 @@ hardware.opengl.enable = true;
 hardware.opengl.driSupport = true;
 hardware.opengl.driSupport32Bit = true;
 #+end_src
-*** xserver nvidia legacy driver
+*** xserver nvidia driver
 This belongs to desktop config
 #+name: configurationnix-video-driver
 #+begin_src nix
-services.xserver.videoDrivers = [ "unstable.nvidiaLegacy340" ];
+services.xserver.videoDrivers = [ "unstable.nouveau" ];
 services.xserver.deviceSection = ''
 Option "TearFree" "true"
 '';
@@ -5796,192 +5763,6 @@ in
     "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
     "COLORTERM" = "truecolor";
     "EDITOR" = "emacsclient -c";
-  }; # }}}
-
-}
-#+end_src
-** Server
-*** Set server hostname
-#+name: configurationnix-server-hostname
-#+begin_src nix
-networking.hostName = "server1";
-#+end_src
-*** configuration.nix
-#+begin_src nix :tangle machines/mainserver/configuration.nix :noweb no-export :tangle-mode (identity #o644)
-# This file is generated from "README.org"
-{ config, pkgs, fetchgit, ... }:
-{
-
-  imports =
-    [
-      <<configurationnix-defaultimports>>
-    ];
-
-  <<configurationnix-enable-grub>>
-  <<configurationnix-grub-timeout>>
-  <<configurationnix-grub-copykernels>>
-  <<configurationnix-faster-boot>>
-  <<configurationnix-latest-kernel>>
-  <<configurationnix-plymouth-enable>>
-
-  <<configurationnix-server-fspath>>
-
-  <<hardware-redistributable-firmware>>
-  <<enable-sound>>
-  <<configurationnix-intel-microcode>>
-
-  <<configurationnix-server-hostname>>
-  # Networking{{{
-
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
-  networking = {
-    dhcpcd.enable = false;
-    useNetworkd = true;
-    useDHCP = false;
-    interfaces.wlp0s4f1u3u4.useDHCP = true;
-    networkmanager = {
-      enable = true;
-      dns = "systemd-resolved";
-    };
-  };
-  #}}}
-
-  environment.variables = (import ../../modules/common/globalvars.nix);
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.03"; # Did you read the comment?
-
-}
-#+end_src
-*** Packages to install on server home environment
-#+name: home-manager-server-packages
-#+begin_src nix :noweb no-export
-home.packages = with pkgs; [
-  trash-cli
-  unstable.fd
-  gitAndTools.diff-so-fancy
-  ripgrep
-  unstable.fzf
-  binutils
-  killall
-  neofetch
-  unstable.mosh
-  nix-index
-  niv
-  scrot
-  feh
-  lightlocker
-  circleci-cli
-  # nixpkgs
-  nix-prefetch-git
-  nix-prefetch-github
-  # tui apps
-  htop
-  # dependencies
-  libnotify
-  unstable.youtube-dl
-  unstable.neovim-remote
-  unstable.direnv
-  unstable.imagemagick
-  # misc
-  file
-  catimg
-  # joke command
-  cowsay
-  cmatrix
-  espeak
-  figlet
-  fortune
-  asciiquarium
-];
-#+end_src
-*** home.nix
-#+begin_src nix :tangle machines/mainserver/home.nix :noweb no-export
-# This file is generated from "README.org"
-{ config, pkgs, lib, ... }:
-{
-  <<home-manager-server-packages>>
-  <<lorri-enable>>
-
-  # programs {{{
-  programs = {
-
-    home-manager.enable = true;
-
-    neovim = (import ../../modules/editors/neovim.nix) { inherit pkgs; }; # don't compile
-  };
-  #}}}
-
-  # home files{{{
-  home.file = {
-
-    # tmux theme
-    ".palenight-tmux".source = ../../.palenight-tmux;
-
-    # neovim dashboard logo
-    "Pictures/neovimlogo.png".source = (pkgs.fetchurl {
-      url = "https://raw.githubusercontent.com/neovim/neovim.github.io/master/logos/neovim-logo-flat.png";
-      sha256 = "1vl7mi87wisqhd9zigg24y2ksjyyjk6225bvw9qk4s6gfv62w4jm";
-    });
-
-    ".ghc/ghci.conf".text = ''
-      :set prompt "%s λ: "
-    '';
-
-  };
-  #}}}
-
-  # .config files{{{
-  xdg.configFile = {
-
-    "nvim/coc-settings.json".source = ../../configs/coc-settings.json;
-    "neofetch/config.conf".source = ../../configs/neofetch.conf;
-    "ncpamixer.conf".source = ../../configs/ncpamixer.conf;
-
-    # nixpkgs{{{
-    "nixpkgs/config.nix".text = ''
-      { allowUnfree = true; }
-    '';
-    # }}}
-
-    "vifm/vifmrc".source = ../../configs/vifmrc.vim;
-
-  };
-  # }}}
-
-  xsession.enable = false;
-
-
-  # Home Manager config{{{
-  # Home Manager needs a bit of information about you and the
-  # paths it should manage.
-  home.username = "hac";
-  home.homeDirectory = "/home/hac";
-
-  # This value determines the Home Manager release that your
-  # configuration is compatible with. This helps avoid breakage
-  # when a new Home Manager release introduces backwards
-  # incompatible changes.
-  #
-  # You can update Home Manager without changing this value. See
-  # the Home Manager release notes for a list of state version
-  # changes in each release.
-  home.stateVersion = "20.03";
-
-  #}}}
-
-  # local env variables{{{
-  home.sessionVariables = {
-    "XDG_CONFIG_HOME" = "$HOME/.config";
-    "MANPAGER" = "sh -c 'col -bx | bat -l man -p'";
-    "COLORTERM" = "truecolor";
   }; # }}}
 
 }
