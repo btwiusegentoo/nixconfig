@@ -2,7 +2,7 @@
 { pkgs, ...}:
 {
   programs.emacs.enable = true;
-  programs.emacs.package = pkgs.emacsPgtkGcc;
+  programs.emacs.package = pkgs.unstable.emacsPgtkGcc;
   programs.emacs.extraPackages = (epkgs: [ epkgs.vterm ]);
   services.emacs = {
     enable = true;

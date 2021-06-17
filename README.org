@@ -213,13 +213,15 @@ overlays =
       nur = final: prev: {
         nur = import inputs.nur { nurpkgs = final.unstable; pkgs = final.unstable; };
       };
-      emacs-overlay = inputs.emacs-overlay.overlay;
       unstable = final: prev: {
         unstable = import inputs.unstable {
           system = final.system;
           config = {
             <<nixpkgs-globalconfigs>>
           };
+          overlays = [
+            inputs.emacs-overlay.overlay;
+          ];
         };
       };
       master = final: prev: {
@@ -3119,7 +3121,7 @@ programs.emacs.enable = true;
 Use emacs native comp pgtk package from [[Flake inputs][Overlay here]]
 #+name: emacs-package
 #+begin_src nix
-programs.emacs.package = pkgs.emacsPgtkGcc;
+programs.emacs.package = pkgs.unstable.emacsPgtkGcc;
 #+end_src
 
 You have to add this to init.el and config.el to fix nativecomp in Nix

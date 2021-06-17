@@ -72,7 +72,6 @@
             nur = final: prev: {
               nur = import inputs.nur { nurpkgs = final.unstable; pkgs = final.unstable; };
             };
-            emacs-overlay = inputs.emacs-overlay.overlay;
             unstable = final: prev: {
               unstable = import inputs.unstable {
                 system = final.system;
@@ -88,6 +87,9 @@
                     enableVbaNext = true;
                   };
                 };
+                overlays = [
+                  inputs.emacs-overlay.overlay;
+                ];
               };
             };
             master = final: prev: {
