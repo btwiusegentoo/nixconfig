@@ -3103,9 +3103,7 @@ I use emacs (specifically, *doom-emacs*) as main text editor
 doom-emacs is an Emacs framework, which is preconfigured with evil-mode(vim keybindings) that allows me to use heavily customized emacs ootb
 Doom starts up really quickly,because it tries to lazy load a lot of packages, byte compiles your configuration.
 
-My emacs config is still work in progress, I change it often.
-
-So, I choose to install doom-emacs in traditional way instead of using [[https://github.com/vlaci/nix-doom-emacs][nix-doom-emacs]]
+Requires manual installation
 ~git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d~
 ~~/.emacs.d/bin/doom install~
 
