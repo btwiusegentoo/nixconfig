@@ -1601,7 +1601,7 @@ blur:
 {
     method = "kawase";
     strength = 8;
-    background = false;
+    background = true;
     background-frame = false;
     background-fixed = false;
 };
@@ -4814,6 +4814,10 @@ glx uses GPU rendering.
 #+begin_src nix
 services.picom.backend = "glx";
 #+end_src
+#+name: picom-experimental-backends
+#+begin_src nix
+services.picom.experimentalBackends = true;
+#+end_src
 *** Detect Client Opacity
 Detect _NET_WM_OPACITY on client windows.
 This prevents opacity being ignored for some apps.
@@ -5262,6 +5266,7 @@ home.packages = with pkgs; [
   olive-editor
   blender
   master.discord
+  master.betterdiscordctl
   tdesktop
   pavucontrol
   spotify

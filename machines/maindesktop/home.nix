@@ -87,6 +87,7 @@ in
     olive-editor
     blender
     master.discord
+    master.betterdiscordctl
     tdesktop
     pavucontrol
     spotify

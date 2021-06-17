@@ -4,7 +4,7 @@
   services.picom.enable = true;
   services.picom.package = pkgs.nur.repos.reedrw.picom-next-ibhagwan;
   services.picom.backend = "glx";
-  
+  services.picom.experimentalBackends = true;
   services.picom.opacityRule = [
       "90:class_g  = 'Zathura'"
       "90:class_g  = 'TelegramDesktop'"
@@ -18,7 +18,7 @@
     {
         method = "kawase";
         strength = 8;
-        background = false;
+        background = true;
         background-frame = false;
         background-fixed = false;
     };
