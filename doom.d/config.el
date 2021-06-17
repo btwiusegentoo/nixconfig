@@ -86,7 +86,7 @@
   (setq centaur-tabs-set-bar 'under)
   (setq centaur-tabs-set-modified-marker t)
   (setq centaur-tabs-modified-marker "•")
-  (setq centaur-tabs-close-button "")
+  (setq centaur-tabs-close-button "")
   (setq centaur-tabs-cycle-scope 'tabs)
   :config
   (add-hook '+doom-dashboard-mode-hook #'centaur-tabs-local-mode)
@@ -188,3 +188,4 @@
 (after! twittering-mode
   (setq twittering-icon-mode t)
   )
+(elcord-mode)

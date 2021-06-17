@@ -18,3 +18,6 @@
 ;; company(autocompletion) packages
 ;; (package! company-tabnine)
 ;; (package! company-emoji)
+
+;; discord rpc
+(package! elcord)

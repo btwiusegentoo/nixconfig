@@ -3401,6 +3401,9 @@ Install custom packages that aren't included in doom-emacs here
 ;; (package! company-tabnine)
 ;; (package! company-emoji)
 
+;; discord rpc
+<<elcord-package>>
+
 #+end_src
 *** Commentary
 To install a package with Doom you must declare them here and run 'doom sync'
@@ -3653,7 +3656,7 @@ Set modified marker character
 Set close button character
 #+name: centaur-tabs-close-button
 #+begin_src elisp
-(setq centaur-tabs-close-button "")
+(setq centaur-tabs-close-button "")
 #+end_src
 
 Add horizontal margins
@@ -4013,6 +4016,17 @@ Disable line highlight
 #+begin_src elisp
 (remove-hook! doom-first-buffer #'global-hl-line-mode)
 #+end_src
+** Discord RPC
+Install
+#+name: elcord-package
+#+begin_src elisp
+(package! elcord)
+#+end_src
+Enable it
+#+name: elcord-mode
+#+begin_src elisp
+(elcord-mode)
+#+end_src
 ** emacs.nix base code
 #+begin_src nix :tangle modules/editors/emacs.nix :noweb no-export
 # This file is generated from "README.org"
@@ -4080,6 +4094,7 @@ Disable line highlight
 <<emacs-haskell-language-server>>
 <<emacs-opacity>>
 <<emacs-twittering-mode-icon>>
+<<elcord-mode>>
 #+end_src
 * neovim
 ** Open lazygit commit window inside neovim
