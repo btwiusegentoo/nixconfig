@@ -169,7 +169,7 @@ List default modules for home-manager that *requires X11* here
 ./modules/gui/firefox.nix
 ./modules/gui/mpv.nix
 ./modules/gui/zathura.nix
-./modules/editors/emacs.nix
+#./modules/editors/emacs.nix
 #+end_src
 ** nixpkgs config
 Configs specific for default pkgs
@@ -3113,10 +3113,10 @@ So, I choose to install doom-emacs in traditional way instead of using [[https:/
 + [[Emacs fonts][Fonts]]
 
 ** Install Emacs nativecomp pgtk
-Install emacs itself
+Disabled emacs to use emacsNg
 #+name: emacs-install
 #+begin_src nix
-programs.emacs.enable = true;
+#programs.emacs.enable = true;
 #+end_src
 Use emacs native comp pgtk package from [[Flake inputs][Overlay here]]
 #+name: emacs-package
@@ -3124,7 +3124,7 @@ Use emacs native comp pgtk package from [[Flake inputs][Overlay here]]
 programs.emacs.package = pkgs.unstable.emacsPgtkGcc;
 #+end_src
 
-You have to add this to init.el and config.el to fix nativecomp in Nix
+add this to init.el and config.el to fix nativecomp in Nix
 #+name: emacs-fix-nativecomp
 #+begin_src elisp
 (setq comp-async-env-modifier-form "")
@@ -3306,7 +3306,7 @@ cc                ; C/C++/Obj-C madness
 ;;crystal           ; ruby at the speed of c
 ;;csharp            ; unity, .NET, and mono shenanigans
 ;;data              ; config/data formats
-(dart +flutter)   ; paint ui and not much else
+(dart +flutter +lsp)   ; paint ui and not much else
 ;;elixir            ; erlang done right
 ;;elm               ; care for a cup of TEA?
 emacs-lisp        ; drown in parentheses

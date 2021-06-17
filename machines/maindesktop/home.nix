@@ -200,10 +200,6 @@ in
       sha256 = "0k0iay6pd01k2nyjm2n648n8ja36mgarvb9677ky2d758xkzgckv";
     });
 
-    # doom emacs
-    # ".emacs.d/init.el".text = ''
-    #     (load "default.el")
-    # '';
     ".doom.d/init.el".source = ../../doom.d/init.el;
     ".doom.d/config.el".source = ../../doom.d/config.el;
     ".doom.d/packages.el".source = ../../doom.d/packages.el;
