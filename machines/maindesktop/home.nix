@@ -164,7 +164,7 @@ in
     layout = "us";
     variant = "dvorak";
   };
-  xsession.profileExtra = "xrandr --output DVI-D-0 --scale-from 2560x1440 --panning 2560x1440";
+  xsession.profileExtra = "xrandr --output DVI-I-1 --scale-from 2560x1440 --panning 2560x1440";
 
   # home files{{{
   home.file = {

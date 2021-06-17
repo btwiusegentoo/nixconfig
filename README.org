@@ -548,7 +548,7 @@ We need these kernel parameters to be able to control display brightness on Thin
 Scale desktop monitor to 1440p
 #+name: xrandr-desktop-scale
 #+begin_src nix
-xsession.profileExtra = "xrandr --output DVI-D-0 --scale-from 2560x1440 --panning 2560x1440";
+xsession.profileExtra = "xrandr --output DVI-I-1 --scale-from 2560x1440 --panning 2560x1440";
 #+end_src
 Scale laptop monitor to 1080p
 #+name: xrandr-laptop-scale
