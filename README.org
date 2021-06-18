@@ -3091,7 +3091,7 @@ Enable emacs
 #+begin_src nix
 programs.emacs.enable = true;
 #+end_src
-Use emacs-ng with webrender
+Use emacs-ng system-wide
 #+name: emacs-package
 #+begin_src nix
 programs.emacs.package = pkgs.emacsNg;
