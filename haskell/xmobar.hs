@@ -4,7 +4,7 @@ import           Xmobar
 
 config :: Config
 config = defaultConfig
-  { font             = "xft:Liberation Sans-14,Iosevka Font Nerd Font-14"
+  { font             = "xft:Iosevka Font Nerd Font-14"
   , additionalFonts  = []
   , borderColor      = "#232635"
   , border           = BottomB

@@ -7,7 +7,7 @@
     spleen
     apple-color-emoji
     noto-fonts-cjk
-    emacs-all-the-icons-fonts
+    unstable.emacs-all-the-icons-fonts
     etBook
     liberation_ttf_v2
   ];

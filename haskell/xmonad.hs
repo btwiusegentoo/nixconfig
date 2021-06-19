@@ -55,15 +55,15 @@ myEmojiFont :: String
 myEmojiFont = "xft:Apple Color Emoji:size=14"
 myWorkspaces :: [String]
 myWorkspaces =
-  [ "\8203"
-  , "\8203\8203"
-  , "\8203\8203\8203"
-  , "\8203\8203\8203\8203"
-  , "\8203\8203\8203\8203\8203"
-  , "\8203\8203\8203\8203\8203\8203"
-  , "\8203\8203\8203\8203\8203\8203\8203"
-  , "\8203\8203\8203\8203\8203\8203\8203\8203"
-  , "\8203\8203\8203\8203\8203\8203\8203\8203\8203"
+  [ "1"
+  , "2"
+  , "3"
+  , "4"
+  , "5"
+  , "6"
+  , "7"
+  , "8"
+  , "9"
   ]
 myBorderWidth :: Dimension
 myBorderWidth = 2
@@ -289,10 +289,10 @@ myStartupHook = do
 myLogHook h = dynamicLogWithPP xmobarPP
   { ppOutput          = hPutStrLn h
   , ppSort            = fmap (namedScratchpadFilterOutWorkspace .) (ppSort def) -- hide nsp
-  , ppCurrent         = xmobarColor "#c792ea" "" . wrap "\61713" " "  -- Current workspace
-  , ppVisible         = xmobarColor "#ab47bc" "" . wrap "\61842" " "
-  , ppHidden          = xmobarColor "#ab47bc" "" . wrap "\61842" " "
-  , ppHiddenNoWindows = xmobarColor "#FFFFFF" "" . wrap "\61915" " "
+  , ppCurrent         = xmobarColor "#c792ea" "" -- Current workspace
+  , ppVisible         = xmobarColor "#ab47bc" ""
+  , ppHidden          = xmobarColor "#ab47bc" ""
+  , ppHiddenNoWindows = xmobarColor "#FFFFFF" ""
   , ppLayout          = xmobarColor "#82aaff" ""
   , ppSep             = "  |  "
   , ppTitle           = mempty
