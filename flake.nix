@@ -10,7 +10,8 @@
       };
     };
     nur.url = "github:nix-community/NUR";
-    emacs-ng.url = "github:emacs-ng/emacs-ng";
+    #emacs-ng.url = "github:emacs-ng/emacs-ng";
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
   
     nixpkgs.url = "github:nixos/nixpkgs/nixos-21.05";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -71,9 +72,10 @@
             nur = final: prev: {
               nur = import inputs.nur { nurpkgs = final.unstable; pkgs = final.unstable; };
             };
-            emacsNg = final: prev: {
-              emacsNg = inputs.emacs-ng.defaultPackage.${final.system};
-            };
+            emacs-overlay = inputs.emacs-overlay.overlay;
+            # emacsNg = final: prev: {
+            #   emacsNg = inputs.emacs-ng.defaultPackage.${final.system};
+            # };
             unstable = final: prev: {
               unstable = import inputs.unstable {
                 system = final.system;

@@ -105,7 +105,8 @@ inputs = {
     };
   };
   nur.url = "github:nix-community/NUR";
-  emacs-ng.url = "github:emacs-ng/emacs-ng";
+  #emacs-ng.url = "github:emacs-ng/emacs-ng";
+  emacs-overlay.url = "github:nix-community/emacs-overlay";
 
   nixpkgs.url = "github:nixos/nixpkgs/nixos-21.05";
   unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -213,9 +214,10 @@ overlays =
       nur = final: prev: {
         nur = import inputs.nur { nurpkgs = final.unstable; pkgs = final.unstable; };
       };
-      emacsNg = final: prev: {
-        emacsNg = inputs.emacs-ng.defaultPackage.${final.system};
-      };
+      emacs-overlay = inputs.emacs-overlay.overlay;
+      # emacsNg = final: prev: {
+      #   emacsNg = inputs.emacs-ng.defaultPackage.${final.system};
+      # };
       unstable = final: prev: {
         unstable = import inputs.unstable {
           system = final.system;
@@ -3047,7 +3049,7 @@ Requires manual installation
 + [[Emacs theme][Theme]]
 + [[Emacs fonts][Fonts]]
 
-** EmacsNg
+** Emacs installation
 Enable emacs
 #+name: emacs-install
 #+begin_src nix
@@ -3056,7 +3058,7 @@ programs.emacs.enable = true;
 Use emacs-ng system-wide
 #+name: emacs-package
 #+begin_src nix
-programs.emacs.package = pkgs.emacsNg;
+programs.emacs.package = pkgs.emacsPgtkGcc;
 #+end_src
 
 add this to init.el and config.el to fix nativecomp in Nix
