@@ -1197,24 +1197,15 @@ load colorscheme file
 source-file ~/.palenight-tmux
 #+end_src
 ** Fonts
-I use Cozette font as editor/terminal font.
-
-Spleen is my choice for TTY font
-
-GohuFont is used only to render nerdfonts.
-
-I think Apple's emoji font is the best emoji font.
-
 Install fonts:
 #+begin_src nix :tangle modules/common/fonts.nix :noweb no-export
 # This file is generated from "README.org"
 { pkgs, ... }:
 {
   fonts.fonts = with pkgs; [
-    (nerdfonts.override { fonts = [ "Gohu" ]; })
+    (nerdfonts.override { fonts = [ "Iosevka" ]; })
     unstable.dejavu_fonts
     spleen
-    unstable.cozette
     apple-color-emoji
     noto-fonts-cjk
     emacs-all-the-icons-fonts
@@ -1282,7 +1273,7 @@ console.font = "spleen-6x12";
 Set doom fixed-pitch font and doom variable pitch font here:
 #+name: emacs-doom-fonts
 #+begin_src elisp
-(setq doom-font "CozetteVector-10.5"
+(setq doom-font "Iosevka Nerd Font-10.0"
       doom-variable-pitch-font "ETBembo-11")
 #+end_src
 
@@ -1344,9 +1335,8 @@ Set emoji and nerdfont(extrafonts):
            :append
            (defun my/init-extra-fonts-h(&optional frame)
              (with-selected-frame (or frame (selected-frame))
-               (set-fontset-font t 'symbol "CozetteVector" nil)
-               (set-fontset-font t 'symbol "Apple Color Emoji" nil 'append)
-               (set-fontset-font t 'symbol "GohuFont Nerd Font" nil 'append))))
+               (set-fontset-font t 'symbol "Iosevka Nerd Font" nil)
+               (set-fontset-font t 'symbol "Apple Color Emoji" nil 'append))))
 #+end_src
 
 
@@ -1374,18 +1364,18 @@ The size is in point(pt)
 #+begin_src nix
 programs.alacritty.settings.font = {
   normal = {
-    family = "CozetteVector";
-    style = "Regular";
+    family = "Iosevka Nerd Font";
+    style = "Medium";
   };
   bold = {
-    family = "CozetteVector";
-    style = "Regular";
+    family = "Iosevka Nerd Font";
+    style = "Bold";
   };
   italic = {
-    family = "CozetteVector";
-    style = "Regular";
+    family = "Iosevka Nerd Font";
+    style = "Italic";
   };
-  size = 10.5;
+  size = 10;
   offset = {
     x = 0;
     y = 0;
@@ -1405,45 +1395,31 @@ programs.qutebrowser.settings.fonts = {
   web.family.standard = "Liberation Sans";
   web.family.serif = "Liberation Sans";
   web.family.sans_serif = "Liberation Sans";
-  web.family.fixed = "CozetteVector";
+  web.family.fixed = "Iosevka Nerd Font";
   completion = {
-    category = "10.5pt CozetteVector";
-    entry = "10.5pt CozetteVector";
+    category = "10pt Iosevka Nerd Font";
+    entry = "10pt Iosevka Nerd Font";
   };
-  contextmenu = "10.5pt CozetteVector";
-  debug_console = "10.5pt CozetteVector";
+  contextmenu = "10pt Iosevka Nerd Font";
+  debug_console = "10pt Iosevka Nerd Font";
   default_size = "10.5pt";
-  downloads = "10.5pt CozetteVector";
+  downloads = "10pt Iosevka Nerd Font";
   hints = "11pt Liberation Sans";
-  keyhint = "10.5pt CozetteVector";
+  keyhint = "10pt Iosevka Nerd Font";
   messages = {
-    error = "10.5pt CozetteVector";
-    info = "10.5pt CozetteVector";
-    warning = "10.5pt CozetteVector";
+    error = "10pt Iosevka Nerd Font";
+    info = "10pt Iosevka Nerd Font";
+    warning = "10pt Iosevka Nerd Font";
   };
-  prompts = "10.5pt CozetteVector";
-  statusbar = "10.5pt CozetteVector";
-  tabs.selected = "10.5pt CozetteVector";
-  tabs.unselected = "10.5pt CozetteVector";
-  #tabs = "10.5pt CozetteVector";
+  prompts = "10pt Iosevka Nerd Font";
+  statusbar = "10pt Iosevka Nerd Font";
+  tabs.selected = "10pt Iosevka Nerd Font";
+  tabs.unselected = "10pt Iosevka Nerd Font";
+  #tabs = "10pt Iosevka Nerd Font";
 };
 #+end_src
 *** fontconfig
 Font configs that can't be configured using nix options belongs here.
-**** 10-symbols.conf
-Use nerdfont as fallback font
-#+begin_src xml :tangle configs/fontconfig/10-symbols.conf
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-    <alias>
-        <family>Cozette</family>
-        <prefer>
-            <family>GohuFont Nerd Font</family>
-        </prefer>
-    </alias>
-</fontconfig>
-#+end_src
 **** 65-nonlatin.conf
 This configures Japanese font.
 This makes programs use *Noto Sans CJK JP* for Japanese automatically. Therefore no need to configure Japanese font as main font.
@@ -1492,20 +1468,6 @@ Seems like this user-level config is needed to programs use Apple Color Emoji fo
             <string>Apple Color Emoji</string>
         </edit>
     </match>
-</fontconfig>
-#+end_src
-**** 10-hinting.conf
-#+begin_src xml :tangle configs/fontconfig/10-hinting.conf
-<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-  <match target="font">
-    <test name="family" qual="any">
-      <string>CozetteVector</string>
-    </test>
-    <edit name="hinting" mode="assign">
-      <bool>false</bool>
-    </edit>
-  </match>
 </fontconfig>
 #+end_src
 *** Dunst(Notifications) font
@@ -2903,7 +2865,7 @@ import           Xmobar
 
 config :: Config
 config = defaultConfig
-  { font             = "xft:Liberation Sans-14,GohuFont Nerd Font-14"
+  { font             = "xft:Liberation Sans-14,Iosevka Font Nerd Font-14"
   , additionalFonts  = []
   , borderColor      = "#232635"
   , border           = BottomB
@@ -2967,7 +2929,7 @@ import           Xmobar
 
 config :: Config
 config = defaultConfig
-  { font             = "xft:Liberation Sans-14,GohuFont Nerd Font-14"
+  { font             = "xft:Liberation Sans-14,Iosevka Font Nerd Font-14"
   , additionalFonts  = []
   , borderColor      = "#232635"
   , border           = BottomB
@@ -5795,9 +5757,7 @@ This module is imported from home-manager
   "ncpamixer.conf".source = ../../configs/ncpamixer.conf;
 
   "fontconfig/conf.d/10-prefer-emoji.conf".source = ../../configs/fontconfig/10-prefer-emoji.conf;
-  "fontconfig/conf.d/10-symbols.conf".source = ../../configs/fontconfig/10-symbols.conf;
   "fontconfig/conf.d/65-nonlatin.conf".source = ../../configs/fontconfig/65-nonlatin.conf;
-  "fontconfig/conf.d/10-hinting.conf".source = ../../configs/fontconfig/10-hinting.conf;
 
   <<tridactylrc-symlink>>
 

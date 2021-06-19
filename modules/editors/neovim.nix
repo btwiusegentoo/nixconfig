@@ -8,7 +8,7 @@ in
   enable = true;
   viAlias = true;
   vimAlias = true;
-  package = unstable.neovim-unwrapped;
+  package = pkgs.neovim-unwrapped;
   # plugins {{{
   plugins = with master.vimPlugins // plugins; [
     coc-nvim
@@ -20,8 +20,7 @@ in
     coc-html
     coc-lua
     coc-pairs
-    palenight-vim
-    nvim-colorizer-lua #norcalli/nvim-colorizer.lua
+    material-vim
     indentLine
     vista-vim
     vim-sneak
@@ -53,7 +52,6 @@ in
     fzf-vim
     fzf-proj
     fzfWrapper
-    vim-which-key
     indent-blankline
     vim-visual-multi
     lazygit-nvim

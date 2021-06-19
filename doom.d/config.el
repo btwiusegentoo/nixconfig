@@ -1,15 +1,14 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 ;This file is generated from "README.org"
 (setq comp-async-env-modifier-form "")
-(setq doom-font "CozetteVector-10.5"
+(setq doom-font "Iosevka Nerd Font-10.0"
       doom-variable-pitch-font "ETBembo-11")
 (add-hook! 'doom-load-theme-hook
            :append
            (defun my/init-extra-fonts-h(&optional frame)
              (with-selected-frame (or frame (selected-frame))
-               (set-fontset-font t 'symbol "CozetteVector" nil)
-               (set-fontset-font t 'symbol "Apple Color Emoji" nil 'append)
-               (set-fontset-font t 'symbol "GohuFont Nerd Font" nil 'append))))
+               (set-fontset-font t 'symbol "Iosevka Nerd Font" nil)
+               (set-fontset-font t 'symbol "Apple Color Emoji" nil 'append))))
 (custom-set-faces!
   '(mode-line :family "Liberation Sans" :height 110)
   '(mode-line-inactive :family "Liberation Sans" :height 110)

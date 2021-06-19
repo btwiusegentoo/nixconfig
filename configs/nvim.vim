@@ -66,8 +66,11 @@ set signcolumn=yes
 let g:nix_recommended_style=0
 
 let g:auto_comma_or_semicolon = 1
-let g:palenight_terminal_italics = 1
-colorscheme palenight
+
+let g:material_theme_style='palenight-community'
+let g:material_terminal_italics = 1
+colorscheme material
+
 set termguicolors
 " custom colors
 hi! Normal guibg=NONE
@@ -79,10 +82,6 @@ hi! NormalFloat guifg=#A6ACCD guibg=#292D3E
 hi! VertSplit guifg=#4E5579
 " remove annoying tilde(EndOfBuffer)
 let &fcs='eob: '
-
-lua <<EOF
-require'colorizer'.setup()
-EOF
 
 "haskell{{{
 let g:stylishask_on_save = 1
@@ -194,101 +193,6 @@ function! LAST_SESSION()
 endfunction
 " }}}
 
-" whichkey{{{
-
-" set timeout before show which-key
-set timeoutlen=1000
-set ttimeout
-set ttimeoutlen=30
-" set which-key floating window color to same as normal floating window
-hi! WhichKeyFloating guifg=#A6ACCD guibg=#292D3E
-" use floating window for which-key
-let g:which_key_use_floating_win = 1
-
-call which_key#register('<Space>', "g:which_key_map_space")
-let g:which_key_map_space = {} " Define dictionary.
-let g:which_key_map_space.F = 'Format file with coc'
-let g:which_key_map_space.w = 'Save current file'
-let g:which_key_map_space.n = 'Open file tree(coc-explorer)'
-let g:which_key_map_space.y = 'Yank selection to clipboard'
-let g:which_key_map_space.p = 'Paste from clipboard'
-let g:which_key_map_space.P = 'Same as p but puts text before the cursor'
-let g:which_key_map_space.yy = 'Yank entire line'
-let g:which_key_map_space.Y = 'Same as yy'
-let g:which_key_map_space.t = 'Open terminal in new buffer'
-
-let g:which_key_map_space.f = {
-        \ 'name' : '+FZF',
-        \ 'f' : 'Files',
-        \ 'h' : 'History',
-        \ 'l' : 'Lines',
-        \ 'd' : 'Word',
-        \ 'p' : 'Projects',
-        \ }
-
-let g:which_key_map_space.b = {
-        \ 'name' : '+Buffers',
-        \ 'q' : 'Close current buffer',
-        \ 'b' : 'FZF Buffers',
-        \ 'n' : 'Open new buffer',
-        \ }
-
-let g:which_key_map_space.s = {
-        \ 'name' : '+Session',
-        \ 's' : 'Save current session',
-        \ 'l' : 'Load last session',
-        \ }
-
-let g:which_key_map_space.c = {
-        \ 'name' : '+NERDCommenter',
-        \ 'SPC' : 'Toggles the comment state of the selected line(s)',
-        \ 'c' : 'Comment out the current line or selected text',
-        \ 'n' : 'Same as c but forces nesting',
-        \ 'm': 'Comments the given lines using only one set of multipart delimiters',
-        \ 'i': 'Toggles the comment state of the selected line(s) individually',
-        \ 's': 'Comments out the selected lines with a pretty block formatted layout',
-        \ 'y': 'Same as c except that the commented line(s) are yanked first',
-        \ '$': 'Comments the current line from the cursor to the end of line',
-        \ 'A': 'Adds comment delimiters to the end of line and goes into insert mode between them',
-        \ 'a': 'Switches to the alternative set of delimiters',
-        \ 'u': 'Uncomments the selected line(s)',
-        \ 'l': 'Same as c except that the delimiters are aligned down the left side',
-        \ 'b': 'Same as c except that the delimiters are aligned down the both sides',
-        \ }
-
-let g:which_key_map_space.g = {
-        \ 'name' : '+Git',
-        \ 'g' : 'Open lazygit',
-        \ 'l' : 'Open git log graph',
-        \ 'd' : {
-            \ 'name' : '+diff',
-            \ 's' : 'View the staged version of the file side by side with the working tree version',
-            \ 'f' : 'Open git diff of current repo',
-            \ },
-        \ }
-
-let g:which_key_map_space.r = {
-        \ 'name' : '+Configuration',
-        \ 'r' : 'Reload neovim config',
-        \ 'c' : 'Open private configuration',
-        \ }
-
-let g:which_key_map_space.T = {
-        \ 'name' : '+Open programs',
-        \ 'y' : 'Youtube',
-        \ 'n' : {
-            \ 'name' : '+Nix',
-            \ 'r' : {
-                \ 'name' : '+Rebuild',
-                \ 's' : 'Switch',
-                \ 't' : 'Test',
-                \ 'b' : 'Boot',
-                \ },
-            \ },
-        \ }
-
-"}}}
-
 " fzf {{{
 "match colorscheme
 let g:fzf_commits_log_options = '--graph --color=always'
@@ -339,7 +243,7 @@ let g:rooter_patterns = ['.git', 'Makefile', '*.sln', 'build/env.sh']
 
 "lightline{{{
 let g:lightline = {
-\ 'colorscheme': 'palenight',
+\ 'colorscheme': 'material_vim',
 \ 'active': {
 \   'left': [ [ 'mode', 'paste' ],
 \             [ 'cocstatus', 'currentfunction', 'gitbranch', 'readonly', 'filename' ] ],
@@ -421,28 +325,6 @@ let g:lightline#bufferline#filename_modifier = ':t'
 let g:sky_color_clock#datetime_format = "%H:%M"
 let g:sky_color_clock#enable_emoji_icon = 1
 
-" color
-let s:palette = g:lightline#colorscheme#palenight#palette
-let s:palette.normal.left = [ [ "#292D3E", "#c792ea", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.normal.middle = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.normal.right = [ [ "#292D3E", "#c3e88d", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.insert.left = [ [ "#292D3E", "#82b1ff", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.insert.middle = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.insert.right = [ [ "#292D3E", "#c3e88d", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.visual.left = [ [ "#292D3E", "#89DDFF", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.visual.middle = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.visual.right = [ [ "#292D3E", "#c3e88d", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.replace.left = [ [ "#292D3E", "#C3E88D", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.replace.middle = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.replace.right = [ [ "#292D3E", "#c3e88d", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.tabline.tabsel = [ [ '#292D3E', '#c792ea', 'NONE', 'NONE' ] ]
-let s:palette.tabline.left  = [ [ '#bfc7d5', 'NONE', 'NONE', 'NONE'] ]
-let s:palette.tabline.middle = [ [ "NONE", "NONE", 'NONE', 'NONE' ] ]
-let s:palette.tabline.right  = [ [ '#292d3e', '#c792ea', 'NONE', 'NONE' ] ]
-let s:palette.inactive.left   = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.inactive.middle = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-let s:palette.inactive.right   = [ [ "#A6ACCD", "#232635", 'NONE', 'NONE' ], [ "#A6ACCD", "#232635", 'NONE', 'NONE' ] ]
-unlet s:palette
 
 "}}}
 

@@ -192,6 +192,16 @@ in
     };
   };
 
+  "material-vim" = buildVimPlugin {
+    name = "material-vim";
+    src = fetchFromGitHub {
+      owner = "kaicataldo";
+      repo = "material.vim";
+      rev = "7dfa4bbf1fe43fcebcd836ef4f3b1342b4ea69be";
+      sha256 = "1ihakmh07j47rzy76242zbipcgdn4yh5bivz09469hr1jj2snyj3";
+    };
+  };
+
 }
 
 # vim: foldmethod=marker shiftwidth=4:

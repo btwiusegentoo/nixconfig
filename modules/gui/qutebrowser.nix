@@ -16,27 +16,27 @@
     web.family.standard = "Liberation Sans";
     web.family.serif = "Liberation Sans";
     web.family.sans_serif = "Liberation Sans";
-    web.family.fixed = "CozetteVector";
+    web.family.fixed = "Iosevka Nerd Font";
     completion = {
-      category = "10.5pt CozetteVector";
-      entry = "10.5pt CozetteVector";
+      category = "10pt Iosevka Nerd Font";
+      entry = "10pt Iosevka Nerd Font";
     };
-    contextmenu = "10.5pt CozetteVector";
-    debug_console = "10.5pt CozetteVector";
+    contextmenu = "10pt Iosevka Nerd Font";
+    debug_console = "10pt Iosevka Nerd Font";
     default_size = "10.5pt";
-    downloads = "10.5pt CozetteVector";
+    downloads = "10pt Iosevka Nerd Font";
     hints = "11pt Liberation Sans";
-    keyhint = "10.5pt CozetteVector";
+    keyhint = "10pt Iosevka Nerd Font";
     messages = {
-      error = "10.5pt CozetteVector";
-      info = "10.5pt CozetteVector";
-      warning = "10.5pt CozetteVector";
+      error = "10pt Iosevka Nerd Font";
+      info = "10pt Iosevka Nerd Font";
+      warning = "10pt Iosevka Nerd Font";
     };
-    prompts = "10.5pt CozetteVector";
-    statusbar = "10.5pt CozetteVector";
-    tabs.selected = "10.5pt CozetteVector";
-    tabs.unselected = "10.5pt CozetteVector";
-    #tabs = "10.5pt CozetteVector";
+    prompts = "10pt Iosevka Nerd Font";
+    statusbar = "10pt Iosevka Nerd Font";
+    tabs.selected = "10pt Iosevka Nerd Font";
+    tabs.unselected = "10pt Iosevka Nerd Font";
+    #tabs = "10pt Iosevka Nerd Font";
   };
   
   programs.qutebrowser.settings.colors = {

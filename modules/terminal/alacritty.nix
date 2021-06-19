@@ -62,18 +62,18 @@
   };
   programs.alacritty.settings.font = {
     normal = {
-      family = "CozetteVector";
-      style = "Regular";
+      family = "Iosevka Nerd Font";
+      style = "Medium";
     };
     bold = {
-      family = "CozetteVector";
-      style = "Regular";
+      family = "Iosevka Nerd Font";
+      style = "Bold";
     };
     italic = {
-      family = "CozetteVector";
-      style = "Regular";
+      family = "Iosevka Nerd Font";
+      style = "Italic";
     };
-    size = 10.5;
+    size = 10;
     offset = {
       x = 0;
       y = 0;

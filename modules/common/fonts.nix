@@ -2,10 +2,9 @@
 { pkgs, ... }:
 {
   fonts.fonts = with pkgs; [
-    (nerdfonts.override { fonts = [ "Gohu" ]; })
+    (nerdfonts.override { fonts = [ "Iosevka" ]; })
     unstable.dejavu_fonts
     spleen
-    unstable.cozette
     apple-color-emoji
     noto-fonts-cjk
     emacs-all-the-icons-fonts

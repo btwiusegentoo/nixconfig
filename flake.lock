@@ -27,11 +27,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1623748997,
-        "narHash": "sha256-RTmgyfrgdLM1m+hMfaMYAk7FxmPvPJaoCK4ogHH1s+g=",
+        "lastModified": 1624023274,
+        "narHash": "sha256-4GbPFBpwM5X+T71kvSFqXsMedyw6/Fkh9RwL1RBPXEc=",
         "owner": "emacs-ng",
         "repo": "emacs-ng",
-        "rev": "04958a44d449a86d711af7d053ae3c39062f8a2e",
+        "rev": "40bd0dc39b8aee372325fd0ec31db9b31f7f8bfa",
         "type": "github"
       },
       "original": {
