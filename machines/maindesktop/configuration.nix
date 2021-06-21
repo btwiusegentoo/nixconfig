@@ -146,7 +146,7 @@
   services.fstrim.interval = "daily";
 
   networking.hostName = "desktop1";
-  networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 8447 6885 6888 8744 8777 9444 9447 ];
+  networking.firewall.allowedTCPPorts = [ 8080 9090 9777 10128 8444 8555 8447 6885 6888 8744 8777 9444 9447 8520 8547 55520 ];
   # Networking{{{
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
